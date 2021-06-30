@@ -1,24 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import { Switch, Route } from 'react-router-dom';
+import { CssBaseline, Container } from '@material-ui/core';
+
+// Pages
+import Home from './pages/Home';
+import Favourites from './pages/Favourites';
+import ReadingList from './pages/ReadingList';
+
+// Components
+import Header from './components/Header/Header.jsx';
+
+import useStyles from './styles';
 
 function App() {
+  const classes = useStyles();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <CssBaseline />
+      <Header />
+
+      {/* Routes */}
+      <Container maxWidth="lg" className={classes.container}>
+        <Switch>
+          <Route path="/favourites">
+            <Favourites />
+          </Route>
+          <Route path="/reading-list">
+            <ReadingList />
+          </Route>
+          <Route path="/">
+            <Home />
+          </Route>
+        </Switch>
+      </Container>
+
+      {/* Footer */}
+    </>
   );
 }
 
