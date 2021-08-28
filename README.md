@@ -17,7 +17,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 If you wish to run this project on your local machine, you will need to:
 
-1. Clone this repo by running `git clone https://github.com/Bilaal96/book-worm.git`
+1. Clone this repo by running: `git clone https://github.com/Bilaal96/book-worm.git`
 2. In the command line, ensure that you navigate to the root of the project folder
 3. Install all dependencies by running: `npm install`
 4. start a server on your local machine by running: `npm start`

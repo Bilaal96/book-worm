@@ -9,10 +9,12 @@ const SearchBox = () => {
   const classes = useStyles();
 
   return (
-    <div className={classes.searchBox}>
-      <SearchIcon className={classes.searchIcon} />
+    <div className={classes.searchBar}>
+      <div className={classes.searchBox}>
+        <SearchIcon className={classes.searchIcon} />
 
-      <InputBase className={classes.searchInput} placeholder="Search..." />
+        <InputBase className={classes.searchInput} placeholder="Search..." />
+      </div>
     </div>
   );
 };

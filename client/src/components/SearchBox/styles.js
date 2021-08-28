@@ -1,12 +1,21 @@
 import { makeStyles } from '@material-ui/core';
-import { findByLabelText } from '@testing-library/react';
 
 export default makeStyles((theme) => ({
-  searchBox: {
+  searchBar: {
     width: '100%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  searchBox: {
+    width: '400px',
+    padding: theme.spacing(1),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '1px solid #aaa',
+    borderRadius: '4px',
+    color: '#aaa',
   },
   searchIcon: {
     height: '100%',
@@ -14,6 +23,6 @@ export default makeStyles((theme) => ({
     pointerEvents: 'none',
   },
   searchInput: {
-    width: '400px',
+    width: '100%',
   },
 }));
