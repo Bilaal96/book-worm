@@ -1,0 +1,30 @@
+# Articles for .gitignore reference
+## See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+## .gitignore sytnax: https://stackoverflow.com/questions/24139478/when-to-use-leading-slash-in-gitignore
+## Using Client Env Vars: https://medium.com/@ai.ashkan9473/environment-variables-in-client-side-6a6ff51c6085
+
+# -- /<dir or file name> -> ignore all dirs/files with the specified name, that exist in the current directory
+# -- <dir or file name> (without /) -> ignore all directories and files from the current directory, as well as any sub-directories
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
