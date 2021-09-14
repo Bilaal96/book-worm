@@ -1,18 +1,17 @@
-import React from 'react';
-import { Typography } from '@material-ui/core';
+import { Typography } from "@material-ui/core";
 
-import useStyles from './styles';
+import useStyles from "./styles";
 
 const Logo = () => {
-  const classes = useStyles();
+    const classes = useStyles();
 
-  return (
-    <div className={classes.logo}>
-      <Typography variant="h5" noWrap>
-        Book Worm
-      </Typography>
-    </div>
-  );
+    return (
+        <div className={classes.logo}>
+            <Typography variant="h5" noWrap>
+                Book Worm
+            </Typography>
+        </div>
+    );
 };
 
 export default Logo;

@@ -1,12 +1,13 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from "@material-ui/core";
 
 export default makeStyles((theme) => ({
-  nav: {
-    height: '100%',
-    display: 'flex',
-    gap: 10,
-  },
-  navLink: {
-    color: '#fff',
-  },
+    nav: {
+        height: "100%",
+        display: "flex",
+        gap: theme.spacing(1),
+    },
+    navLink: {
+        color: "#fff",
+        padding: theme.spacing(1, 1.8),
+    },
 }));

@@ -1,9 +1,12 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from "@material-ui/core";
 
-const drawerWidth = 240;
+// const drawerWidth = 240;
 
 export default makeStyles((theme) => ({
-  list: {
-    width: drawerWidth,
-  },
+    hamburger: {
+        color: "#fff",
+    },
+    list: {
+        width: "240px",
+    },
 }));

@@ -27,10 +27,19 @@ app.get("/", async (req, res) => {
     // If Search Term received, use it to make a request to the Books API
     if (req.query.search) {
         // Build request endpoint
+        /**
+         * --- encodeURIComponent() ---
+         * Purpose: Used to encode URI query strings
+         * Why?: Values such as whitespace and "!" need to be encoded when passed as query strings
+        
+         * DETAILS: https://thisthat.dev/encode-uri-vs-encode-uri-component/
+         * DESCRIPTION AND RELATED METHODS: https://love2dev.com/blog/whats-the-difference-between-encodeuri-and-encodeuricomponent/
+         */
+        //! ?maxResults: https://stackoverflow.com/questions/11375173/google-books-api-returns-only-10-results
         const { BOOKS_API_KEY } = process.env;
         const booksSearchEndpoint = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
             req.query.search
-        )}&key=${BOOKS_API_KEY}`;
+        )}&maxResults=40&key=${BOOKS_API_KEY}`;
 
         // Fetch books from Books API using the above endpoint
         try {
@@ -51,7 +60,7 @@ app.get("/", async (req, res) => {
                 res.status(response.status).json(books);
             } else {
                 /**
-                 * ! THROWING ERRORS:
+                 *! THROWING ERRORS:
                  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error
                  *! https://rollbar.com/guides/javascript/how-to-throw-exceptions-in-javascript/
 

@@ -1,23 +1,24 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
-import { Link as RouterLink } from 'react-router-dom';
-
-// M-UI
-// -- components
-import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from '@material-ui/core';
+import { useState } from "react";
 
 // Components
-import Logo from '../Logo/Logo';
+import { Link as RouterLink } from "react-router-dom";
+import {
+    IconButton,
+    Drawer,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+} from "@material-ui/core";
+import Logo from "components/Logo/Logo";
 
-import { NAV_ITEMS_MAP } from '../../constants';
+// MUI Icons
+import { Menu } from "@material-ui/icons";
 
-import useStyles from './styles';
+// Constants
+import { NAV_ITEMS_MAP } from "constants/index";
+
+import useStyles from "./styles";
 
 /** findDomNode Warning options
  * SEE: https://stackoverflow.com/questions/61220424/material-ui-drawer-finddomnode-is-deprecated-in-strictmode 
@@ -25,47 +26,63 @@ import useStyles from './styles';
  * ignore -> is an issue with Material UI
  * or use unstable version of createMuiTheme
  */
-const NavDrawer = ({ isOpen, toggleDrawer }) => {
-  const classes = useStyles();
-  const [selectedIndex, setSelectedIndex] = useState(0);
+const NavDrawer = () => {
+    const classes = useStyles();
 
-  const handleListItemClick = (index) => (event) => {
-    setSelectedIndex(index);
-    toggleDrawer(false);
-  };
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
-  return (
-    <nav className={classes.drawer} aria-label="Navigation">
-      <Drawer open={isOpen} onClose={toggleDrawer(false)}>
-        <div className={classes.list}>
-          <List>
-            <ListItem>
-              <Logo />
-            </ListItem>
+    const handleDrawerToggle = (openState) => (event) => {
+        /**
+         * Defining this handler is not absolutely necessary, but is optimal If we simply pass a
+         * callback to a component's event listener prop - e.g. onClick={() => setIsOpen(true)} -
+         * the callback is redefined on every render
+         */
+        setIsOpen(openState);
+    };
 
-            {NAV_ITEMS_MAP.map((item, index) => (
-              <ListItem
-                button
-                key={index}
-                component={RouterLink}
-                to={item.route}
-                onClick={handleListItemClick(index)}
-                selected={selectedIndex === index}
-              >
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItem>
-            ))}
-          </List>
-        </div>
-      </Drawer>
-    </nav>
-  );
-};
+    const handleListItemClick = (index) => (event) => {
+        // set value of ListItem's "selected" prop, which determines styles for selected ListItem
+        setSelectedIndex(index);
+        // close NavDrawer
+        setIsOpen(false);
+    };
 
-NavDrawer.propTypes = {
-  isOpen: PropTypes.bool.isRequired,
-  toggleDrawer: PropTypes.func.isRequired,
+    return (
+        <>
+            {/* Hamburger Button */}
+            <IconButton onClick={handleDrawerToggle(true)}>
+                <Menu className={classes.hamburger} />
+            </IconButton>
+
+            {/* Collapsible Side Drawer */}
+            <nav className={classes.drawer} aria-label="Navigation">
+                <Drawer open={isOpen} onClose={handleDrawerToggle(false)}>
+                    <div className={classes.list}>
+                        <List>
+                            <ListItem>
+                                <Logo />
+                            </ListItem>
+
+                            {NAV_ITEMS_MAP.map((item, index) => (
+                                <ListItem
+                                    button
+                                    key={index}
+                                    component={RouterLink}
+                                    to={item.route}
+                                    onClick={handleListItemClick(index)}
+                                    selected={selectedIndex === index}
+                                >
+                                    <ListItemIcon>{item.icon}</ListItemIcon>
+                                    <ListItemText primary={item.text} />
+                                </ListItem>
+                            ))}
+                        </List>
+                    </div>
+                </Drawer>
+            </nav>
+        </>
+    );
 };
 
 export default NavDrawer;

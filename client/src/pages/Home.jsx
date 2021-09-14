@@ -13,14 +13,12 @@
     -> does not exist until a user opens a Volume
     -> can store detailed position info (private to user) - down to the resolution of a word
  */
-import { useEffect, useState } from "react";
-
-// MUI
-// -- Components
-import { Typography } from "@material-ui/core";
+import { useState } from "react";
 
 // Components
-import SearchBox from "components/SearchBox/SearchBox";
+import { Typography } from "@material-ui/core";
+import SearchBar from "components/SearchBar/SearchBar";
+import BooksGrid from "components/BooksGrid/BooksGrid";
 
 import useStyles from "./styles";
 
@@ -33,74 +31,50 @@ const Home = () => {
         - https://reactjs.org/docs/context.html
         - https://www.youtube.com/watch?v=5LrDIWkK_Bc
      */
-    const [searchTerm, setSearchTerm] = useState("");
-    const [books, setBooks] = useState([]);
 
-    /**
-     * Query the Google Books API & set fetched books to local state
-     * Books API Ref: https://developers.google.com/books/docs/v1/reference?authuser=1
-     
-     *! NOTE: AT THE MOMENT, REQUEST ONLY HAPPENS WHEN STATE CHANGES
-     *! This will be changed when Search Button is created
-     */
-    useEffect(() => {
-        // Observe/track state changes
-        console.log({ searchTerm });
-        console.log({ books });
+    const [books, setBooks] = useState(null);
+    console.log({ books });
 
-        // Ensure that user has typed something in search box
-        if (searchTerm.length) {
-            /**
-             * --- encodeURIComponent() ---
-             * Purpose: Used to encode URI query strings
-             * Why?: Values such as whitespace and "!" need to be encoded when passed as query strings
-             
-             * DETAILS: https://thisthat.dev/encode-uri-vs-encode-uri-component/
-             * DESCRIPTION AND RELATED METHODS: https://love2dev.com/blog/whats-the-difference-between-encodeuri-and-encodeuricomponent/
-             */
-            const apiSearchEndpoint = `http://localhost:5000/?search=${encodeURIComponent(
-                searchTerm
-            )}`;
-
-            async function fetchBooks() {
-                try {
-                    const response = await fetch(apiSearchEndpoint);
-                    const data = await response.json();
-                    console.log({ data });
-
-                    setBooks(data);
-                } catch (err) {
-                    console.error("fetchBooks ERROR: ", err);
-                }
-            }
-
-            fetchBooks();
+    // Renders appropriate UI based on books state
+    const renderBooksGrid = () => {
+        // No searches made, prompt user
+        if (!books) {
+            return (
+                <Typography variant="h4" component="p" align="center">
+                    Find books using the search bar above
+                </Typography>
+            );
         }
-    }, [searchTerm]);
 
-    const handleSearchSubmit = (e) => {
-        if (e.key === "Enter") {
-            setSearchTerm(e.target.value);
+        // Books found, display with BooksGrid
+        if (books.totalItems > 0) {
+            return <BooksGrid books={books} />;
+        } else {
+            // No results found that match the search term entered
+            return (
+                <Typography variant="h4" component="p" align="center">
+                    No results found, try searching for something else
+                </Typography>
+            );
         }
     };
 
     return (
-        <main>
+        <>
             <Typography
-                variant="h4"
+                variant="h2"
                 component="h1"
                 className={classes.pageHeading}
+                align="center"
             >
-                Home
+                Discover
             </Typography>
+
             {/* Search Box */}
-            <SearchBox handleSearch={handleSearchSubmit} />
-            Press Enter to submit
-            {/* TODO Grid of Books
-             * Mobile: 1 per row
-             * desktop: 3-4 per row
-             */}
-        </main>
+            <SearchBar setBooks={setBooks} />
+
+            {renderBooksGrid()}
+        </>
     );
 };
 
