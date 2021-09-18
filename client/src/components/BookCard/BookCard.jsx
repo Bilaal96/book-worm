@@ -102,8 +102,7 @@ const BookCard = ({ book }) => {
     }`;
 
     /** Consideration:
-     *! Alternate solution for object's with properties that don't exist (e.g. no author or
-     *! description) is to filter them out, removing them from the output
+     *! Alternate solution for object's with properties that don't exist (e.g. no author or description) is to filter them out, removing them from the output
      */
     const getSubheader = (authors) => (
         <Typography
@@ -165,7 +164,7 @@ const BookCard = ({ book }) => {
                     {false ? <RemoveCircle /> : <AddCircleOutline />}
                 </IconButton>
 
-                {/* Favourite */}
+                {/* Add to Favourites */}
                 <IconButton title="Add to Favourites">
                     {false ? (
                         <Favorite color="secondary" />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Components
 import { InputBase, Button } from "@material-ui/core";
@@ -8,47 +8,33 @@ import { Search as SearchIcon } from "@material-ui/icons";
 
 import useStyles from "./styles";
 
-const SearchBar = ({ setBooks }) => {
+const SearchBar = ({ setSearchSubmission, setPage, isLoading }) => {
     const classes = useStyles();
 
-    const [previousSearch, setPreviousSearch] = useState("");
-    const [searchTerm, setSearchTerm] = useState("");
-    console.log({ searchTerm }); // Track changes to searchTerm
+    const [searchInput, setSearchInput] = useState("");
+    // console.log("SearchBar", { searchInput });
 
     // When input value changes, update searchTerm state
     const handleChange = (e) => {
-        setSearchTerm(e.target.value);
+        setSearchInput(e.target.value);
     };
 
-    // Handle Async request on search button click
+    // Handle Async request on search button click / enter key press (keydown)
     const handleSearchSubmit = async (e) => {
-        // Do not proceed if search box is empty OR searchTerm has not changed
-        if (searchTerm.length === 0 || previousSearch === searchTerm) return;
-
-        /**
-         * Only request books if:
-            - "Enter" key pressed (keydown)
-            - search button clicked
-         */
+        // Validate input
         if ((e.type === "keydown" && e.key === "Enter") || e.type === "click") {
-            // Build request endpoint
-            const apiSearchEndpoint = `http://localhost:5000/?search=${encodeURIComponent(
-                searchTerm
-            )}`;
+            if (!searchInput.length)
+                return console.error("Cannot submit empty search");
 
-            // Send request to API to search for Books
-            try {
-                const response = await fetch(apiSearchEndpoint);
-                const data = await response.json();
-
-                setBooks(data);
-            } catch (err) {
-                console.error("fetchBooks ERROR: ", err);
-            }
-
-            setPreviousSearch(searchTerm);
+            setSearchSubmission(searchInput);
+            // Reset page to 1 on new search
+            setPage(1);
         }
     };
+
+    useEffect(() => {
+        console.log("SearchBar rendered");
+    }, []);
 
     return (
         <div className={classes.searchBar}>
@@ -60,6 +46,7 @@ const SearchBar = ({ setBooks }) => {
                     onChange={handleChange}
                     onKeyDown={handleSearchSubmit}
                     placeholder="e.g. The Great Gatsby"
+                    disabled={isLoading}
                 />
             </div>
 
@@ -69,6 +56,7 @@ const SearchBar = ({ setBooks }) => {
                 color="secondary"
                 onClick={handleSearchSubmit}
                 disableElevation
+                disabled={isLoading}
             >
                 Search
             </Button>

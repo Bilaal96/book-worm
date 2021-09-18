@@ -20,12 +20,14 @@ app.get("/test", (req, res) => {
 
 //? REF: https://opensource.com/article/20/11/top-level-await-javascript
 app.get("/", async (req, res) => {
+    const { search: searchTerm, maxResults, startIndex } = req.query;
+
     // returns undefined if "search" is not specified
-    console.log({ reqQuerySearch: req.query.search });
+    console.log({ reqQuery: req.query });
 
     // Check if Client sent a Search Term
     // If Search Term received, use it to make a request to the Books API
-    if (req.query.search) {
+    if (searchTerm) {
         // Build request endpoint
         /**
          * --- encodeURIComponent() ---
@@ -38,8 +40,10 @@ app.get("/", async (req, res) => {
         //! ?maxResults: https://stackoverflow.com/questions/11375173/google-books-api-returns-only-10-results
         const { BOOKS_API_KEY } = process.env;
         const booksSearchEndpoint = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
-            req.query.search
-        )}&maxResults=40&key=${BOOKS_API_KEY}`;
+            searchTerm
+        )}&startIndex=${encodeURIComponent(
+            startIndex
+        )}&maxResults=${encodeURIComponent(maxResults)}&key=${BOOKS_API_KEY}`;
 
         // Fetch books from Books API using the above endpoint
         try {
