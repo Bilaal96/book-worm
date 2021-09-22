@@ -16,8 +16,7 @@ Future improvements may include:
 ## 2 | Issues Faced During Development
 
 <details>
-    <summary>
-        <h3 style="display:inline-block">2.1 | Pagination of API Data Retrieved</h3>
+    <summary style="font-size: 1.25em; font-weight: 600">2.1 | Pagination of API Data Retrieved
     </summary>
     <div style="margin: 0 0 0 26px">
         <div style="margin: 16px 0 0">
