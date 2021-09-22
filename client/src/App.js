@@ -4,7 +4,7 @@ import { CssBaseline, Container } from "@material-ui/core";
 import Header from "components/Header/Header.jsx";
 
 // Pages
-import Home from "pages/Home/Home";
+import Home from "pages/Home";
 import Favourites from "pages/Favourites";
 import ReadingList from "pages/ReadingList";
 

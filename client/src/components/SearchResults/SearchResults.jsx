@@ -5,88 +5,59 @@ import PropTypes from "prop-types";
 import { Typography } from "@material-ui/core";
 import BooksGrid from "components/BooksGrid/BooksGrid";
 
-// Constants
-import { MAX_SEARCH_RESULTS } from "constants/index";
-
 // Helpers
-import { getBooksRequestURI } from "helpers/api-requests";
+import { getStartIndex } from "helpers/pagination";
+import { isValidSearchString } from "helpers/search-string-validation";
 
 const SearchResults = ({
+    fetchBooks,
     books,
-    dispatchBooks,
-    booksCount,
-    setBooksCount,
-    pagination: ResultsPagination, // MUI Pagination component
-    page,
-    setPageCount,
+    selectedPage,
     searchSubmission,
+    resultsPagination,
 }) => {
-    // Track whether or not SearchResults is mounting DOM for first time
+    // Tracks whether or not SearchResults is mounting DOM for first time
     const isMounted = useRef(null);
 
-    // Calculate the number of pages available to select
-    useEffect(() => {
-        setPageCount(Math.ceil(booksCount / MAX_SEARCH_RESULTS));
-    }, [booksCount, setPageCount]);
-
     /**
-     * --- Request Books for a Specific Page ---
+     * ----- Request Books for a Specific Page -----
      * Google's Books API limits each request to maximum of 40 books
-     * In order to access all the books we must paginate them
+     * In order to access more / all of the books we must paginate them
      * Pagination requires use of the query params: startIndex and maxResults 
      
-     * getBooksRequestURI() handles building the request endpoint, which involves:
-        - calculating the startIndex (using the currently selected page and maxResults)
-        - url encoding the values passed as query params
-        - For more details see: /src/helpers/api-requests.js 
+     * --- getStartIndex() ---
+     * calculates the startIndex queryParam, using the currently selected page
      
-     * The URI (returned by getBooksRequestURI) is used to fetch the Books for a specific user-selected page
-
-     * Submitting a search via SearchBar manually sets the page to: 1
+     * --- fetchBooks() ---
+     * Handles fetching books data and updating the app state during different stages of the data fetch
+     * Object accepted as arg is used by other functions (called internally) to set query params for the request URI
+     
+     * --- useEffect() ---
+     * NOTE: selectedPage state is listed in the dependencies array
+     * So when selectedPage updated, the books are requested with newly calculated startIndex as a side-effect 
      */
     useEffect(() => {
-        async function fetchBooksToDisplay() {
-            console.log("------------FETCH BOOKS START--------------");
-            const booksRequestURI = getBooksRequestURI(page, {
-                search: searchSubmission,
-            });
-
-            try {
-                dispatchBooks({ type: "FETCH_BOOKS_START" });
-
-                const response = await fetch(booksRequestURI);
-                const booksData = await response.json();
-
-                dispatchBooks({
-                    type: "FETCH_BOOKS_SUCCESS",
-                    payload: booksData,
-                });
-
-                // Set the num
-                // The total number of books from the initial request
-                // -- when fetching results from startIndex > 0, the total number of matching books found will change, so it is important to use the totalItems property returned by the INITIAL request
-                if (page === 1) {
-                    setBooksCount(booksData.totalItems);
-                    console.log("|||||||||| books count updated ||||||||||");
-                }
-                console.log("------------FETCH SUCCESS--------------");
-            } catch (err) {
-                console.log(err);
-                dispatchBooks({ type: "FETCH_BOOKS_FAILED", payload: err });
-                console.log("------------FETCH FAILED--------------");
-            }
-        }
-
         // Request books on every re-render (i.e. every render AFTER the first render)
         if (isMounted.current) {
-            fetchBooksToDisplay();
+            // Prevent empty search request on refreshes after initial render
+            if (!isValidSearchString(searchSubmission))
+                return console.log("|| Empty search prevented on refresh ||");
+
+            const startIndex = getStartIndex(selectedPage);
+            fetchBooks({
+                search: searchSubmission,
+                startIndex,
+            });
         } else {
+            // First render, do not request; update isMounted Ref
             isMounted.current = true;
         }
-    }, [page, searchSubmission, dispatchBooks, setBooksCount]);
+    }, [selectedPage, fetchBooks, searchSubmission]);
+
+    const { data: booksData } = books; // reduces verbosity / increase readability
 
     // No searches made, prompt user
-    if (!books.data) {
+    if (!booksData) {
         return (
             <Typography variant="h4" component="p" align="center">
                 Find books using the search bar above
@@ -94,19 +65,13 @@ const SearchResults = ({
         );
     }
 
-    // Books found, display in BooksGrid
-    if (booksCount > 0) {
+    // Books found, display in paginated BooksGrid
+    if (booksData.items?.length > 0) {
         return (
             <>
-                {/* //! TODO REMOVE BooksPagination */}
-                {/* <BooksPagination>
-                    <BooksGrid books={books} />
-                </BooksPagination> */}
-
-                {/* //! only render ResultsPagination if any number of pages actually exist */}
-                {ResultsPagination}
+                {resultsPagination}
                 <BooksGrid books={books.data} />
-                {ResultsPagination}
+                {resultsPagination}
             </>
         );
     } else {
@@ -119,9 +84,17 @@ const SearchResults = ({
     }
 };
 
+// Allowing null values: https://github.com/facebook/react/issues/3163#issuecomment-463656929
 SearchResults.propTypes = {
+    fetchBooks: PropTypes.func.isRequired,
+    books: PropTypes.shape({
+        data: PropTypes.object,
+        isFetching: PropTypes.bool.isRequired,
+        error: PropTypes.instanceOf(Error),
+    }),
+    selectedPage: PropTypes.number.isRequired,
     searchSubmission: PropTypes.string.isRequired,
-    books: PropTypes.object,
+    resultsPagination: PropTypes.object.isRequired,
 };
 
 export default SearchResults;

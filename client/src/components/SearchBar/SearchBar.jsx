@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 
 // Components
 import { InputBase, Button } from "@material-ui/core";
@@ -6,13 +7,21 @@ import { InputBase, Button } from "@material-ui/core";
 // MUI Icons
 import { Search as SearchIcon } from "@material-ui/icons";
 
+// Helpers
+import { isValidSearchString } from "helpers/search-string-validation";
+
 import useStyles from "./styles";
 
-const SearchBar = ({ setSearchSubmission, setPage, isLoading }) => {
+const SearchBar = ({
+    fetchBooks,
+    previousSearch,
+    setSearchSubmission,
+    setSelectedPage,
+    isFetchingBooks,
+}) => {
     const classes = useStyles();
 
     const [searchInput, setSearchInput] = useState("");
-    // console.log("SearchBar", { searchInput });
 
     // When input value changes, update searchTerm state
     const handleChange = (e) => {
@@ -23,18 +32,23 @@ const SearchBar = ({ setSearchSubmission, setPage, isLoading }) => {
     const handleSearchSubmit = async (e) => {
         // Validate input
         if ((e.type === "keydown" && e.key === "Enter") || e.type === "click") {
-            if (!searchInput.length)
-                return console.error("Cannot submit empty search");
+            if (!isValidSearchString(searchInput))
+                return console.error("|| Cannot submit empty search ||");
 
+            // prevent resubmission of previous search
+            if (searchInput === previousSearch)
+                return console.log("Search term has not changed");
+
+            // Store submitted search term for making paginated requests
             setSearchSubmission(searchInput);
-            // Reset page to 1 on new search
-            setPage(1);
+
+            // Requests books data from Books API and updates app state appropriately
+            fetchBooks({ search: searchInput });
+
+            // Reset page to 1 on new search submission
+            setSelectedPage(1);
         }
     };
-
-    useEffect(() => {
-        console.log("SearchBar rendered");
-    }, []);
 
     return (
         <div className={classes.searchBar}>
@@ -46,7 +60,7 @@ const SearchBar = ({ setSearchSubmission, setPage, isLoading }) => {
                     onChange={handleChange}
                     onKeyDown={handleSearchSubmit}
                     placeholder="e.g. The Great Gatsby"
-                    disabled={isLoading}
+                    disabled={isFetchingBooks}
                 />
             </div>
 
@@ -56,12 +70,20 @@ const SearchBar = ({ setSearchSubmission, setPage, isLoading }) => {
                 color="secondary"
                 onClick={handleSearchSubmit}
                 disableElevation
-                disabled={isLoading}
+                disabled={isFetchingBooks}
             >
                 Search
             </Button>
         </div>
     );
+};
+
+SearchBar.propTypes = {
+    fetchBooks: PropTypes.func.isRequired,
+    previousSearch: PropTypes.string.isRequired,
+    setSearchSubmission: PropTypes.func.isRequired,
+    setSelectedPage: PropTypes.func.isRequired,
+    isFetchingBooks: PropTypes.bool.isRequired,
 };
 
 export default SearchBar;
