@@ -88,9 +88,9 @@ const SearchResults = ({
 SearchResults.propTypes = {
     fetchBooks: PropTypes.func.isRequired,
     books: PropTypes.shape({
-        data: PropTypes.object,
+        data: PropTypes.object, // allows null
         isFetching: PropTypes.bool.isRequired,
-        error: PropTypes.instanceOf(Error),
+        error: PropTypes.instanceOf(Error), // allows null
     }),
     selectedPage: PropTypes.number.isRequired,
     searchSubmission: PropTypes.string.isRequired,
