@@ -64,19 +64,21 @@ const NavDrawer = () => {
                                 <Logo />
                             </ListItem>
 
-                            {NAV_ITEMS_MAP.map((item, index) => (
-                                <ListItem
-                                    button
-                                    key={index}
-                                    component={RouterLink}
-                                    to={item.route}
-                                    onClick={handleListItemClick(index)}
-                                    selected={selectedIndex === index}
-                                >
-                                    <ListItemIcon>{item.icon}</ListItemIcon>
-                                    <ListItemText primary={item.text} />
-                                </ListItem>
-                            ))}
+                            {NAV_ITEMS_MAP.map(
+                                ({ routeName, isExact, text, icon }, index) => (
+                                    <ListItem
+                                        button
+                                        key={index}
+                                        component={RouterLink}
+                                        to={routeName}
+                                        onClick={handleListItemClick(index)}
+                                        selected={selectedIndex === index}
+                                    >
+                                        <ListItemIcon>{icon}</ListItemIcon>
+                                        <ListItemText primary={text} />
+                                    </ListItem>
+                                )
+                            )}
                         </List>
                     </div>
                 </Drawer>

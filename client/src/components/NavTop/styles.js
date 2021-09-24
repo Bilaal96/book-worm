@@ -10,4 +10,7 @@ export default makeStyles((theme) => ({
         color: "#fff",
         padding: theme.spacing(1, 1.8),
     },
+    navLinkSelected: {
+        border: "1px solid #fff",
+    },
 }));

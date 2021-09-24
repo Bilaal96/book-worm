@@ -14,7 +14,7 @@ const SearchResults = ({
     books,
     selectedPage,
     searchSubmission,
-    resultsPagination,
+    resultsPagination: ResultsPagination,
 }) => {
     // Tracks whether or not SearchResults is mounting DOM for first time
     const isMounted = useRef(null);
@@ -69,9 +69,9 @@ const SearchResults = ({
     if (booksData.items?.length > 0) {
         return (
             <>
-                {resultsPagination}
+                {ResultsPagination}
                 <BooksGrid books={books.data} />
-                {resultsPagination}
+                {ResultsPagination}
             </>
         );
     } else {
@@ -84,7 +84,7 @@ const SearchResults = ({
     }
 };
 
-// Allowing null values: https://github.com/facebook/react/issues/3163#issuecomment-463656929
+// Allowing null values: https://github.com/facebook/react/issues/3163
 SearchResults.propTypes = {
     fetchBooks: PropTypes.func.isRequired,
     books: PropTypes.shape({

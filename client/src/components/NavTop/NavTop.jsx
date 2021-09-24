@@ -1,5 +1,5 @@
 // Components
-import { Link as RouterLink } from "react-router-dom";
+import { NavLink as RouterNavLink } from "react-router-dom";
 import { Button } from "@material-ui/core";
 
 // Constants
@@ -13,15 +13,17 @@ const NavTop = () => {
     return (
         <nav className={classes.nav}>
             {/* DOCS: https://material-ui.com/guides/composition/#button */}
-            {NAV_ITEMS_MAP.map((item, index) => (
+            {NAV_ITEMS_MAP.map(({ routeName, isExact, text, icon }, index) => (
                 <Button
                     key={index}
                     className={classes.navLink}
-                    component={RouterLink}
-                    to={item.route}
-                    startIcon={item.icon}
+                    startIcon={icon}
+                    activeClassName={classes.navLinkSelected}
+                    component={RouterNavLink}
+                    to={routeName}
+                    exact={isExact}
                 >
-                    {item.text}
+                    {text}
                 </Button>
             ))}
         </nav>

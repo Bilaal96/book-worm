@@ -1,5 +1,5 @@
 // Components
-import { Switch, Route } from "react-router-dom";
+import { Switch, Route, Redirect } from "react-router-dom";
 import { CssBaseline, Container } from "@material-ui/core";
 import Header from "components/Header/Header.jsx";
 
@@ -25,14 +25,20 @@ function App() {
                 component="main"
             >
                 <Switch>
+                    {/* Home */}
+                    {/* Redirect root path to /books */}
+                    <Route exact path="/">
+                        <Redirect to="/books" />
+                    </Route>
+                    <Route path="/books">
+                        <Home />
+                    </Route>
+
                     <Route path="/favourites">
                         <Favourites />
                     </Route>
                     <Route path="/reading-list">
                         <ReadingList />
-                    </Route>
-                    <Route path="/">
-                        <Home />
                     </Route>
                 </Switch>
             </Container>

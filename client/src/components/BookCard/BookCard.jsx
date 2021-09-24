@@ -1,52 +1,5 @@
-/**
- *! BOOKS API DATA AVAILABLE / INTERESTED IN:
-    - https://www.googleapis.com/books/v1/volumes?q=develop
-
- * booksApiResultsObj.items => array of objects => iterate over
-
- * item => object in array
-
- * item properties: {
-    id,
-    searchInfo: {
-        textSnippet
-    }
-    volumeInfo: {
-        imageLinks: {
-            smallThumbnail,
-            thumbnail
-        },
-        previewLink,
-        infoLink,
-        title,
-        subtitle,
-        authors,
-        description
-        publisher,
-        publishedDate,
-        categories,
-        averageRating,
-        ratingsCount
-    },
-    saleInfo: { // can use for filtering data
-        country, -> auto filtered by google based on region
-        saleability,
-        isEbook,
-        listPrice,
-        retailPrice,
-    },
-    accessInfo: {
-        epub: {
-            isAvailable
-        },
-        pdf: {
-            isAvailable
-        },
-    }
- }
-*/
-
 import PropTypes from "prop-types";
+import { Link, useRouteMatch } from "react-router-dom";
 
 // Components
 import {
@@ -87,7 +40,9 @@ import useStyles from "./styles";
  */
 const BookCard = ({ book }) => {
     const classes = useStyles();
-    const { volumeInfo, searchInfo } = book;
+    const match = useRouteMatch();
+
+    const { id, volumeInfo, searchInfo } = book;
     // const { volumeInfo, searchInfo, saleInfo, accessInfo } = book; //? for future use
 
     // if available get book cover, if not use fallback image
@@ -102,7 +57,8 @@ const BookCard = ({ book }) => {
     }`;
 
     /** Consideration:
-     *! Alternate solution for object's with properties that don't exist (e.g. no author or description) is to filter them out, removing them from the output
+     *! Alternate solution for object's with properties that don't exist (e.g. no
+     *! author or description) is to filter them out, removing them from the output
      */
     const getSubheader = (authors) => (
         <Typography
@@ -195,9 +151,12 @@ const BookCard = ({ book }) => {
                     Preview
                 </Button>
                 <Button
+                    component={Link}
                     variant="outlined"
                     color="secondary"
                     startIcon={<OpenInNew />}
+                    to={`${match.url}/${id}`}
+                    target="_blank"
                 >
                     Details
                 </Button>
