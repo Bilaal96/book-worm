@@ -11,13 +11,14 @@ import { isValidSearchString } from "helpers/search-string-validation";
 
 const SearchResults = ({
     fetchBooks,
-    books,
+    search,
     selectedPage,
     searchSubmission,
     resultsPagination: ResultsPagination,
 }) => {
     // Tracks whether or not SearchResults is mounting DOM for first time
     const isMounted = useRef(null);
+    const booksFound = search.results; // reduces verbosity / increase readability
 
     /**
      * ----- Request Books for a Specific Page -----
@@ -34,7 +35,7 @@ const SearchResults = ({
      
      * --- useEffect() ---
      * NOTE: selectedPage state is listed in the dependencies array
-     * So when selectedPage updated, the books are requested with newly calculated startIndex as a side-effect 
+     * So when selectedPage updates, the books are requested with newly calculated startIndex as a side-effect 
      */
     useEffect(() => {
         // Request books on every re-render (i.e. every render AFTER the first render)
@@ -54,10 +55,8 @@ const SearchResults = ({
         }
     }, [selectedPage, fetchBooks, searchSubmission]);
 
-    const { data: booksData } = books; // reduces verbosity / increase readability
-
     // No searches made, prompt user
-    if (!booksData) {
+    if (!booksFound) {
         return (
             <Typography variant="h4" component="p" align="center">
                 Find books using the search bar above
@@ -66,11 +65,11 @@ const SearchResults = ({
     }
 
     // Books found, display in paginated BooksGrid
-    if (booksData.items?.length > 0) {
+    if (booksFound.items?.length > 0) {
         return (
             <>
                 {ResultsPagination}
-                <BooksGrid books={books.data} />
+                <BooksGrid booksFound={booksFound} />
                 {ResultsPagination}
             </>
         );
@@ -87,8 +86,8 @@ const SearchResults = ({
 // Allowing null values: https://github.com/facebook/react/issues/3163
 SearchResults.propTypes = {
     fetchBooks: PropTypes.func.isRequired,
-    books: PropTypes.shape({
-        data: PropTypes.object, // allows null
+    search: PropTypes.shape({
+        results: PropTypes.object, // allows null
         isFetching: PropTypes.bool.isRequired,
         error: PropTypes.instanceOf(Error), // allows null
     }),

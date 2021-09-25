@@ -31,10 +31,7 @@ import useStyles from "./styles";
 /**
  * Actions
     - preview -> embedded View API
-    - details/learn more -> links to BookDetails page which shows things like:
-        - price etc. //! TBD 
-        - book is purchasable? (maybe as tag)
-        - links to Google Books or Google PlayStore Books section -> via "View in playstore" Button for example
+    - details/learn more 
     - Add to Reading List -> + icon or share Books Icon (as seen in NavTop)
     - Add to favourites -> Heart Icon
  */
@@ -156,7 +153,7 @@ const BookCard = ({ book }) => {
                     color="secondary"
                     startIcon={<OpenInNew />}
                     to={`${match.url}/${id}`}
-                    target="_blank"
+                    // target="_blank"
                 >
                     Details
                 </Button>

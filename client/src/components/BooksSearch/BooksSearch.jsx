@@ -13,7 +13,10 @@
     -> does not exist until a user opens a Volume
     -> can store detailed position info (private to user) - down to the resolution of a word
  */
-import { useState, useReducer } from "react";
+import { useState } from "react";
+
+// Contexts
+import { useSearchContext } from "contexts/search/search.context";
 
 // Components
 import { Typography } from "@material-ui/core";
@@ -24,55 +27,17 @@ import SearchResults from "components/SearchResults/SearchResults";
 // Helpers
 import { getBooksRequestURI } from "helpers/api-query-builder";
 
-// booksReducer - handles app state during and after requests for books
-function booksReducer(state, action) {
-    switch (action.type) {
-        case "FETCH_BOOKS_START":
-            return {
-                ...state,
-                isFetching: true,
-                error: null,
-            };
-        case "FETCH_BOOKS_SUCCESS":
-            return {
-                ...state,
-                data: action.payload,
-                isFetching: false,
-                error: null,
-            };
-        case "FETCH_BOOKS_FAILED":
-            return {
-                ...state,
-                data: {},
-                isFetching: false,
-                error: action.payload,
-            };
-        default:
-            return state;
-    }
-}
-
 const BooksSearch = () => {
-    const [books, dispatchBooks] = useReducer(booksReducer, {
-        data: null,
-        isFetching: false,
-        error: null,
-    });
+    const [search, dispatchSearch] = useSearchContext();
 
     // The search term used to fetch books data
     const [searchSubmission, setSearchSubmission] = useState("");
     // Currently selected page
     const [selectedPage, setSelectedPage] = useState(1);
 
-    // ! TBD - CURRENTLY NO LONGER IN USE
-    // The total number of books from the initial request
-    // const [booksCount, setBooksCount] = useState(0);
-    // Total number of pages user can select from
-    // const [pageCount, setPageCount] = useState(0);
-
     console.log("Home", {
         searchSubmission,
-        books,
+        searchResults: search,
         selectedPage,
     });
 
@@ -93,7 +58,6 @@ const BooksSearch = () => {
      */
     async function fetchBooks(configurableParams) {
         console.log({ configurableParams });
-        console.log({ "configParams.search": configurableParams.search });
 
         const booksRequestURI = getBooksRequestURI(configurableParams);
 
@@ -101,17 +65,19 @@ const BooksSearch = () => {
             console.log("------------FETCH BOOKS START--------------");
 
             // start loading state
-            dispatchBooks({ type: "FETCH_BOOKS_START" });
+            dispatchSearch({ type: "FETCH_BOOKS_START" });
 
             // Fetch books from Google Books API
             const response = await fetch(booksRequestURI);
-            const booksData = await response.json();
+            const searchResults = await response.json();
+
+            console.log({ fetchBooks: searchResults });
 
             // update books state with fetched data
             // end loading state
-            dispatchBooks({
+            dispatchSearch({
                 type: "FETCH_BOOKS_SUCCESS",
-                payload: booksData,
+                payload: searchResults,
             });
 
             console.log("------------FETCH SUCCESS--------------");
@@ -121,7 +87,7 @@ const BooksSearch = () => {
 
             // update books state with error
             // end loading state
-            dispatchBooks({ type: "FETCH_BOOKS_FAILED", payload: err });
+            dispatchSearch({ type: "FETCH_BOOKS_FAILED", payload: err });
         }
     }
 
@@ -135,7 +101,7 @@ const BooksSearch = () => {
             selectedPage={selectedPage}
             setSelectedPage={setSelectedPage}
             pageCount={10}
-            isFetchingBooks={books.isFetching}
+            isFetchingBooks={search.isFetching}
         />
     );
 
@@ -151,18 +117,18 @@ const BooksSearch = () => {
                 previousSearch={searchSubmission}
                 setSearchSubmission={setSearchSubmission}
                 setSelectedPage={setSelectedPage}
-                isFetchingBooks={books.isFetching}
+                isFetchingBooks={search.isFetching}
             />
 
             {/* Renders appropriate UI based on "books" state */}
-            {books.isFetching ? (
+            {search.isFetching ? (
                 <Typography variant="h4" component="p" align="center">
                     Loading...
                 </Typography>
             ) : (
                 <SearchResults
                     fetchBooks={fetchBooks}
-                    books={books}
+                    search={search}
                     selectedPage={selectedPage}
                     searchSubmission={searchSubmission}
                     resultsPagination={resultsPagination}
