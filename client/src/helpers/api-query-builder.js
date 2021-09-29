@@ -30,7 +30,7 @@ export const getURIEncodedQueryString = (queryParams) => {
 
 /**
  * --- getBooksRequestURI() ---
- * Builds the URI required to request books data from Books API 
+ * Builds the URI required to request books data from Google Books API 
  
  * @param { object } configurableParams - used to manually set / override default params
  * @param { string } serverDomain - flexibly set the domain for custom API
@@ -57,7 +57,7 @@ export const getBooksRequestURI = (
 
     // Get url encoded string, consisting of all query parameters
     const uriEncodedQuerystring = getURIEncodedQueryString(queryParams);
-    console.log({ uriEncodedQuerystring });
+    console.log("getBooksRequestURI", { uriEncodedQuerystring });
 
     // return URI with which API request can be made
     // e.g. http://localhost:5000/?search=test&startIndex=0&maxResults=20

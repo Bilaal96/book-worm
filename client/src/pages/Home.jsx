@@ -5,7 +5,7 @@ import { SearchProvider } from "contexts/search/search.provider";
 
 // Components
 import BooksSearch from "components/BooksSearch/BooksSearch";
-import BookDetails from "../components/BookDetails/BookDetails";
+import BookDetails from "pages/BookDetails";
 
 const Home = () => {
     const { path } = useRouteMatch();

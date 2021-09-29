@@ -1,6 +1,9 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 
+// Contexts
+import { useSearchContext } from "contexts/search/search.context";
+
 // Components
 import { InputBase, Button } from "@material-ui/core";
 
@@ -12,16 +15,10 @@ import { isValidSearchString } from "helpers/search-string-validation";
 
 import useStyles from "./styles";
 
-const SearchBar = ({
-    fetchBooks,
-    previousSearch,
-    setSearchSubmission,
-    setSelectedPage,
-    isFetchingBooks,
-}) => {
+const SearchBar = ({ fetchBooks, setSelectedPage }) => {
     const classes = useStyles();
-
     const [searchInput, setSearchInput] = useState("");
+    const [search, dispatchSearch] = useSearchContext();
 
     // When input value changes, update searchTerm state
     const handleChange = (e) => {
@@ -30,23 +27,30 @@ const SearchBar = ({
 
     // Handle Async request on search button click / enter key press (keydown)
     const handleSearchSubmit = async (e) => {
-        // Validate input
+        // Validate user inputs
         if ((e.type === "keydown" && e.key === "Enter") || e.type === "click") {
             if (!isValidSearchString(searchInput))
-                return console.error("|| Cannot submit empty search ||");
+                return console.error("Search box requires a valid search term");
 
-            // prevent resubmission of previous search
-            if (searchInput === previousSearch)
-                return console.log("Search term has not changed");
+            // Prevent resubmission of previous search
+            if (searchInput === search.submission)
+                return console.log(
+                    `Already showing results for "${searchInput}"`
+                );
 
-            // Store submitted search term for making paginated requests
-            setSearchSubmission(searchInput);
+            // Store submitted search term in SearchContext
+            // -- for making paginated requests and preventing resubmissions
+            dispatchSearch({
+                type: "UPDATE_SEARCH_SUBMISSION",
+                payload: searchInput,
+            });
 
-            // Requests books data from Books API and updates app state appropriately
+            // Request books data (for page 1) from Books API and updates SearchContext when appropriate
             fetchBooks({ search: searchInput });
 
-            // Reset page to 1 on new search submission
+            // Reset page (in state and sessionStorage) to 1
             setSelectedPage(1);
+            sessionStorage.setItem("results-page", JSON.stringify(Number(1)));
         }
     };
 
@@ -60,7 +64,7 @@ const SearchBar = ({
                     onChange={handleChange}
                     onKeyDown={handleSearchSubmit}
                     placeholder="e.g. The Great Gatsby"
-                    disabled={isFetchingBooks}
+                    disabled={search.isFetching}
                 />
             </div>
 
@@ -70,7 +74,7 @@ const SearchBar = ({
                 color="secondary"
                 onClick={handleSearchSubmit}
                 disableElevation
-                disabled={isFetchingBooks}
+                disabled={search.isFetching}
             >
                 Search
             </Button>
@@ -80,10 +84,7 @@ const SearchBar = ({
 
 SearchBar.propTypes = {
     fetchBooks: PropTypes.func.isRequired,
-    previousSearch: PropTypes.string.isRequired,
-    setSearchSubmission: PropTypes.func.isRequired,
     setSelectedPage: PropTypes.func.isRequired,
-    isFetchingBooks: PropTypes.bool.isRequired,
 };
 
 export default SearchBar;

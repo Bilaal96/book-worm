@@ -28,65 +28,70 @@ import SearchResults from "components/SearchResults/SearchResults";
 import { getBooksRequestURI } from "helpers/api-query-builder";
 
 const BooksSearch = () => {
+    // Initialises selectedPage state - the currently selected page
+    const getInitialSelectedPage = () => {
+        const cachedResultsPage = JSON.parse(
+            sessionStorage.getItem("results-page")
+        );
+
+        // Restore last clicked "page" if cached in sessionStorage
+        if (cachedResultsPage) return cachedResultsPage;
+
+        // Otherwise, default to page 1
+        return 1;
+    };
+
+    const [selectedPage, setSelectedPage] = useState(getInitialSelectedPage);
     const [search, dispatchSearch] = useSearchContext();
 
-    // The search term used to fetch books data
-    const [searchSubmission, setSearchSubmission] = useState("");
-    // Currently selected page
-    const [selectedPage, setSelectedPage] = useState(1);
-
-    console.log("Home", {
-        searchSubmission,
-        searchResults: search,
+    console.log("BooksSearch", {
+        searchContext: search,
         selectedPage,
     });
 
     /**
      * ----- fetchBooks() -----
-     * calls getBooksRequestURI() - see below
-     * makes an async requests to the URI for books data
-     * updates the books state during and after the async request
-
+     * Builds Request URI - see getBooksRequestURI() below
+     * Makes an async requests to the URI for books data
+     * Updates the SearchContext during and after the async request
+     * Caches results of the request in sessionStorage
+     
      * --- getBooksRequestURI() ---
      * Builds and returns a URI that targets the Google Books API 
-
-     * @param { object } configurableParams - query parameters as key-value pairs
-
+     
+     * @param { object } configurableParams - query parameters as key-value pairs 
+     
      * configurableParams REQUIRES a "search" property
      * Additional properties (set internally by getBooksRequestURI) have default values 
-     * Default properties can be overridden if specified in configurableParams
+     * Default properties can be overridden if specified in configurableParams 
+     * See "src/helpers/api-query-builder.js" for details
      */
     async function fetchBooks(configurableParams) {
-        console.log({ configurableParams });
+        console.log("fetchBooks", { configurableParams });
 
+        // Build URI to fetch books from
         const booksRequestURI = getBooksRequestURI(configurableParams);
 
         try {
-            console.log("------------FETCH BOOKS START--------------");
-
-            // start loading state
+            // Enter loading state
             dispatchSearch({ type: "FETCH_BOOKS_START" });
 
             // Fetch books from Google Books API
             const response = await fetch(booksRequestURI);
-            const searchResults = await response.json();
+            const books = await response.json();
+            // console.log("fetchBooks response:", books);
 
-            console.log({ fetchBooks: searchResults });
-
-            // update books state with fetched data
-            // end loading state
+            // Update SearchContext with fetched data, and exit loading state
             dispatchSearch({
                 type: "FETCH_BOOKS_SUCCESS",
-                payload: searchResults,
+                payload: books,
             });
 
-            console.log("------------FETCH SUCCESS--------------");
+            // Cache fetched books in sessionStorage
+            sessionStorage.setItem("search-results", JSON.stringify(books));
         } catch (err) {
-            console.log("------------FETCH FAILED--------------");
             console.error(err);
-
-            // update books state with error
-            // end loading state
+            // update SearchContext with error, and exit loading state
             dispatchSearch({ type: "FETCH_BOOKS_FAILED", payload: err });
         }
     }
@@ -98,6 +103,7 @@ const BooksSearch = () => {
      */
     const resultsPagination = (
         <SearchResultsPagination
+            fetchBooks={fetchBooks}
             selectedPage={selectedPage}
             setSelectedPage={setSelectedPage}
             pageCount={10}
@@ -111,13 +117,10 @@ const BooksSearch = () => {
                 Discover
             </Typography>
 
-            {/* Search Box */}
+            {/* Search Bar */}
             <SearchBar
                 fetchBooks={fetchBooks}
-                previousSearch={searchSubmission}
-                setSearchSubmission={setSearchSubmission}
                 setSelectedPage={setSelectedPage}
-                isFetchingBooks={search.isFetching}
             />
 
             {/* Renders appropriate UI based on "books" state */}
@@ -126,13 +129,7 @@ const BooksSearch = () => {
                     Loading...
                 </Typography>
             ) : (
-                <SearchResults
-                    fetchBooks={fetchBooks}
-                    search={search}
-                    selectedPage={selectedPage}
-                    searchSubmission={searchSubmission}
-                    resultsPagination={resultsPagination}
-                />
+                <SearchResults resultsPagination={resultsPagination} />
             )}
         </>
     );

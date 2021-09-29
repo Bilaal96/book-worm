@@ -2,6 +2,7 @@ import { createContext, useContext } from "react";
 
 // Define Contexts with default values
 export const SearchStateContext = createContext({
+    submission: "",
     results: null,
     isFetching: false,
     error: null,
