@@ -22,25 +22,17 @@ import {
     Favorite,
     AddCircleOutline,
     RemoveCircle,
-    OpenInNew,
     Visibility,
+    Subject,
 } from "@material-ui/icons";
 
 import useStyles from "./styles";
 
-/**
- * Actions
-    - preview -> embedded View API
-    - details/learn more 
-    - Add to Reading List -> + icon or share Books Icon (as seen in NavTop)
-    - Add to favourites -> Heart Icon
- */
 const BookCard = ({ book }) => {
     const classes = useStyles();
     const match = useRouteMatch();
 
     const { id, volumeInfo, searchInfo } = book;
-    // const { volumeInfo, searchInfo, saleInfo, accessInfo } = book; //? for future use
 
     // if available get book cover, if not use fallback image
     const bookThumbnail = volumeInfo.imageLinks
@@ -57,15 +49,15 @@ const BookCard = ({ book }) => {
      *! Alternate solution for object's with properties that don't exist (e.g. no
      *! author or description) is to filter them out, removing them from the output
      */
-    const getSubheader = (authors) => (
+    const getSubheader = (content) => (
         <Typography
             noWrap
             variant="body1"
             component="h3"
             color="textSecondary"
-            title={authors}
+            title={content}
         >
-            {authors}
+            {content}
         </Typography>
     );
 
@@ -144,6 +136,10 @@ const BookCard = ({ book }) => {
                     variant="contained"
                     color="primary"
                     startIcon={<Visibility />}
+                    component="a"
+                    href={volumeInfo.previewLink}
+                    target="_blank"
+                    disabled={!volumeInfo.previewLink}
                 >
                     Preview
                 </Button>
@@ -151,9 +147,8 @@ const BookCard = ({ book }) => {
                     component={Link}
                     variant="outlined"
                     color="secondary"
-                    startIcon={<OpenInNew />}
+                    startIcon={<Subject />}
                     to={`${match.url}/${id}`}
-                    // target="_blank"
                 >
                     Details
                 </Button>

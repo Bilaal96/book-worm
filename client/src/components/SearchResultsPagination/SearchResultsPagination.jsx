@@ -6,8 +6,8 @@ import { useSearchContext } from "contexts/search/search.context";
 // Components
 import Pagination from "@material-ui/lab/Pagination";
 
-// Helpers
-import { getStartIndex } from "helpers/pagination";
+// Utils
+import { getStartIndex } from "utils/pagination";
 
 import useStyles from "./styles";
 

@@ -10,8 +10,8 @@ import { InputBase, Button } from "@material-ui/core";
 // MUI Icons
 import { Search as SearchIcon } from "@material-ui/icons";
 
-// Helpers
-import { isValidSearchString } from "helpers/search-string-validation";
+// Utils
+import { isValidSearchString } from "utils/search-string-validation";
 
 import useStyles from "./styles";
 

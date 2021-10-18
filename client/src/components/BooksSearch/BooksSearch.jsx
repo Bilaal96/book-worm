@@ -24,23 +24,23 @@ import SearchBar from "components/SearchBar/SearchBar";
 import SearchResultsPagination from "components/SearchResultsPagination/SearchResultsPagination";
 import SearchResults from "components/SearchResults/SearchResults";
 
-// Helpers
-import { getBooksRequestURI } from "helpers/api-query-builder";
+// Utils
+import { getBooksRequestURI } from "utils/api-query-builder";
+
+// Initialises selectedPage state - the currently selected page
+const getInitialSelectedPage = () => {
+    const cachedResultsPage = JSON.parse(
+        sessionStorage.getItem("results-page")
+    );
+
+    // Restore last clicked "page" if cached in sessionStorage
+    if (cachedResultsPage) return cachedResultsPage;
+
+    // Otherwise, default to page 1
+    return 1;
+};
 
 const BooksSearch = () => {
-    // Initialises selectedPage state - the currently selected page
-    const getInitialSelectedPage = () => {
-        const cachedResultsPage = JSON.parse(
-            sessionStorage.getItem("results-page")
-        );
-
-        // Restore last clicked "page" if cached in sessionStorage
-        if (cachedResultsPage) return cachedResultsPage;
-
-        // Otherwise, default to page 1
-        return 1;
-    };
-
     const [selectedPage, setSelectedPage] = useState(getInitialSelectedPage);
     const [search, dispatchSearch] = useSearchContext();
 

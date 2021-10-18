@@ -18,15 +18,12 @@ app.get("/test", (req, res) => {
     res.status(200).json({ success: `Test endpoint hit` });
 });
 
-//? REF: https://opensource.com/article/20/11/top-level-await-javascript
+//? For Reference: https://opensource.com/article/20/11/top-level-await-javascript
 app.get("/", async (req, res) => {
     const { search: searchTerm, maxResults, startIndex } = req.query;
-
-    // returns undefined if "search" is not specified
     console.log({ reqQuery: req.query });
 
-    // Check if Client sent a Search Term
-    // If Search Term received, use it to make a request to the Books API
+    // If searchTerm received, use it to make a request to the Books API
     if (searchTerm) {
         // Build request endpoint
         /**
@@ -47,6 +44,7 @@ app.get("/", async (req, res) => {
 
         // Fetch books from Books API using the above endpoint
         try {
+            console.log("Fetching:", booksSearchEndpoint);
             const response = await fetch(booksSearchEndpoint);
 
             console.log({
@@ -77,7 +75,39 @@ app.get("/", async (req, res) => {
             }
         } catch (err) {
             console.error(err);
+            res.status(404).send(err);
         }
+    }
+});
+
+app.get("/:bookId", async (req, res) => {
+    const { bookId } = req.params;
+
+    try {
+        const { BOOKS_API_KEY } = process.env;
+        const response = await fetch(
+            `https://www.googleapis.com/books/v1/volumes/${bookId}?key=${BOOKS_API_KEY}`
+        );
+
+        if (response.ok) {
+            const book = await response.json();
+            console.log({ book });
+
+            res.status(response.status).json(book);
+        } else {
+            /**
+                 *! THROWING ERRORS:
+                 * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error
+                 *! https://rollbar.com/guides/javascript/how-to-throw-exceptions-in-javascript/
+
+                 *? CUSTOM ERROR with STATUS CODE
+                 * https://www.codegrepper.com/code-examples/javascript/throw+error+with+status+code+javascript
+                 */
+            throw Error(`Failed to fetch resource, STATUS: ${response.status}`);
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(404).send(err);
     }
 });
 
