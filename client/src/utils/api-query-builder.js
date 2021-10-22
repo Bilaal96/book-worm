@@ -43,7 +43,7 @@ export const getURIEncodedQueryString = (queryParams) => {
  */
 export const getBooksRequestURI = (
     configurableParams,
-    serverDomain = "http://localhost:5000/"
+    serverDomain = "http://localhost:5000"
 ) => {
     // Accumulate query params in an object
     const queryParams = {
@@ -61,5 +61,5 @@ export const getBooksRequestURI = (
 
     // return URI with which API request can be made
     // e.g. http://localhost:5000/?search=test&startIndex=0&maxResults=20
-    return `${serverDomain}?${uriEncodedQuerystring}`;
+    return `${serverDomain}/books?${uriEncodedQuerystring}`;
 };

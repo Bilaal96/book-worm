@@ -101,6 +101,14 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
                 const response = await fetch(booksRequestURI, {
                     signal: abortController.signal,
                 });
+
+                // Fetch failed: HTTP status code is NOT WITHIN success range (200-299)
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw error;
+                }
+
+                // Fetch succeeded: HTTP status code is WITHIN success range (200-299)
                 const searchResults = await response.json();
                 console.log(searchResults);
 
@@ -140,7 +148,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
             } catch (err) {
                 // Exception - do not log error resulting from aborted fetch
                 if (!abortController.signal.aborted) {
-                    console.error(err);
+                    console.error(err.message);
                     // Update relatedBooks.error & end loading state
                     dispatchFailed(err);
                 }

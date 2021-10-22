@@ -30,12 +30,16 @@ const SearchBar = ({ fetchBooks, setSelectedPage }) => {
         // Validate user inputs
         if ((e.type === "keydown" && e.key === "Enter") || e.type === "click") {
             if (!isValidSearchString(searchInput))
-                return console.error("Search box requires a valid search term");
+                return console.info(
+                    "%c Search box requires a valid search term ",
+                    "background: rgba(0, 0, 0, 0.4); color: crimson"
+                );
 
             // Prevent resubmission of previous search
             if (searchInput === search.submission)
-                return console.log(
-                    `Already showing results for "${searchInput}"`
+                return console.info(
+                    `%c Already showing results for "${searchInput}" `,
+                    "background: rgba(0, 0, 0, 0.4); color: #bada55"
                 );
 
             // Store submitted search term in SearchContext

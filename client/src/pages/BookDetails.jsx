@@ -31,6 +31,11 @@ const BookDetails = () => {
 
         dispatchStart(); // init loading state
 
+        //! TEST Fetch book
+        // const abortController = new AbortController();
+        // fetchBookById(bookIdParam, abortController.signal);
+        // return;
+
         // If selected book has been previously viewed by user
         // retrieve book from "viewed-books" cache in sessionStorage
         const viewedBooks = JSON.parse(sessionStorage.getItem("viewed-books"));
@@ -74,19 +79,18 @@ const BookDetails = () => {
         async function fetchBookById(
             id,
             abortSignal,
-            serverDomain = "http://localhost:5000/"
+            serverDomain = "http://localhost:5000"
         ) {
             try {
                 // fetch a single book at the route /:bookId
-                const response = await fetch(`${serverDomain}${id}`, {
+                const response = await fetch(`${serverDomain}/books/${id}`, {
                     signal: abortSignal,
                 });
 
                 // Fetch failed: HTTP status code is NOT WITHIN success range (200-299)
                 if (!response.ok) {
-                    throw new Error(
-                        `Something went wrong when fetching book with ID: ${id}`
-                    );
+                    const error = await response.json();
+                    throw error;
                 }
 
                 // Fetch succeeded: HTTP status code is WITHIN success range (200-299)
@@ -95,7 +99,7 @@ const BookDetails = () => {
                 return;
             } catch (err) {
                 if (!abortSignal.aborted) {
-                    console.error(err);
+                    console.error(err.message);
                     dispatchFailed(err); // update reducer state
                 }
             }

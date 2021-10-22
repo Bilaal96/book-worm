@@ -78,6 +78,14 @@ const BooksSearch = () => {
 
             // Fetch books from Google Books API
             const response = await fetch(booksRequestURI);
+
+            // Fetch failed: HTTP status code is NOT WITHIN success range (200-299)
+            if (!response.ok) {
+                const error = await response.json();
+                throw error;
+            }
+
+            // Fetch succeeded: HTTP status code is WITHIN success range (200-299)
             const books = await response.json();
             // console.log("fetchBooks response:", books);
 
@@ -90,7 +98,7 @@ const BooksSearch = () => {
             // Cache fetched books in sessionStorage
             sessionStorage.setItem("search-results", JSON.stringify(books));
         } catch (err) {
-            console.error(err);
+            console.error(err.message);
             // update SearchContext with error, and exit loading state
             dispatchSearch({ type: "FETCH_BOOKS_FAILED", payload: err });
         }
