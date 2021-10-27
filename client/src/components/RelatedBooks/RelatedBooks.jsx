@@ -110,7 +110,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
 
                 // Fetch succeeded: HTTP status code is WITHIN success range (200-299)
                 const searchResults = await response.json();
-                console.log(searchResults);
+                console.log("searchResults", searchResults);
 
                 /** Filter Search Results
                  * Retain results with bookLinkValue AND different title
@@ -128,14 +128,15 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
                         // filter out the currently viewed book and duplicates (i.e. has same title and bookLinkValue)
                         result.volumeInfo.title !== book.volumeInfo.title
                 );
+                console.log("filteredBooks", filteredBooks);
 
                 //? LOG INFO - FOR TESTING
-                filteredBooks.map((result, index) =>
+                /*  filteredBooks.map((result, index) =>
                     console.log(`${index}:`, {
                         [bookLinkKey]: result.volumeInfo[bookLinkKey],
                         title: result.volumeInfo.title,
                     })
-                );
+                ); */
 
                 // Update relatedBooks.value & end loading state
                 dispatchSuccess(filteredBooks);
