@@ -5,8 +5,9 @@ import Header from "components/Header/Header.jsx";
 
 // Pages
 import Home from "pages/Home";
-import Favourites from "pages/Favourites";
-import ReadingList from "pages/ReadingList";
+import ManageLists from "pages/ManageLists";
+import SignUp from "pages/SignUp";
+import Login from "pages/Login";
 
 import useStyles from "./styles";
 
@@ -33,12 +34,21 @@ function App() {
                     <Route path="/books">
                         <Home />
                     </Route>
-
-                    <Route path="/favourites">
-                        <Favourites />
+                    {/* Protected Route 
+                        - only available to logged in users 
+                        - if no user, redirect to login */}
+                    <Route path="/manage-lists">
+                        <ManageLists />
                     </Route>
-                    <Route path="/reading-list">
-                        <ReadingList />
+
+                    {/* Conditionally Rendered
+                        - if user, render Logout
+                        - if no user, render Login & SignUp  */}
+                    <Route path="/login">
+                        <Login />
+                    </Route>
+                    <Route path="/signup">
+                        <SignUp />
                     </Route>
                 </Switch>
             </Container>

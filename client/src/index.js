@@ -6,12 +6,12 @@ import theme from "config/mui-theme";
 import App from "./App";
 
 ReactDOM.render(
-    <React.StrictMode>
-        <Router>
-            <ThemeProvider theme={theme}>
-                <App />
-            </ThemeProvider>
-        </Router>
-    </React.StrictMode>,
+    // <React.StrictMode>
+    <Router>
+        <ThemeProvider theme={theme}>
+            <App />
+        </ThemeProvider>
+    </Router>,
+    // </React.StrictMode>,
     document.getElementById("root")
 );

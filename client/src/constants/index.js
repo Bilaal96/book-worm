@@ -1,8 +1,60 @@
-import { Home, Favorite, MenuBook } from "@material-ui/icons";
+import {
+    Home,
+    MenuBook,
+    LockOpen,
+    Lock,
+    PowerSettingsNew,
+    Assignment,
+    ArrowUpward,
+    Power,
+    Edit,
+} from "@material-ui/icons";
 
 // Map for Navigation Items
 // -- used in NavTop & NavDrawer
 // -- NOTE: for isExact prop: https://stackoverflow.com/questions/39189640/react-router-index-route-always-active
+export const EXPERIMENTAL_NAV_ITEMS_MAP = {
+    // Not affected by user state - always rendered
+    base: [
+        {
+            routeName: "/books",
+            isExact: true,
+            text: "Home",
+            icon: <Home />,
+        },
+        {
+            routeName: "/manage-lists",
+            isExact: false,
+            text: "Manage Lists",
+            icon: <MenuBook />,
+        },
+    ],
+    // Rendered if no user (i.e. logged out)
+    noUser: [
+        {
+            routeName: "/login",
+            isExact: false,
+            text: "Log In",
+            icon: <LockOpen />,
+        },
+        {
+            routeName: "/signup",
+            isExact: false,
+            text: "Sign Up",
+            icon: <Assignment />,
+        },
+    ],
+    // Rendered if user exists (i.e. logged in)
+    user: [
+        {
+            routeName: "/logout",
+            isExact: false,
+            text: "Log Out",
+            icon: <Lock />,
+        },
+    ],
+};
+
 export const NAV_ITEMS_MAP = [
     {
         routeName: "/books",
@@ -11,16 +63,30 @@ export const NAV_ITEMS_MAP = [
         icon: <Home />,
     },
     {
-        routeName: "/favourites",
+        routeName: "/manage-lists",
         isExact: false,
-        text: "Favourites",
-        icon: <Favorite />,
+        text: "Manage Lists",
+        icon: <MenuBook />,
     },
     {
-        routeName: "/reading-list",
+        routeName: "/login",
         isExact: false,
-        text: "Reading List",
-        icon: <MenuBook />,
+        text: "Log In",
+        icon: <LockOpen />,
+    },
+    {
+        routeName: "/signup",
+        isExact: false,
+        text: "Sign Up",
+        // icon: <ArrowUpward />,
+        icon: <Edit />,
+    },
+    {
+        routeName: "/", // temporary - simulate logout
+        isExact: true, // temporary - simulate logout
+        text: "Log Out",
+        // icon: <Lock />,
+        icon: <PowerSettingsNew />,
     },
 ];
 
