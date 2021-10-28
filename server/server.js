@@ -4,11 +4,11 @@ import cors from "cors";
 import morgan from "morgan";
 import mongoose from "mongoose";
 
-// Error Handling Middleware
-import apiErrorHandler from "./middleware/api-error-handler.js";
+// Custom Middleware
+import apiErrorHandler from "./middleware/apiErrorHandler.js";
 
-// Routers
-import booksRoute from "./routes/books.js";
+// Routes
+import booksRoute from "./routes/booksRoute.js";
 
 // App Configuration
 dotenv.config();

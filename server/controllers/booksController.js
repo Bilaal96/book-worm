@@ -1,14 +1,11 @@
-import { Router } from "express";
 import fetch from "node-fetch";
 
 // Utils
 import getURIEncodedQueryString from "../utils/get-uri-encoded-query-string.js";
 import ApiError from "../utils/ApiError.js";
 
-const router = Router();
-
 // Get books based on user search term
-router.get("/", async (req, res, next) => {
+const books_by_search_get = async (req, res, next) => {
     const { search: searchTerm, maxResults, startIndex } = req.query;
     console.log("Query params:", req.query);
 
@@ -57,10 +54,10 @@ router.get("/", async (req, res, next) => {
         // Forward error to apiErrorHandler middleware
         next(err);
     }
-});
+};
 
 // Get single book by route param (i.e. req.params.bookId)
-router.get("/:bookId", async (req, res, next) => {
+const book_by_id_get = async (req, res, next) => {
     const { bookId } = req.params;
 
     try {
@@ -81,6 +78,10 @@ router.get("/:bookId", async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-});
+};
 
-export default router;
+// booksController
+export default {
+    books_by_search_get,
+    book_by_id_get,
+};
