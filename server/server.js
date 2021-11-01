@@ -9,6 +9,7 @@ import apiErrorHandler from "./middleware/apiErrorHandler.js";
 
 // Routes
 import booksRoute from "./routes/booksRoute.js";
+import authRoute from "./routes/authRoute.js";
 
 // App Configuration
 dotenv.config();
@@ -48,8 +49,9 @@ app.get("/test", (req, res) => {
     res.status(200).json({ success: `Test endpoint hit` });
 });
 
-// Handle requests to /books routes
+// Routes
 app.use("/books", booksRoute);
+app.use("/auth", authRoute);
 
 // Handle errors
 app.use(apiErrorHandler);
