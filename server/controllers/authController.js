@@ -12,9 +12,8 @@ const signup_post = async (req, res, next) => {
             email,
             password,
         });
-        console.log("User created:", user);
 
-        res.status(201).send("User created; endpoint hit: signup_post");
+        res.status(201).send(`User created; ID: ${user._id}`);
     } catch (err) {
         console.log(err.message);
         console.log(err.name);

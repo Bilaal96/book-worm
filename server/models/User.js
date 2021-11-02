@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { validate as isEmail } from "email-validator";
+import bcrypt from "bcrypt";
 
 /**
  * [auto-gen id]
@@ -38,6 +39,20 @@ const userSchema = new mongoose.Schema(
     },
     { timestamps: true } // auto-generates createdAt & updatedAt properties
 );
+
+// 'save' hook is fired on User.create()
+userSchema.pre("save", async function (next) {
+    console.log("Hashing:", this);
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+});
+
+userSchema.post("save", async function (doc, next) {
+    console.log("New user saved:", doc);
+    next();
+});
 
 const User = mongoose.model("user", userSchema);
 
