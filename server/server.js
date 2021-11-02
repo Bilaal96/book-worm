@@ -4,9 +4,6 @@ import cors from "cors";
 import morgan from "morgan";
 import mongoose from "mongoose";
 
-// Custom Middleware
-import apiErrorHandler from "./middleware/apiErrorHandler.js";
-
 // Routes
 import booksRoute from "./routes/booksRoute.js";
 import authRoute from "./routes/authRoute.js";
@@ -53,5 +50,9 @@ app.get("/test", (req, res) => {
 app.use("/books", booksRoute);
 app.use("/auth", authRoute);
 
-// Handle errors
-app.use(apiErrorHandler);
+// Catch-all error handler
+// Will execute for Network Errors
+// i.e. when there is no communication between server and Books API
+app.use((err, req, res, next) => {
+    res.status(500).send("Internal Server Error: Something went wrong");
+});

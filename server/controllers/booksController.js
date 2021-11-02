@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 
 // Utils
 import getURIEncodedQueryString from "../utils/get-uri-encoded-query-string.js";
-import ApiError from "../utils/ApiError.js";
+import CustomError from "../utils/CustomError.js";
 
 // Get books based on user search term
 const books_by_search_get = async (req, res, next) => {
@@ -10,7 +10,7 @@ const books_by_search_get = async (req, res, next) => {
     console.log("Query params:", req.query);
 
     // No searchTerm, cannot make request, throw 400 error
-    if (!searchTerm) next(ApiError.badRequest("No search term provided"));
+    if (!searchTerm) next(CustomError.badRequest("No search term provided"));
 
     // searchTerm received
     // Build request url for books using query parameters
@@ -30,7 +30,7 @@ const books_by_search_get = async (req, res, next) => {
         if (!response.ok) {
             // HTTP status range: 400-500
             // Catch-block will intercept this ApiError instance
-            throw ApiError.badRequest(
+            throw CustomError.badRequest(
                 `${response.statusText} (${response.status}) - ${response.url}`
             );
         }
@@ -46,12 +46,12 @@ const books_by_search_get = async (req, res, next) => {
             res.status(response.status).json(books);
         } else {
             // No books found
-            throw ApiError.notFound(
+            throw CustomError.notFound(
                 "Not Found (404) - No books found that match the search criteria"
             );
         }
     } catch (err) {
-        // Forward error to apiErrorHandler middleware
+        // Forward error to handleApiError middleware
         next(err);
     }
 };
@@ -66,7 +66,7 @@ const book_by_id_get = async (req, res, next) => {
         );
 
         if (!response.ok) {
-            throw ApiError.notFound(
+            throw CustomError.notFound(
                 `Not Found (404) - Could not find book with ID: ${bookId}`
             );
         }

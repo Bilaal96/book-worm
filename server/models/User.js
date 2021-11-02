@@ -13,15 +13,13 @@ const userSchema = new mongoose.Schema(
     {
         // name: Possibly add maxlength SchemaType option
         // https://mongoosejs.com/docs/guide.html#virtuals
-        name: {
-            first: {
-                type: String,
-                required: [true, "First name is required"],
-            },
-            last: {
-                type: String,
-                required: [true, "Last name is required"],
-            },
+        firstName: {
+            type: String,
+            required: [true, "First name is required"],
+        },
+        lastName: {
+            type: String,
+            required: [true, "Last name is required"],
         },
         email: {
             type: String,
