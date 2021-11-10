@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import mongoose from "mongoose";
 
@@ -16,7 +17,14 @@ const app = express();
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+    cors({
+        // Set appropriate headers
+        credentials: true, // Access-Control-Allow-Credentials
+        origin: "http://localhost:3000", // Access-Control-Allow-Origin
+    })
+);
+app.use(cookieParser());
 app.use(morgan("dev"));
 
 // Create MongoDB Connection String

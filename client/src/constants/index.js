@@ -2,11 +2,7 @@ import {
     Home,
     MenuBook,
     LockOpen,
-    Lock,
     PowerSettingsNew,
-    Assignment,
-    ArrowUpward,
-    Power,
     Edit,
 } from "@material-ui/icons";
 
@@ -41,7 +37,7 @@ export const EXPERIMENTAL_NAV_ITEMS_MAP = {
             routeName: "/signup",
             isExact: false,
             text: "Sign Up",
-            icon: <Assignment />,
+            icon: <Edit />,
         },
     ],
     // Rendered if user exists (i.e. logged in)
@@ -50,7 +46,7 @@ export const EXPERIMENTAL_NAV_ITEMS_MAP = {
             routeName: "/logout",
             isExact: false,
             text: "Log Out",
-            icon: <Lock />,
+            icon: <PowerSettingsNew />,
         },
     ],
 };
