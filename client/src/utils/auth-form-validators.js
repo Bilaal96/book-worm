@@ -1,4 +1,4 @@
-import isEmptyString from "./is-empty-string";
+import { isEmptyString } from "./string-validation";
 
 /**
  * ----- Client-side Form Validation -----

@@ -10,7 +10,8 @@ const books_by_search_get = async (req, res, next) => {
     console.log("Query params:", req.query);
 
     // No searchTerm, cannot make request, throw 400 error
-    if (!searchTerm) next(CustomError.badRequest("No search term provided"));
+    if (!searchTerm)
+        return next(CustomError.badRequest("No search term provided"));
 
     // searchTerm received
     // Build request url for books using query parameters
@@ -43,7 +44,7 @@ const books_by_search_get = async (req, res, next) => {
         // Fetch successful, respond to client
         if (books.items?.length) {
             // books found
-            res.status(response.status).json(books);
+            return res.status(response.status).json(books);
         } else {
             // No books found
             throw CustomError.notFound(
