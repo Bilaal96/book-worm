@@ -11,7 +11,7 @@ import { InputBase, Button } from "@material-ui/core";
 import { Search as SearchIcon } from "@material-ui/icons";
 
 // Utils
-import { isValidSearchString } from "utils/string-validation";
+import { isValidSearchString } from "utils/string-validators";
 
 import useStyles from "./styles";
 

@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
+
+// Contexts
+import { AuthContext } from "contexts/auth/auth.context";
 
 // Components
 import { Link as RouterLink } from "react-router-dom";
@@ -11,33 +14,35 @@ import {
     ListItemText,
 } from "@material-ui/core";
 import Logo from "components/Logo/Logo";
+import LogoutButton from "components/LogoutButton/LogoutButton";
 
 // MUI Icons
 import { Menu } from "@material-ui/icons";
 
-// Constants
-import { NAV_ITEMS_MAP } from "constants/index";
-
 import useStyles from "./styles";
 
 /** findDomNode Warning options
- * SEE: https://stackoverflow.com/questions/61220424/material-ui-drawer-finddomnode-is-deprecated-in-strictmode 
+ * ! CURRENTLY DISABLED REACT STRICT MODE TO PREVENT CONSOLE ERROR
  
- * ignore -> is an issue with Material UI
- * or use unstable version of createMuiTheme
+ * 1) ignore -> is an issue with Material UI
+ * 2) disable React Strict Mode
+ * 3) use unstable version of createMuiTheme 
+ 
+ * SEE: https://stackoverflow.com/questions/61220424/material-ui-drawer-finddomnode-is-deprecated-in-strictmode 
  */
-const NavDrawer = () => {
+const NavDrawer = ({ navigationMap }) => {
     const classes = useStyles();
 
+    const { auth } = useContext(AuthContext);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
 
+    /**
+     * Defining this handler is not absolutely necessary, but is optimal
+     * Because a callback passed as a prop is redefined on every render
+     * e.g. onClick={ () => setIsOpen(true) }
+     */
     const handleDrawerToggle = (openState) => (event) => {
-        /**
-         * Defining this handler is not absolutely necessary, but is optimal If we simply pass a
-         * callback to a component's event listener prop - e.g. onClick={() => setIsOpen(true)} -
-         * the callback is redefined on every render
-         */
         setIsOpen(openState);
     };
 
@@ -47,6 +52,15 @@ const NavDrawer = () => {
         // close NavDrawer
         setIsOpen(false);
     };
+
+    // Highlight the correct ListItem after route redirect on login/logout
+    useEffect(() => {
+        if (auth.isAuthenticated) {
+            setSelectedIndex(1); // select: Manage Lists
+        } else {
+            setSelectedIndex(0); // select: Home
+        }
+    }, [auth.isAuthenticated]);
 
     return (
         <>
@@ -64,8 +78,8 @@ const NavDrawer = () => {
                                 <Logo />
                             </ListItem>
 
-                            {NAV_ITEMS_MAP.map(
-                                ({ routeName, isExact, text, icon }, index) => (
+                            {navigationMap.map(
+                                ({ routeName, text, icon }, index) => (
                                     <ListItem
                                         button
                                         key={index}
@@ -78,6 +92,14 @@ const NavDrawer = () => {
                                         <ListItemText primary={text} />
                                     </ListItem>
                                 )
+                            )}
+
+                            {/* Render LogoutButton if user is logged in */}
+                            {auth.isAuthenticated && (
+                                <LogoutButton
+                                    listItem
+                                    closeDrawer={() => setIsOpen(false)}
+                                />
                             )}
                         </List>
                     </div>
