@@ -17,6 +17,6 @@ router.post("/login", authController.login_post);
 router.use("/login", handleLoginError);
 
 // path: /auth/logout
-router.get("logout", authController.logout_get);
+router.get("/logout", authController.logout_get);
 
 export default router;

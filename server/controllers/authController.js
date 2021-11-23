@@ -7,14 +7,23 @@ import User from "../models/User.js";
 // Cookie/JWT Expiration
 const daysTillExpired = 3;
 const secondsInOneDay = 60 * 60 * 24;
-const maxAgeInSeconds = daysTillExpired * secondsInOneDay; // required in jwt.sign() options
-const maxAgeInMilliseconds = maxAgeInSeconds * 1000; // required in res.cookie() options
+// jwt.sign() - 'expiresIn' option required in seconds
+const maxAgeInSeconds = daysTillExpired * secondsInOneDay;
+// res.cookie() - 'maxAge' option required in milliseconds
+const maxAgeInMilliseconds = maxAgeInSeconds * 1000;
 
 // Create and set expiration of JWT - contains user id for auth
 const createToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: maxAgeInSeconds,
     });
+};
+
+// These options remain the same for all auth cookies
+const authCookieOptions = {
+    httpOnly: true,
+    sameSite: "None",
+    secure: true,
 };
 
 // POST /auth/signup
@@ -37,8 +46,8 @@ const signup_post = async (req, res, next) => {
 
         // Create cookie containing JWT and set expiration date/time
         res.cookie("jwt", token, {
+            ...authCookieOptions,
             maxAge: maxAgeInMilliseconds,
-            httpOnly: true,
         });
 
         // Response: 201 (Created), object with user details
@@ -83,8 +92,8 @@ const login_post = async (req, res, next) => {
 
         // Create cookie containing JWT and set expiration date/time
         res.cookie("jwt", token, {
+            ...authCookieOptions,
             maxAge: maxAgeInMilliseconds,
-            httpOnly: true,
         });
 
         // Send user to client
@@ -106,9 +115,26 @@ const login_post = async (req, res, next) => {
 
 // GET /auth/logout
 const logout_get = (req, res, next) => {
-    // Destroy JWT Cookie - reset & expire
-    res.cookie("jwt", "", { maxAge: 1, httpOnly: true });
-    res.status(301).json({ user: null });
+    try {
+        console.log("--- logout_get ---");
+        console.log("COOKIE TO DELETE", req.cookies.jwt);
+
+        // Destroy JWT Cookie - reset & expire
+        res.cookie("jwt", "", {
+            ...authCookieOptions,
+            maxAge: 1,
+        });
+
+        // log headers - ensure set-cookie & CORS headers are set
+        console.log("HEADERS", res.getHeaders());
+
+        // send null user back to client
+        res.status(301).json({ user: null });
+    } catch (err) {
+        // log error and forward to error handling middleware
+        console.log(err);
+        next(err);
+    }
 };
 
 export default {

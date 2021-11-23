@@ -19,14 +19,43 @@ const LogoutButton = ({ listItem, closeDrawer, ...otherProps }) => {
     const history = useHistory();
     const { setAuth } = useContext(AuthContext);
 
-    // ! TEMPORARILY SIMULATE LOGOUT
-    // TODO: make request to GET /auth/logout
-    const handleLogout = (e) => {
-        history.push("/");
-        setAuth({
-            isAuthenticated: false,
-            user: null,
-        });
+    const handleLogout = async (e) => {
+        try {
+            const response = await fetch("http://localhost:5000/auth/logout", {
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    // no-cache - require validation for resource freshness
+                    "Cache-Control": "no-cache",
+                },
+            });
+
+            console.log("Logout HTTP response status:", response.status);
+
+            // Handle successful logout; server responds with 301
+            if (response.status === 301) {
+                const data = await response.json();
+                console.log("LOGOUT SUCCESS:", { data });
+
+                // Redirect to homepage
+                // React Router handles redirect from '/' to '/books'
+                history.push("/");
+
+                // Update Auth Context
+                setAuth({
+                    isAuthenticated: false,
+                    user: data.user,
+                });
+
+                // guard response.ok check below as 301 will trigger it
+                return;
+            }
+
+            // Throw error if response is not 301 / not within 200-299 range
+            if (!response.ok) throw Error(`HTTP Error: ${response.status}`);
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     // Render LogoutButton as ListItem (for NavDrawer)

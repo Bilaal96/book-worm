@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 5000; // get/define PORT to listen for req on
 const app = express();
 
 // Middlewares
+app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -25,7 +26,6 @@ app.use(
     })
 );
 app.use(cookieParser());
-app.use(morgan("dev"));
 
 // Create MongoDB Connection String
 const { MONGO_USER, MONGO_SECRET } = process.env;
