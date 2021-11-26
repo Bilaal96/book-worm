@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink, useHistory, useLocation } from "react-router-dom";
 
 import { AuthContext } from "contexts/auth/auth.context";
 import FormWrapper from "components/FormWrapper/FormWrapper";
@@ -12,6 +12,7 @@ import useStyles from "./styles";
 const LoginForm = () => {
     const classes = useStyles();
     const history = useHistory();
+    const location = useLocation();
 
     const { setAuth } = useContext(AuthContext);
 
@@ -107,9 +108,7 @@ const LoginForm = () => {
                     setFormFields({ email: "", password: "" });
 
                     // Redirect
-                    //! Redirect to either Home/Manage Lists page (TBD)
-                    //! use history.push to return to the page that redirected the user to the login -> see ui-dev video
-                    history.push("/manage-lists");
+                    history.replace("/manage-lists");
                 }
             } catch (err) {
                 // Request error - e.g. wrong endpoint / server error
@@ -120,6 +119,16 @@ const LoginForm = () => {
 
     return (
         <FormWrapper title="Log In">
+            {/* Display message if redirected from a ProtectedRoute component */}
+            {location.state?.isProtected && (
+                <Typography
+                    className={classes.protectedRouteMessage}
+                    align="center"
+                >
+                    You must login to access this page
+                </Typography>
+            )}
+
             <form onSubmit={handleSubmit} noValidate>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>

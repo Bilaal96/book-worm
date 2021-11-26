@@ -120,8 +120,7 @@ const SignUpForm = () => {
                     });
 
                     // Redirect
-                    //! Redirect to either Home/Manage Lists page (TBD)
-                    history.push("/manage-lists");
+                    history.replace("/manage-lists");
                 }
             } catch (err) {
                 // Request error - e.g. wrong endpoint / server error
