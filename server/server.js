@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -10,7 +10,7 @@ import booksRoute from "./routes/booksRoute.js";
 import authRoute from "./routes/authRoute.js";
 
 // App Configuration
-dotenv.config();
+import "./helpers/init_redis.js";
 const PORT = process.env.PORT || 5000; // get/define PORT to listen for req on
 const app = express();
 
