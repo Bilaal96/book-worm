@@ -52,7 +52,7 @@ const books_by_search_get = async (req, res, next) => {
             );
         }
     } catch (err) {
-        // Forward error to handleApiError middleware
+        // Forward error to handleCustomError middleware
         next(err);
     }
 };

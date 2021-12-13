@@ -9,8 +9,12 @@ import mongoose from "mongoose";
 import booksRoute from "./routes/booksRoute.js";
 import authRoute from "./routes/authRoute.js";
 
+// Middleware
+import handleCustomError from "./middleware/handleCustomError.js";
+import { verifyAccessToken } from "./middleware/authMiddleware.js";
+
 // App Configuration
-import "./helpers/init_redis.js";
+import "./config/init_redis.js";
 const PORT = process.env.PORT || 5000; // get/define PORT to listen for req on
 const app = express();
 
@@ -49,8 +53,10 @@ mongoose
         throw err;
     });
 
-// Test server connection
-app.get("/test", (req, res) => {
+// Test server connection / protected route
+app.get("/test", verifyAccessToken, (req, res) => {
+    const { accessToken, decodedToken } = req;
+    console.log("ACCESS VERIFIED:", { accessToken, decodedToken });
     res.status(200).json({ success: `Test endpoint hit` });
 });
 
@@ -58,9 +64,17 @@ app.get("/test", (req, res) => {
 app.use("/books", booksRoute);
 app.use("/auth", authRoute);
 
+// Custom Error Handler
+app.use(handleCustomError);
+
 // Catch-all error handler
 // Will execute for Network Errors
 // i.e. when there is no communication between server and Books API
 app.use((err, req, res, next) => {
-    res.status(500).send("Internal Server Error: Something went wrong");
+    res.status(500).send({
+        error: {
+            status: 500,
+            message: "Internal Server Error",
+        },
+    });
 });

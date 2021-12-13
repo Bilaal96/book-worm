@@ -4,13 +4,14 @@ export function handleSignupError(err, req, res, next) {
 
     // Duplicate Key Error (Email already in-use)
     if (err.name === "MongoServerError" && err.code === 11000) {
-        console.log("ERROR: Duplicate Key");
+        console.error(`${err.name} - ${err.message}`);
         errors.email = "That email is already in use";
         return res.status(400).json({ errors });
     }
 
     // Handle ValidationError thrown by Mongoose
     if (err.name === "ValidationError") {
+        console.error(`${err.name} - ${err.message}`);
         /**
          * The "err" caught has an "errors" property
          * err.errors is an object of nested objects
@@ -31,17 +32,18 @@ export function handleSignupError(err, req, res, next) {
     // Error is not handled here, forward to next error handler
     next(err);
 }
+
 // Generates appropriate error object for Login errors - to be sent to client
 export function handleLoginError(err, req, res, next) {
     const errors = {};
 
-    // CASE: format of login credentials is invalid
+    // Login credentials are invalid (i.e. delivered in unexpected format)
     if (err.message === "invalid login credentials") {
         console.log("INVALID LOGIN CREDENTIALS");
         return res.status(400).json({ errors: err.validationErrors });
     }
 
-    // CASE: email / password don't match what's stored in DB
+    // Email / password don't match what's stored in DB
     if (
         err.message === "incorrect email" ||
         err.message === "incorrect password"

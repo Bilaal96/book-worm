@@ -1,6 +1,8 @@
 import { Router } from "express";
 import authController from "../controllers/authController.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
+// Custom Error Handling Middleware
 import {
     handleSignupError,
     handleLoginError,
@@ -16,7 +18,18 @@ router.use("/signup", handleSignupError);
 router.post("/login", authController.login_post);
 router.use("/login", handleLoginError);
 
+// path: /auth/refresh
+router.get(
+    "/refresh",
+    authMiddleware.verifyRefreshToken,
+    authController.refresh_get
+);
+
 // path: /auth/logout
-router.get("/logout", authController.logout_get);
+router.get(
+    "/logout",
+    authMiddleware.verifyAccessToken,
+    authController.logout_get
+);
 
 export default router;

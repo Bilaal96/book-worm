@@ -1,38 +1,42 @@
-import jwt from "jsonwebtoken";
-import { validateLoginCredentials } from "../utils/auth-validation.js";
-
 // User Model
 import User from "../models/User.js";
 
-// Cookie/JWT Expiration
-const daysTillExpired = 3;
-const secondsInOneDay = 60 * 60 * 24;
-// jwt.sign() - 'expiresIn' option required in seconds
-const maxAgeInSeconds = daysTillExpired * secondsInOneDay;
-// res.cookie() - 'maxAge' option required in milliseconds
-const maxAgeInMilliseconds = maxAgeInSeconds * 1000;
+// Utils
+import { validateLoginCredentials } from "../utils/auth-validation.js";
+import {
+    TTL_REF_TOKEN,
+    signAccessToken,
+    signRefreshToken,
+} from "../utils/sign-auth-tokens.js";
 
-// Create and set expiration of JWT - contains user id for auth
-const createToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: maxAgeInSeconds,
-    });
-};
+// Redis Client instance
+import redisClient from "../config/init_redis.js";
 
-// These options remain the same for all auth cookies
-const authCookieOptions = {
+// Calculate Refresh Cookie TTL (Time-To-Live in milliseconds)
+const TTL_REF_COOKIE = TTL_REF_TOKEN * 1000;
+// Define Refresh Cookie options
+const secureCookieOptions = {
     httpOnly: true,
     sameSite: "None",
     secure: true,
 };
+const refreshCookieOptions = {
+    maxAge: TTL_REF_COOKIE,
+    path: "/auth/refresh",
+    ...secureCookieOptions,
+};
 
 // POST /auth/signup
 const signup_post = async (req, res, next) => {
+    console.log("\n", "--- signup_post ---");
     const { firstName, lastName, email, password } = req.body;
-    console.log("--- signup_post ---");
 
     try {
-        // NOTE: Signup validation is handled by mongoose validation at schema level
+        /** User.create() - attempt to create user
+         * Form data validation is handled by mongoose (at schema level)
+         * Errors are thrown if user credentials are invalid, or user already exists
+         * Errors are handled by middleware (see handleAuthError.js)
+         */
         const user = await User.create({
             firstName,
             lastName,
@@ -40,38 +44,35 @@ const signup_post = async (req, res, next) => {
             password, // hashed in mongoose pre-save hook
         });
 
-        // Create JWT - user is "logged in" in as long as this exists
-        const token = createToken(user._id);
-        console.log("TOKEN:", token);
+        // Create access & refresh token pair
+        const accessToken = await signAccessToken(user);
+        const refreshToken = await signRefreshToken(user);
 
-        // Create cookie containing JWT and set expiration date/time
-        res.cookie("jwt", token, {
-            ...authCookieOptions,
-            maxAge: maxAgeInMilliseconds,
-        });
+        // Create HTTP-only cookie that encapsulates refreshToken
+        res.cookie("RF_TK", refreshToken, refreshCookieOptions);
 
-        // Response: 201 (Created), object with user details
+        // Response: 201 (Created)
+        // Send accessToken & user details to client
         res.status(201).send({
             message: "User created",
-            user: { id: user._id, firstName, lastName, email },
+            accessToken,
         });
     } catch (err) {
         // Forward err to handleSignupError middleware
-        console.log("SIGNUP ERROR", err.message);
-        console.log("ERROR NAME", err.name);
         next(err);
     }
 };
 
 // POST /auth/login
 const login_post = async (req, res, next) => {
+    console.log("\n", "--- login_post ---");
+    // Get user credentials from req.body
     const { email, password } = req.body;
-    console.log("--- login_post ---");
 
     // Check that user credentials entered are in expected format
     const { isValid, errors } = validateLoginCredentials(email, password);
 
-    // Prevent login and throw error if user credentials are NOT valid
+    // User credentials are NOT valid, prevent login and throw error
     if (!isValid) {
         let err = new Error("invalid login credentials");
 
@@ -80,31 +81,23 @@ const login_post = async (req, res, next) => {
         return next(err);
     }
 
-    // Attempt Login if user credential are valid
+    // User credentials are VALID, attempt Login
     try {
         const user = await User.login(email, password);
+        console.log("VALID USER:", user);
 
-        // Login Successful
-        // Create JWT - user is "logged in" in as long as this exists
-        const token = createToken(user._id);
-        console.log("LOGIN SUCCESS:", user);
-        console.log("TOKEN:", token);
+        // Create access & refresh token pair
+        const accessToken = await signAccessToken(user);
+        const refreshToken = await signRefreshToken(user);
 
-        // Create cookie containing JWT and set expiration date/time
-        res.cookie("jwt", token, {
-            ...authCookieOptions,
-            maxAge: maxAgeInMilliseconds,
-        });
+        // Create HTTP-only cookie that encapsulates refreshToken
+        res.cookie("RF_TK", refreshToken, refreshCookieOptions);
 
-        // Send user to client
+        // Response: 200 (OK)
+        // Send accessToken & user details to client
         res.status(200).json({
             message: "User logged in",
-            user: {
-                id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email,
-            },
+            accessToken,
         });
     } catch (err) {
         // Forward err to handleLoginError middleware
@@ -113,25 +106,83 @@ const login_post = async (req, res, next) => {
     }
 };
 
+// GET /auth/refresh
+const refresh_get = async (req, res, next) => {
+    console.log("\n", "--- refresh_get ---");
+    try {
+        // Once refresh token is approved, it's decoded payload is forwarded to this middleware; accessible under "req.refTokenPayload"
+        // Below, the payload is used to reconstruct the user object with properties expected by the token signing functions
+        const payload = req.refTokenPayload;
+        const user = {
+            id: payload.sub,
+            email: payload.email,
+            firstName: payload.given_name,
+            lastName: payload.family_name,
+        };
+
+        // Renew auth tokens
+        const newAccessToken = await signAccessToken(user);
+        const newRefreshToken = await signRefreshToken(user);
+
+        // Create HTTP-only cookie that encapsulates newRefreshToken
+        res.cookie("RF_TK", newRefreshToken, refreshCookieOptions);
+
+        // Send new auth tokens to client
+        res.status(200).json({
+            message: "Tokens refreshed",
+            accessToken: newAccessToken,
+        });
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
 // GET /auth/logout
 const logout_get = (req, res, next) => {
+    console.log("\n", "--- logout_get ---");
     try {
-        console.log("--- logout_get ---");
-        console.log("COOKIE TO DELETE", req.cookies.jwt);
+        // Passed by middleware: verifyAccessToken
+        const { accessToken, decodedToken } = req;
 
-        // Destroy JWT Cookie - reset & expire
-        res.cookie("jwt", "", {
-            ...authCookieOptions,
+        /** Calculate time remaining (in seconds) till expiration of accessToken
+         * Access Token (AT) is still technically valid after logout as it has not expired
+         * We must revoke the AT, by storing it in a blacklist in the Redis cache, until it expires
+         * To ensure that the Redis cache deletes the revoked AT on expiration, we must calculate the ATs remaining Time-to-Live (TTL)
+         * NOTE: all values calculated are in seconds (as expected by redisClient)
+         */
+        // Get total TTL of access token (in seconds)
+        const ttlAccessToken = decodedToken.exp - decodedToken.iat;
+        // Calculate seconds passed since token was issued
+        const secondsSinceIssued =
+            Math.floor(Date.now() / 1000) - decodedToken.iat;
+        // Calculate remaining TTL of accessToken (in seconds)
+        const ttlRevokedAccessToken = ttlAccessToken - secondsSinceIssued;
+
+        // Revoke / blacklist accessToken
+        redisClient.setex(
+            "BL_" + decodedToken.sub,
+            ttlRevokedAccessToken,
+            accessToken
+        );
+
+        // Clear refresh token from redis cache
+        redisClient.del("RF_" + decodedToken.sub);
+
+        // Destroy Refresh Cookie - reset & expire cookie in client
+        res.cookie("RF_TK", "", {
             maxAge: 1,
+            path: "/auth/refresh",
+            ...secureCookieOptions,
         });
 
-        // log headers - ensure set-cookie & CORS headers are set
+        // Log headers - ensure set-cookie & CORS headers are set
         console.log("HEADERS", res.getHeaders());
 
-        // send null user back to client
-        res.status(301).json({ user: null });
+        // Send redirect response on logout + message
+        res.status(301).json({ message: "User logged out" });
     } catch (err) {
-        // log error and forward to error handling middleware
+        // log error and forward to appropriate error handling middleware
         console.log(err);
         next(err);
     }
@@ -140,5 +191,6 @@ const logout_get = (req, res, next) => {
 export default {
     signup_post,
     login_post,
+    refresh_get,
     logout_get,
 };
