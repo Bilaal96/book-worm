@@ -20,10 +20,19 @@ const secureCookieOptions = {
     sameSite: "None",
     secure: true,
 };
+
 const refreshCookieOptions = {
+    ...secureCookieOptions,
     maxAge: TTL_REF_COOKIE,
     path: "/auth/refresh",
-    ...secureCookieOptions,
+};
+
+// NOTE: only exists if Refresh Cookie exists (hence "Shadow Cookie"); and is accessible to frontend app
+const shadowCookieOptions = {
+    ...refreshCookieOptions,
+    // Overwrite the following Refresh Cookie options
+    path: "/",
+    httpOnly: false,
 };
 
 // POST /auth/signup
@@ -50,6 +59,9 @@ const signup_post = async (req, res, next) => {
 
         // Create HTTP-only cookie that encapsulates refreshToken
         res.cookie("RF_TK", refreshToken, refreshCookieOptions);
+        // Existence of this non-HTTP-only cookie indirectly tells client whether a refresh cookie exists
+        // Frontend uses this to prevent token refresh requests when the refresh cookie DOES NOT exist
+        res.cookie("PERSIST_SESSION", "true", shadowCookieOptions);
 
         // Response: 201 (Created)
         // Send accessToken & user details to client
@@ -92,6 +104,9 @@ const login_post = async (req, res, next) => {
 
         // Create HTTP-only cookie that encapsulates refreshToken
         res.cookie("RF_TK", refreshToken, refreshCookieOptions);
+        // Existence of this non-HTTP-only cookie indirectly tells client whether a refresh cookie exists
+        // Frontend uses this to prevent token refresh requests when the refresh cookie DOES NOT exist
+        res.cookie("PERSIST_SESSION", "true", shadowCookieOptions);
 
         // Response: 200 (OK)
         // Send accessToken & user details to client
@@ -126,6 +141,9 @@ const refresh_get = async (req, res, next) => {
 
         // Create HTTP-only cookie that encapsulates newRefreshToken
         res.cookie("RF_TK", newRefreshToken, refreshCookieOptions);
+        // Existence of this non-HTTP-only cookie indirectly tells client whether a refresh cookie exists
+        // Frontend uses this to prevent token refresh requests when the refresh cookie DOES NOT exist
+        res.cookie("PERSIST_SESSION", "true", shadowCookieOptions);
 
         // Send new auth tokens to client
         res.status(200).json({
@@ -169,11 +187,15 @@ const logout_get = (req, res, next) => {
         // Clear refresh token from redis cache
         redisClient.del("RF_" + decodedToken.sub);
 
-        // Destroy Refresh Cookie - reset & expire cookie in client
+        // Destroy Refresh Cookie & it's "shadow" counterpart - reset & expire cookies in client
         res.cookie("RF_TK", "", {
-            maxAge: 1,
-            path: "/auth/refresh",
             ...secureCookieOptions,
+            ...refreshCookieOptions,
+            maxAge: 1, // overwrite maxAge to expire in 1ms
+        });
+        res.cookie("PERSIST_SESSION", "", {
+            ...shadowCookieOptions,
+            maxAge: 1, // overwrite maxAge to expire in 1ms
         });
 
         // Log headers - ensure set-cookie & CORS headers are set
