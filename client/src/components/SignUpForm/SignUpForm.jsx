@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { Link as RouterLink, useHistory } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 import { AuthContext } from "contexts/auth/auth.context";
 import FormWrapper from "components/FormWrapper/FormWrapper";
@@ -11,9 +11,9 @@ import useStyles from "./styles";
 
 const SignUpForm = () => {
     const classes = useStyles();
-    const history = useHistory();
 
-    const { setAuth } = useContext(AuthContext);
+    const { setAccessToken, setUser, getUserFromToken } =
+        useContext(AuthContext);
 
     const [formFields, setFormFields] = useState({
         firstName: "",
@@ -102,16 +102,10 @@ const SignUpForm = () => {
                 if (data.errors) setFormErrors(data.errors);
 
                 // Request succeeded
-                if (data.user) {
-                    console.log("SIGNUP SUCCESS", data);
+                if (data.accessToken) {
+                    console.log("SIGNUP SUCCESS:", data);
 
-                    // Update AuthContext with retrieved user
-                    setAuth({
-                        user: data.user,
-                        isAuthenticated: true,
-                    });
-
-                    // Clear form inputs
+                    // Clear form inputs & redirect user
                     setFormFields({
                         firstName: "",
                         lastName: "",
@@ -119,12 +113,14 @@ const SignUpForm = () => {
                         password: "",
                     });
 
-                    // Redirect
-                    history.replace("/manage-lists");
+                    // Update AuthContext with retrieved user
+                    const user = getUserFromToken(data.accessToken);
+                    setUser(user);
+                    setAccessToken(data.accessToken);
                 }
             } catch (err) {
                 // Request error - e.g. wrong endpoint / server error
-                console.log(err);
+                console.error("SIGNUP FAILED:", err);
             }
         }
     };

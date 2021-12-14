@@ -17,17 +17,17 @@ import useStyles from "./styles";
 const Header = () => {
     const classes = useStyles();
 
-    const { auth } = useContext(AuthContext);
+    const auth = useContext(AuthContext);
     const [navigationMap, setNavigationMap] = useState(NAV_MAP_GUEST);
 
     // Set Navigation options based on Auth state
     useEffect(() => {
-        if (auth.isAuthenticated) {
+        if (auth.user) {
             setNavigationMap(NAV_MAP_BASE);
         } else {
             setNavigationMap(NAV_MAP_GUEST);
         }
-    }, [auth.isAuthenticated]);
+    }, [auth.user]);
 
     // ! DEV-ONLY
     useEffect(

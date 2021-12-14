@@ -33,7 +33,7 @@ import useStyles from "./styles";
 const NavDrawer = ({ navigationMap }) => {
     const classes = useStyles();
 
-    const { auth } = useContext(AuthContext);
+    const auth = useContext(AuthContext);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -55,12 +55,12 @@ const NavDrawer = ({ navigationMap }) => {
 
     // Highlight the correct ListItem after route redirect on login/logout
     useEffect(() => {
-        if (auth.isAuthenticated) {
+        if (auth.user) {
             setSelectedIndex(1); // select: Manage Lists
         } else {
             setSelectedIndex(0); // select: Home
         }
-    }, [auth.isAuthenticated]);
+    }, [auth.user]);
 
     return (
         <>
@@ -95,7 +95,7 @@ const NavDrawer = ({ navigationMap }) => {
                             )}
 
                             {/* Render LogoutButton if user is logged in */}
-                            {auth.isAuthenticated && (
+                            {auth.user && (
                                 <LogoutButton
                                     listItem
                                     closeDrawer={() => setIsOpen(false)}

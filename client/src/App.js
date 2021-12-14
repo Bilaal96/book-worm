@@ -34,7 +34,6 @@ function App() {
                     <Route path="/books">
                         <Home />
                     </Route>
-
                     {/** Protected Route 
                       - only available to logged in users 
                       - if no user, redirect to login 
@@ -43,12 +42,15 @@ function App() {
                         <ManageLists />
                     </ProtectedRoute>
 
-                    <Route path="/login">
+                    {/** ProtectedRoute with isLoggedIn prop
+                      - prevent access to routes when user is logged in
+                      */}
+                    <ProtectedRoute path="/login" isLoggedIn>
                         <Login />
-                    </Route>
-                    <Route path="/signup">
+                    </ProtectedRoute>
+                    <ProtectedRoute path="/signup" isLoggedIn>
                         <SignUp />
-                    </Route>
+                    </ProtectedRoute>
 
                     <Route>
                         <h1>404 | NOT FOUND</h1>

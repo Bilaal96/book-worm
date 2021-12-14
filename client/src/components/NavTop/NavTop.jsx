@@ -12,7 +12,7 @@ import useStyles from "./styles";
 
 const NavTop = ({ navigationMap }) => {
     const classes = useStyles();
-    const { auth } = useContext(AuthContext);
+    const auth = useContext(AuthContext);
 
     return (
         <nav className={classes.nav}>
@@ -37,7 +37,7 @@ const NavTop = ({ navigationMap }) => {
             ))}
 
             {/* Render LogoutButton if user is logged in */}
-            {auth.isAuthenticated && (
+            {auth.user && (
                 <LogoutButton className={classes.navLink}>LOG OUT</LogoutButton>
             )}
         </nav>

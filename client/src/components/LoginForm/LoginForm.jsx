@@ -1,5 +1,5 @@
 import { useState, useContext, useEffect } from "react";
-import { Link as RouterLink, useHistory, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 
 import { AuthContext } from "contexts/auth/auth.context";
 import FormWrapper from "components/FormWrapper/FormWrapper";
@@ -11,10 +11,10 @@ import useStyles from "./styles";
 
 const LoginForm = () => {
     const classes = useStyles();
-    const history = useHistory();
     const location = useLocation();
 
-    const { setAuth } = useContext(AuthContext);
+    const { setAccessToken, setUser, getUserFromToken } =
+        useContext(AuthContext);
 
     const [formFields, setFormFields] = useState({
         email: "",
@@ -95,20 +95,16 @@ const LoginForm = () => {
                 if (data.errors) setFormErrors(data.errors);
 
                 // Request succeeded
-                if (data.user) {
+                if (data.accessToken) {
                     console.log("LOGIN SUCCESS", data);
 
-                    // Update AuthContext
-                    setAuth({
-                        user: data.user,
-                        isAuthenticated: true,
-                    });
-
-                    // Clear form inputs
+                    // Clear form inputs & redirect user
                     setFormFields({ email: "", password: "" });
 
-                    // Redirect
-                    history.replace("/manage-lists");
+                    // Update AuthContext
+                    const user = getUserFromToken(data.accessToken);
+                    setUser(user);
+                    setAccessToken(data.accessToken);
                 }
             } catch (err) {
                 // Request error - e.g. wrong endpoint / server error
