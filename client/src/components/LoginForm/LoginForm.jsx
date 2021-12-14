@@ -13,8 +13,7 @@ const LoginForm = () => {
     const classes = useStyles();
     const location = useLocation();
 
-    const { setAccessToken, setUser, getUserFromToken } =
-        useContext(AuthContext);
+    const { authenticate } = useContext(AuthContext);
 
     const [formFields, setFormFields] = useState({
         email: "",
@@ -53,7 +52,7 @@ const LoginForm = () => {
 
     // Validates inputs, constructs errors object and updates errors state
     const validateForm = (formValues) => {
-        console.log("-- validateForm() --");
+        console.log("Validating form values...");
         const { email, password } = formValues;
         const errors = {};
 
@@ -70,46 +69,18 @@ const LoginForm = () => {
         return isValid;
     };
 
-    const handleSubmit = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         console.log("--- Login Submit ---");
 
         // Determine if user input is valid
-        const isValid = validateForm(formFields);
+        const formIsValid = validateForm(formFields);
 
-        if (isValid) {
+        if (formIsValid) {
             // Form passed client validation, make login request
-            try {
-                const response = await fetch(
-                    "http://localhost:5000/auth/login",
-                    {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        credentials: "include",
-                        body: JSON.stringify(formFields),
-                    }
-                );
-                const data = await response.json();
-
-                // Request failed, update errors state
-                if (data.errors) setFormErrors(data.errors);
-
-                // Request succeeded
-                if (data.accessToken) {
-                    console.log("LOGIN SUCCESS", data);
-
-                    // Clear form inputs & redirect user
-                    setFormFields({ email: "", password: "" });
-
-                    // Update AuthContext
-                    const user = getUserFromToken(data.accessToken);
-                    setUser(user);
-                    setAccessToken(data.accessToken);
-                }
-            } catch (err) {
-                // Request error - e.g. wrong endpoint / server error
-                console.log(err);
-            }
+            const authErrors = await authenticate("login", formFields);
+            // Login failed, update formErrors state
+            if (authErrors) setFormErrors(authErrors);
         }
     };
 
@@ -125,7 +96,7 @@ const LoginForm = () => {
                 </Typography>
             )}
 
-            <form onSubmit={handleSubmit} noValidate>
+            <form onSubmit={handleLogin} noValidate>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextField

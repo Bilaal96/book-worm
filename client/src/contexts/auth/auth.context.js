@@ -6,12 +6,8 @@ export const AuthContext = createContext({
     setAccessToken: () => {},
     user: null,
     setUser: () => {},
-    getUserFromToken: () => {},
 
-    // TODO - work in progress
-    // May be able to handle logging in after signup with login() func
-    signUp: () => {},
-    login: () => {},
+    authenticate: () => {},
     logout: () => {},
 });
 
