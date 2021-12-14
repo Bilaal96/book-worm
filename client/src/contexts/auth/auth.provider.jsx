@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import jwt_decode from "jwt-decode";
+import Cookies from "js-cookie";
 import { AuthContext } from "./auth.context";
 
 // Provides app with ability to access & update AuthContext
@@ -69,8 +70,16 @@ const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    // ON MOUNT: Attempt to silently authenticate user
-    useEffect(() => silentlyAuthenticateUser(), [silentlyAuthenticateUser]);
+    /** ON MOUNT: Attempt to silently authenticate user
+     * We only want to silently authenticate if the browser has stored a Refresh Cookie
+     * The Refresh Cookie is HTTP-only, so cannot be accessed by React
+     * As a workaround, a non-HTTP-only cookie (PERSIST_SESSION) is set alongside the Refresh Cookie; with the same expiration time
+     * PERSIST_SESSION only exists when the Refresh Cookie exists & contains NO sensitive data
+     * With this, we can test for PERSIST_SESSION on mount, and only attempt silent auth if the cookie exists
+     */
+    useEffect(() => {
+        if (Cookies.get("PERSIST_SESSION")) return silentlyAuthenticateUser();
+    }, [silentlyAuthenticateUser]);
 
     // ON ACCESS TOKEN EXPIRATION: Attempt to silently authenticate user
     useEffect(() => {
