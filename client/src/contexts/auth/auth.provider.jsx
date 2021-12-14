@@ -43,6 +43,12 @@ const AuthProvider = ({ children }) => {
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
             });
+
+            if (!response.ok && response.status !== 401) {
+                const error = await response.json();
+                throw error;
+            }
+
             const data = await response.json();
 
             return data;
@@ -122,6 +128,13 @@ const AuthProvider = ({ children }) => {
                     body: JSON.stringify(credentials),
                 }
             );
+
+            // Test for response outside of 200-299 range
+            if (!response.ok)
+                throw new Error(
+                    `Authentication request (of type "${authType}") failed with Status: ${response.status} (${response.statusText})`
+                );
+
             const data = await response.json();
 
             // Return server validation errors (if any)
