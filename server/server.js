@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 // Routes
 import booksRoute from "./routes/booksRoute.js";
 import authRoute from "./routes/authRoute.js";
+import booklistsRoute from "./routes/booklistsRoute.js";
 
 // Middleware
 import handleCustomError from "./middleware/handleCustomError.js";
@@ -63,6 +64,7 @@ app.get("/test", verifyAccessToken, (req, res) => {
 // Routes
 app.use("/books", booksRoute);
 app.use("/auth", authRoute);
+app.use("/booklists", verifyAccessToken, booklistsRoute);
 
 // Custom Error Handler
 app.use(handleCustomError);
