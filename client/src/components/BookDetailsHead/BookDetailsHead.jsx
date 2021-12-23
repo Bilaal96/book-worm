@@ -8,8 +8,8 @@ import BookRating from "components/BookRating/BookRating";
 import { AddCircleOutline, Visibility } from "@material-ui/icons";
 import { ReactComponent as GooglePlay } from "assets/google-play-icon.svg";
 
-// Images
-import fallbackThumbnail from "assets/no-book-cover.jpg";
+// Utils
+import { getBookThumbnail } from "utils/book-data-display";
 
 import useStyles from "./styles";
 
@@ -21,15 +21,9 @@ const BookDetailsHead = ({ book }) => {
     const { saleInfo, volumeInfo } = book;
 
     // if available get book cover, if not use fallback image
-    const bookThumbnail = volumeInfo.imageLinks
-        ? volumeInfo.imageLinks?.thumbnail
-        : fallbackThumbnail;
-
+    const bookThumbnail = getBookThumbnail(volumeInfo.imageLinks);
     // Make bookThumbnail accessible in makeStyles via props
-    const styleProps = {
-        bookThumbnail,
-    };
-
+    const styleProps = { bookThumbnail };
     const classes = useStyles(styleProps);
 
     return (

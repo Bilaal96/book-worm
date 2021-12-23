@@ -8,10 +8,6 @@ import RelatedBooks from "components/RelatedBooks/RelatedBooks";
 
 import useStyles from "./styles";
 
-// IMPORT NEEDED COMPONENTS
-// CREATE CHANGE HANDLER
-// https://v4.mui.com/components/tabs/#wrapped-labels
-
 // Accessibility props
 function a11yProps(index) {
     return {
@@ -70,11 +66,14 @@ const BookDetailsTabs = ({ book }) => {
                  */}
                 {/* One - Description */}
                 <TabPanel value={selectedTab} index="one">
-                    <Typography variant="body1">
-                        {volumeInfo.description
-                            ? volumeInfo.description
-                            : "No description available"}
-                    </Typography>
+                    <Typography
+                        variant="body1"
+                        dangerouslySetInnerHTML={{
+                            __html: volumeInfo?.description
+                                ? volumeInfo.description
+                                : "No description available",
+                        }}
+                    />
                 </TabPanel>
 
                 {/* Two - Books By Author */}

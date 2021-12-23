@@ -13,9 +13,6 @@ import {
     IconButton,
 } from "@material-ui/core";
 
-// Images
-import fallbackThumbnail from "assets/no-book-cover.jpg";
-
 // Icons
 import {
     FavoriteBorder,
@@ -26,30 +23,30 @@ import {
     Subject,
 } from "@material-ui/icons";
 
+// Utils
+import {
+    getBookThumbnail,
+    getBookBrief,
+    formatAuthors,
+} from "utils/book-data-display";
+
 import useStyles from "./styles";
 
 const BookCard = ({ book }) => {
     const classes = useStyles();
     const match = useRouteMatch();
-
     const { id, volumeInfo, searchInfo } = book;
 
     // if available get book cover, if not use fallback image
-    const bookThumbnail = volumeInfo.imageLinks
-        ? volumeInfo.imageLinks?.thumbnail
-        : fallbackThumbnail;
+    const bookThumbnail = getBookThumbnail(volumeInfo.imageLinks);
 
-    const bookBrief = `<strong>Brief: </strong>${
-        searchInfo
-            ? searchInfo.textSnippet
-            : "<em>No description available</em>"
-    }`;
+    // Get book brief (a short preview/snippet about the book)
+    const bookBrief = getBookBrief(searchInfo);
 
-    /** Consideration:
-     *! Alternate solution for object's with properties that don't exist (e.g. no
-     *! author or description) is to filter them out, removing them from the output
-     */
-    const getSubheader = (content) => (
+    // Format string of Authors for this book
+    const formattedAuthors = formatAuthors(volumeInfo.authors);
+
+    const CardSubheader = (content) => (
         <Typography
             noWrap
             variant="body1"
@@ -60,22 +57,6 @@ const BookCard = ({ book }) => {
             {content}
         </Typography>
     );
-
-    const getAuthors = () => {
-        // An array of Authors
-        const { authors } = volumeInfo;
-
-        // No authors array present
-        if (!authors) return getSubheader("Author(s) Unknown");
-
-        // If more than 1 author, abbreviate author list
-        if (authors.length > 1) {
-            return getSubheader(`${authors[0]} (+${authors.length - 1} more)`);
-        }
-
-        // Return single author
-        return getSubheader(authors[0]);
-    };
 
     /**
      * --- Truncate Long CardHeader (show ellipsis) ---
@@ -96,7 +77,7 @@ const BookCard = ({ book }) => {
                         {volumeInfo.title}
                     </Typography>
                 }
-                subheader={getAuthors()}
+                subheader={CardSubheader(formattedAuthors)}
             />
             <CardMedia
                 className={classes.media}

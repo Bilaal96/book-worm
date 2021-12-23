@@ -42,7 +42,7 @@ const BookDetailsData = ({ book }) => {
 
     return (
         <Paper style={{ padding: "16px" }}>
-            {industryIdentifiers.map((isbn, index) => (
+            {industryIdentifiers?.map((isbn, index) => (
                 <Typography key={index} variant="body2">
                     {`${isbn.type}: ${isbn.identifier}`}
                 </Typography>
