@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 // Components
@@ -21,6 +21,14 @@ const BookDetailsTabs = ({ book }) => {
 
     const classes = useStyles();
     const [selectedTab, setSelectedTab] = useState("one");
+
+    useEffect(() => {
+        return () => {
+            // Clear all "related books" from cache on unmount
+            sessionStorage.removeItem("books-by-author");
+            sessionStorage.removeItem("books-by-category");
+        };
+    }, []);
 
     const handleTabChange = (event, newTab) => {
         setSelectedTab(newTab);

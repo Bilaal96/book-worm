@@ -1,18 +1,20 @@
 import { useMemo, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 
 // Custom Hooks
 import useAsyncReducer from "hooks/useAsyncReducer";
 
 // Components
-import { Typography } from "@material-ui/core";
+import { Typography, Grid } from "@material-ui/core";
+import BookListItem from "components/BookListItem/BookListItem";
 
 // Utils
 import { getBooksRequestURI } from "utils/api-query-builder";
 
 /**
  * --- derivePropsByRelation() --- 
- * The properties of the object returned by this function:
+ * The property-values of the object returned by this function:
     - differ depending on the argument provided
     - are used to calculate the related books
 
@@ -27,19 +29,18 @@ import { getBooksRequestURI } from "utils/api-query-builder";
         - https://developers.google.com/books/docs/v1/using#PerformingSearch
     - storageKey
  */
-
 const derivePropsByRelation = (relation) => {
     switch (relation) {
         case "author":
             return {
-                actionPrefix: "FETCH_MORE_BY_AUTHOR",
+                actionTypePrefix: "FETCH_BOOKS_BY_AUTHOR",
                 bookLinkKey: "authors",
                 searchPrefix: "inauthor:",
                 storageKey: "books-by-author",
             };
         case "category":
             return {
-                actionPrefix: "FETCH_MORE_BY_CATEGORY",
+                actionTypePrefix: "FETCH_BOOKS_BY_CATEGORY",
                 bookLinkKey: "categories",
                 searchPrefix: "subject:",
                 storageKey: "books-by-category",
@@ -50,16 +51,22 @@ const derivePropsByRelation = (relation) => {
 };
 
 const RelatedBooks = ({ relatedBy: relation, book }) => {
+    const history = useHistory();
+
     // The properties returned are derived from the "relatedBy" prop (i.e. author / category)
     const {
-        actionPrefix, // determines name of actions dispatched to async reducer
+        actionTypePrefix, // names actions dispatched to async reducer
         bookLinkKey, // used to access "bookLink" (see below)
         searchPrefix, // special keyword used to filter Book API queries
-        storageKey, // the web storage key, where the related books are cached
+        storageKey, // web storage key; where "related books" are cached
     } = derivePropsByRelation(relation);
 
-    // bookLink is the value that represents the link/connection between fetched books and the book being viewed
-    // bookLinkKey (i.e. authors / categories) is used to access the API data to retrieve the bookLink
+    /** Definitions: bookLink & bookLinkKey
+     * bookLink - a string value that represents the "link"/connection between the book being viewed and the fetched related books
+     * i.e. author / category name (e.g. George Martin / Fantasy)
+     
+     * bookLinkKey - a string value used to access the API data to retrieve the bookLink; possible values: "authors" / "categories" 
+     */
     const bookLink = useMemo(
         () =>
             book.volumeInfo[bookLinkKey]
@@ -68,9 +75,9 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
         [book, bookLinkKey]
     );
 
-    // Creates reducer with state and provides a means to update it
+    // Used to handle app state when fetching related books
     const [relatedBooks, dispatchStart, dispatchSuccess, dispatchFailed] =
-        useAsyncReducer(actionPrefix);
+        useAsyncReducer(actionTypePrefix);
 
     console.log("Related Books", {
         relatedBooks,
@@ -79,20 +86,21 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
         searchPrefix,
     });
 
+    // Fetch relatedBooks; cache in web storage; determine when to load from cache
     useEffect(() => {
         const abortController = new AbortController();
 
+        // NOTE: in fetchRelatedBooks, bookLinkValue is an alias for bookLink
         const fetchRelatedBooks = async (bookLinkValue) => {
-            // bookLink unknown (i.e. null), do not make fetch request, exit function
+            // bookLink unknown, can't fetch without it, exit function
             if (!bookLinkValue)
                 return console.log("Cannot fetch books, bookLink unknown");
 
-            // Build request URI, where search is made using "searchPrefix" & "bookLinkValue"
+            // Get URI to send request to Books API
             const booksRequestURI = getBooksRequestURI({
                 search: `${searchPrefix}${bookLinkValue}`,
                 maxResults: 40,
             });
-            console.log({ booksRequestURI });
 
             try {
                 dispatchStart(); // init loading state
@@ -110,33 +118,32 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
 
                 // Fetch succeeded: HTTP status code is WITHIN success range (200-299)
                 const searchResults = await response.json();
-                console.log("searchResults", searchResults);
+                console.log("RelatedBooks Fetch Results", searchResults);
 
                 /** Filter Search Results
-                 * Retain results with bookLinkValue AND different title
-                    
-                 * i.e. Remove
-                    - books that do not have the same bookLinkValue 
-                    - duplicates (i.e. books with same title and bookLinkValue)
+                 * Keep results with matching bookLinkValue AND different title
+                  
+                 * Remove results where bookLinkKey (either "authors" OR "categories") does not exist as a property
+                 * Remove results that do not have the same bookLinkValue as the book being viewed (book-in-view)
+
+                 * Remove book-in-view and duplicates of it 
+                 * i.e. where result's & book-in-view's title AND bookLinkValue are identical
                  */
                 const filteredBooks = searchResults.items.filter(
                     (result) =>
-                        // filter out results where authors/categories array: is undefined / does not include bookLinkValue
                         result.volumeInfo[bookLinkKey]?.includes(
                             bookLinkValue
-                        ) &&
-                        // filter out the currently viewed book and duplicates (i.e. has same title and bookLinkValue)
-                        result.volumeInfo.title !== book.volumeInfo.title
+                        ) && result.volumeInfo.title !== book.volumeInfo.title
                 );
                 console.log("filteredBooks", filteredBooks);
 
                 //? LOG INFO - FOR TESTING
-                /*  filteredBooks.map((result, index) =>
+                filteredBooks.map((result, index) =>
                     console.log(`${index}:`, {
                         [bookLinkKey]: result.volumeInfo[bookLinkKey],
                         title: result.volumeInfo.title,
                     })
-                ); */
+                );
 
                 // Update relatedBooks.value & end loading state
                 dispatchSuccess(filteredBooks);
@@ -156,22 +163,18 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
             }
         };
 
-        // Load cached results if available
+        // Get cached "related books" array if available
         const cachedRelatedBooks = JSON.parse(
             sessionStorage.getItem(storageKey)
         );
 
         /**
-         * Update relatedBooks.results state with cachedRelatedBooks if:
+         * Update relatedBooks.value state with cachedRelatedBooks if:
             - there are cached books from a previous invocation of fetchRelatedBooks()
-            - the cached books share the same bookLink as the currently viewed book
          * Otherwise make a new request for related books
          */
-        if (
-            cachedRelatedBooks?.length &&
-            bookLink &&
-            cachedRelatedBooks[0].volumeInfo[bookLinkKey].includes(bookLink)
-        ) {
+        if (cachedRelatedBooks?.length) {
+            console.log("LOADED RELATED BOOKS FROM CACHE");
             dispatchSuccess(cachedRelatedBooks);
         } else {
             fetchRelatedBooks(bookLink);
@@ -180,6 +183,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
         // Cleanup async request on unmount
         return () => {
             abortController.abort();
+            console.log(`${storageKey} unmounted`);
         };
     }, [
         book,
@@ -191,6 +195,14 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
         dispatchSuccess,
         dispatchFailed,
     ]);
+
+    const handleRelatedBookClick = (bookId) => (e) => {
+        // Clear all "related books" from cache
+        sessionStorage.removeItem("books-by-author");
+        sessionStorage.removeItem("books-by-category");
+        // Navigate to the BookDetails page for the "related book" that is clicked
+        history.push(`/books/${bookId}`);
+    };
 
     // No bookLink listed (in book.volumeInfo[bookLinkKey])
     if (!bookLink) {
@@ -206,17 +218,17 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
 
     if (relatedBooks.value?.length) {
         // relatedBooks Found
-        return relatedBooks.value.map((book, index) => {
-            const { title, authors, description } = book.volumeInfo;
-            return (
-                <ul key={index}>
-                    <li>
-                        {`${title} by ${authors}`}
-                        <ul>{description && <li>{description}</li>}</ul>
-                    </li>
-                </ul>
-            );
-        });
+        return (
+            <Grid container spacing={2}>
+                {relatedBooks.value.map((book, index) => (
+                    <BookListItem
+                        key={index}
+                        book={book}
+                        onClick={handleRelatedBookClick(book.id)}
+                    />
+                ))}
+            </Grid>
+        );
     } else {
         // No relatedBooks Found
         return (
