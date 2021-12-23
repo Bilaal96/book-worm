@@ -12,7 +12,7 @@ import {
 
 import useStyles from "./styles.js";
 
-const BookListItem = ({ book, onClick }) => {
+const BookListItem = ({ book, onClick: clickHandler }) => {
     const { volumeInfo, searchInfo } = book;
 
     // if available get book cover, if not use fallback image
@@ -28,7 +28,7 @@ const BookListItem = ({ book, onClick }) => {
     const bookBrief = getBookBrief(searchInfo);
 
     return (
-        <Grid item xs={12} onClick={onClick}>
+        <Grid item xs={12} onClick={clickHandler}>
             <Paper className={classes.bookListItem} elevation={2}>
                 <Grid container>
                     {/* Thumbnail - Book Cover */}
