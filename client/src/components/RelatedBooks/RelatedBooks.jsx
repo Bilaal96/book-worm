@@ -7,7 +7,7 @@ import useAsyncReducer from "hooks/useAsyncReducer";
 
 // Components
 import { Typography, Grid } from "@material-ui/core";
-import BookListItem from "components/BookListItem/BookListItem";
+import BookApiListItem from "components/BookApiListItem/BookApiListItem";
 
 // Utils
 import { getBooksRequestURI } from "utils/api-query-builder";
@@ -221,7 +221,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
         return (
             <Grid container spacing={2}>
                 {relatedBooks.value.map((book, index) => (
-                    <BookListItem
+                    <BookApiListItem
                         key={index}
                         book={book}
                         onClick={handleRelatedBookClick(book.id)}

@@ -12,7 +12,7 @@ import {
 
 import useStyles from "./styles.js";
 
-const BookListItem = ({ book, onClick: clickHandler }) => {
+const BookApiListItem = ({ book, onClick: clickHandler }) => {
     const { volumeInfo, searchInfo } = book;
 
     // if available get book cover, if not use fallback image
@@ -77,8 +77,8 @@ const BookListItem = ({ book, onClick: clickHandler }) => {
     );
 };
 
-BookListItem.propTypes = {
+BookApiListItem.propTypes = {
     book: PropTypes.object.isRequired,
 };
 
-export default BookListItem;
+export default BookApiListItem;
