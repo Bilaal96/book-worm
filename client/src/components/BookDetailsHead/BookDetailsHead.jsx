@@ -17,7 +17,7 @@ import useStyles from "./styles";
  * NOTE for Potential Improvement:
  * Use grid-template-areas to adjust layout per screen size
  */
-const BookDetailsHead = ({ book }) => {
+const BookDetailsHead = ({ book, setOpenModal }) => {
     const { saleInfo, volumeInfo } = book;
 
     // if available get book cover, if not use fallback image
@@ -30,7 +30,10 @@ const BookDetailsHead = ({ book }) => {
         <Paper className={classes.cssLayoutContainer} elevation={2}>
             {/* Actions */}
             <div className={classes.bookActions}>
-                <IconButton className={classes.iconButtons}>
+                <IconButton
+                    className={classes.iconButtons}
+                    onClick={() => setOpenModal(true)}
+                >
                     <AddCircleOutline />
                 </IconButton>
                 <IconButton

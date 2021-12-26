@@ -1,5 +1,7 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
+
+import MasterListProvider from "contexts/master-list/master-list.provider";
 
 // Custom Hooks
 import useAsyncReducer from "hooks/useAsyncReducer";
@@ -8,6 +10,7 @@ import useAsyncReducer from "hooks/useAsyncReducer";
 import { Grid, Typography } from "@material-ui/core";
 import BookDetailsHead from "components/BookDetailsHead/BookDetailsHead";
 import BookDetailsBody from "components/BookDetailsBody/BookDetailsBody";
+import AddToBooklistModal from "components/AddToBooklistModal/AddToBooklistModal";
 
 // Helpers
 import { useSearchContext } from "contexts/search/search.context";
@@ -18,6 +21,7 @@ const BookDetails = () => {
     const [search] = useSearchContext();
     const [book, dispatchStart, dispatchSuccess, dispatchFailed] =
         useAsyncReducer("GET_BOOK_BY_ID");
+    const [openModal, setOpenModal] = useState(false);
 
     console.log("BookDetails", {
         "bookIdParam (route param)": bookIdParam,
@@ -143,14 +147,25 @@ const BookDetails = () => {
     // Render retrieved Book Details
     if (book.value) {
         return (
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <BookDetailsHead book={book.value} />
+            <>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <BookDetailsHead
+                            book={book.value}
+                            setOpenModal={setOpenModal}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <BookDetailsBody book={book.value} />
+                    </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                    <BookDetailsBody book={book.value} />
-                </Grid>
-            </Grid>
+                <MasterListProvider>
+                    <AddToBooklistModal
+                        openModal={openModal}
+                        setOpenModal={setOpenModal}
+                    />
+                </MasterListProvider>
+            </>
         );
     }
 
