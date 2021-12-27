@@ -5,19 +5,27 @@ const MasterListProvider = ({ children }) => {
     // ! TEST DATA
     const [items, setItems] = useState([
         {
+            id: 1,
             title: "Philosophy",
             description: "The biggest test of character in existence is life",
-            bookIds: [1, 2, 3, 4, 5],
+            bookIds: ["2nyKBgAAQBAJ", "suLI7RoaBEEC", "aJgoAwAAQBAJ"],
         },
         {
+            id: 2,
             title: "Web Development",
             description: "All things Web Dev",
-            bookIds: [6, 7, 8, 9],
+            bookIds: ["9OfIDQAAQBAJ", "k0zFcsFA8g8C", "brYgEAAAQBAJ"],
         },
         {
+            id: 3,
             title: "Music and Pop Culture",
             description: "Stay on trend",
-            bookIds: [1, 4, 9, 10],
+            bookIds: [
+                "0etNdRiHWBcC",
+                "kCoEAAAAMBAJ",
+                "QLQ8SAAACAAJ",
+                "_rkdEAAAQBAJ",
+            ],
         },
     ]);
 

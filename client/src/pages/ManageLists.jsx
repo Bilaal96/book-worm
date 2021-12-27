@@ -5,6 +5,9 @@ import { Typography } from "@material-ui/core";
 import MasterList from "components/MasterList/MasterList";
 import Booklist from "components/Booklist/Booklist";
 
+// Context
+import MasterListProvider from "contexts/master-list/master-list.provider";
+
 import useStyles from "./styles";
 
 const ManageLists = () => {
@@ -23,14 +26,16 @@ const ManageLists = () => {
             </Typography>
 
             {/* match.path = /manage-lists */}
-            <Switch>
-                <Route exact path={path}>
-                    <MasterList />
-                </Route>
-                <Route path={`${path}/:listId`}>
-                    <Booklist />
-                </Route>
-            </Switch>
+            <MasterListProvider>
+                <Switch>
+                    <Route exact path={path}>
+                        <MasterList />
+                    </Route>
+                    <Route path={`${path}/:listId`}>
+                        <Booklist />
+                    </Route>
+                </Switch>
+            </MasterListProvider>
         </>
     );
 };
