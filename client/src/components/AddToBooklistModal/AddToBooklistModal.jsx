@@ -26,7 +26,7 @@ import PopupModal from "components/PopupModal/PopupModal";
  * SIDE-NOTE: could even create a new AddToList component, containing the add button and PopupModal
  */
 const AddToBooklistModal = ({ openModal, setOpenModal }) => {
-    const masterList = useContext(MasterListContext);
+    const { masterList } = useContext(MasterListContext);
     console.log("MODAL", masterList);
 
     return (
@@ -38,7 +38,7 @@ const AddToBooklistModal = ({ openModal, setOpenModal }) => {
             setOpenModal={setOpenModal}
         >
             testing testing, things just got more inter-resting
-            {masterList.items
+            {masterList
                 .filter((booklist) => {
                     /* TODO */
                     /* If search input has a value, filter list */

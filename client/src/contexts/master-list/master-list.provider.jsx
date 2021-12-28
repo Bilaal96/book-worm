@@ -3,21 +3,21 @@ import { MasterListContext } from "./master-list.context";
 
 const MasterListProvider = ({ children }) => {
     // ! TEST DATA
-    const [items, setItems] = useState([
+    const [masterList, setMasterList] = useState([
         {
-            id: 1,
+            _id: 1,
             title: "Philosophy",
             description: "The biggest test of character in existence is life",
             bookIds: ["2nyKBgAAQBAJ", "suLI7RoaBEEC", "aJgoAwAAQBAJ"],
         },
         {
-            id: 2,
+            _id: 2,
             title: "Web Development",
             description: "All things Web Dev",
             bookIds: ["9OfIDQAAQBAJ", "k0zFcsFA8g8C", "brYgEAAAQBAJ"],
         },
         {
-            id: 3,
+            _id: 3,
             title: "Music and Pop Culture",
             description: "Stay on trend",
             bookIds: [
@@ -30,7 +30,7 @@ const MasterListProvider = ({ children }) => {
     ]);
 
     return (
-        <MasterListContext.Provider value={{ items, setItems }}>
+        <MasterListContext.Provider value={{ masterList, setMasterList }}>
             {children}
         </MasterListContext.Provider>
     );
