@@ -3,7 +3,10 @@ import CustomError from "../utils/CustomError.js";
 
 const create_booklist_post = async (req, res, next) => {
     try {
-        const { userId, title, description } = req.body;
+        // decodedToken is passed via verifyAccessToken middleware
+        // Get userId from decodedToken
+        const userId = req.decodedToken.sub;
+        const { title, description } = req.body;
 
         const newBooklist = await Booklist.create({
             userId, // reference to associated user
