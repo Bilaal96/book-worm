@@ -68,7 +68,7 @@ const router = Router();
 // Create a new booklist
 router.post("/", booklistsController.create_booklist_post);
 // Get all booklists
-router.get("/", (req, res, next) => {});
+router.get("/", booklistsController.all_booklists_get);
 
 // --- Single booklist ---
 // Get meta-data for a single booklist (id, name, description, booklist array)
