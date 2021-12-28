@@ -1,8 +1,3 @@
-import { Router } from "express";
-
-// All endpoints below are prefixed with /booklists
-const router = Router();
-
 // --- Make multiple fetch calls with Promise.all
 // Google: make multiple fetch requests javascript using array of ids
 // -- https://stackoverflow.com/questions/31710768/how-can-i-fetch-an-array-of-urls-with-promise-all
@@ -61,10 +56,17 @@ const router = Router();
  **    - Allows me to load each book in a booklist individually
  */
 
+import { Router } from "express";
+
+import booklistsController from "../controllers/booklistsController.js";
+
+// All endpoints below are prefixed with /booklists
+const router = Router();
+
 // NOTE: all endpoints are prefixed "/booklists" -> and so this portion can be omitted for endpoints in this file
 // ----- booklists -----
 // Create a new booklist
-router.post("/", (req, res, next) => {});
+router.post("/", booklistsController.create_booklist_post);
 // Get all booklists
 router.get("/", (req, res, next) => {});
 
