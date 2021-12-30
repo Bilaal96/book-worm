@@ -12,7 +12,6 @@ import useStyles from "./styles";
 
 const ManageLists = () => {
     const { path } = useRouteMatch();
-    console.log("ManageLists", path);
     const classes = useStyles();
 
     return (
@@ -25,9 +24,9 @@ const ManageLists = () => {
                 Manage Lists
             </Typography>
 
-            {/* match.path = /manage-lists */}
             <MasterListProvider>
                 <Switch>
+                    {/* match.path = /manage-lists */}
                     <Route exact path={path}>
                         <MasterList />
                     </Route>

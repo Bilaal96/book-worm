@@ -54,11 +54,11 @@ import { Grid, Paper, Typography } from "@material-ui/core";
 import useStyles from "./styles.js";
 
 const MasterListItem = ({ booklist, handleListItemClick, modal }) => {
-    const { id, title, description, bookIds } = booklist;
+    const { _id, title, description, bookIds } = booklist;
     const classes = useStyles();
     return (
         <Grid
-            onClick={handleListItemClick(id)}
+            onClick={handleListItemClick(_id)}
             item
             xs={12}
             md={modal ? 12 : 6}
