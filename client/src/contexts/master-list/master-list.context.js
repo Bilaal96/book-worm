@@ -1,8 +1,9 @@
 import { createContext } from "react";
 
 export const MasterListContext = createContext({
-    masterList: [], // fetched from db
+    masterList: [],
     setMasterList: () => {},
+    clearMasterList: () => {},
 });
 
 MasterListContext.displayName = "MasterListContext";
