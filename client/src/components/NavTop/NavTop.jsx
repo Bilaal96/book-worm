@@ -2,6 +2,7 @@ import { useContext } from "react";
 
 // Contexts
 import { AuthContext } from "contexts/auth/auth.context";
+import MasterListProvider from "contexts/master-list/master-list.provider";
 
 // Components
 import { NavLink as RouterNavLink } from "react-router-dom";
@@ -38,7 +39,11 @@ const NavTop = ({ navigationMap }) => {
 
             {/* Render LogoutButton if user is logged in */}
             {auth.user && (
-                <LogoutButton className={classes.navLink}>LOG OUT</LogoutButton>
+                <MasterListProvider>
+                    <LogoutButton className={classes.navLink}>
+                        LOG OUT
+                    </LogoutButton>
+                </MasterListProvider>
             )}
         </nav>
     );
