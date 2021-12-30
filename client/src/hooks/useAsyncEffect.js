@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 
 /**
- * Tracks error, loading and value states for async processes such as fetch API calls 
+ * Tracks error, loading and value states for async processes that return a Promise (such as Fetch API calls)
  
- * @param { Function } memoizedAsyncCallback - a callback function wrapped in the useCallback hook; this ensures that the callback changes as dependencies change (and avoids linter's hook-dependency warnings)
+ * @param { Function } memoizedAsyncCallback - a callback function wrapped in the useCallback hook; this ensures that the callback changes as dependencies change (and prevents linter's hook-dependency warnings)
  */
-
-// https://stackoverflow.com/questions/56450975/to-fix-cancel-all-subscriptions-and-asynchronous-tasks-in-a-useeffect-cleanup-f
 const useAsyncEffect = (memoizedAsyncCallback) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -18,22 +16,19 @@ const useAsyncEffect = (memoizedAsyncCallback) => {
         memoizedAsyncCallback()
             .then((val) => {
                 if (!isMountedRef.current) return null;
-                console.log("callback receives:", val);
                 setError(null);
                 setValue(val);
+                setLoading(false);
             })
             .catch((err) => {
                 if (!isMountedRef.current) return null;
                 setError(err);
-                setValue(null);
-            })
-            .finally(() => {
-                if (!isMountedRef.current) return null;
                 setLoading(false);
             });
 
         // Prevent state updates on unmount
         return () => {
+            console.log("UNMOUNT ASYNC EFFECT");
             isMountedRef.current = false;
         };
     }, [memoizedAsyncCallback]);
