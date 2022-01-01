@@ -1,10 +1,6 @@
-import { useContext } from "react";
-
-// Context
-import { MasterListContext } from "contexts/master-list/master-list.context";
-
 // Components
 import PopupModal from "components/PopupModal/PopupModal";
+import MasterList from "components/MasterList/MasterList";
 
 // --- AddToBooklistModal
 /**       
@@ -26,38 +22,18 @@ import PopupModal from "components/PopupModal/PopupModal";
  * SIDE-NOTE: could even create a new AddToList component, containing the add button and PopupModal
  */
 const AddToBooklistModal = ({ openModal, setOpenModal }) => {
-    const { masterList } = useContext(MasterListContext);
-    console.log("MODAL", masterList);
+    // Add books ID to bookIds array
+    const handleListItemClick = () => (e) => {
+        console.log("Added books ID to bookIds array");
+    };
 
     return (
         <PopupModal
-            title="Add Book To A List"
-            // title="Add Book to Booklist"
-            // title="Save To List"
+            title="Select A List To Add A Book To"
             openModal={openModal}
             setOpenModal={setOpenModal}
         >
-            testing testing, things just got more inter-resting
-            {masterList
-                .filter((booklist) => {
-                    /* TODO */
-                    /* If search input has a value, filter list */
-                    /* if (input.length) {} */
-                    return true;
-                })
-                .map((booklist, index) => (
-                    <div key={index}>
-                        <p>Title: {booklist.title}</p>
-                        <ul>
-                            <li>
-                                <p>Description: {booklist.description}</p>
-                            </li>
-                            <li>
-                                <p>bookIds: {booklist.bookIds.join(", ")}</p>
-                            </li>
-                        </ul>
-                    </div>
-                ))}
+            <MasterList handleListItemClick={handleListItemClick} modal />
         </PopupModal>
     );
 };

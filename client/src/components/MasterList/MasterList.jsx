@@ -1,5 +1,4 @@
 import { useEffect, useContext, useCallback } from "react";
-import { useHistory } from "react-router-dom";
 import useAsyncEffect from "hooks/useAsyncEffect";
 
 // Components
@@ -16,8 +15,29 @@ import { MasterListContext } from "contexts/master-list/master-list.context";
 
 // if not booklists are not cached, fetch from DB (make API request)
 // -- then update MastertList context, and render MasterList with MasterListItems
-const MasterList = () => {
-    const history = useHistory();
+
+/**
+ *! LIST ITEM -> Flex -> has ACTIONS -> which are only rendered if prop is passed -> e.g. MasterListItem actions={{delete:true, add:true}} -> if not passed fallback to a default value for actions property
+ *! also use "modal" prop to give custom styles to MasterList and MasterListItem that are rendered in AddToBooklistModal
+  
+ * To style modal and /manage-lists differently
+ *! pass modal prop to MasterList
+ *! In MasterList, pass modal prop as arg. to useStyles hook
+ *! this allows me to access modal in a function within makeStyles object
+ *! I can use this prop to conditionally render styles
+ ** NO MODAL (/manage-lists)
+ ** include delete button next to each MasterListItem
+ ** On small screens: MasterListItem takes up entire row width
+ ** On big screens: MasterListItem takes up HALF row width
+ ** MasterList SearchBar will be
+ *? WITH MODAL
+ *? MasterListItem takes up entire row width
+ *? Hide Delete button -> modal is only used to create and add to booklists
+ *! BOTH:
+ *! MASTER LIST SEARCH BAR (FILTERS LIST)
+ *! "CREATE NEW BOOKLIST" BUTTON -> Opens Dialog/PopupModal asking for title and description (optional) -> options cancel/create -> makes request to endpoint: POST /booklists
+ */
+const MasterList = ({ handleListItemClick, modal }) => {
     const { accessToken } = useContext(AuthContext);
     const { masterList, setMasterList } = useContext(MasterListContext);
 
@@ -66,19 +86,14 @@ const MasterList = () => {
         }
     }, [booklists.value, masterList, setMasterList]);
 
-    // Navigate to: /manage-lists/:listId
-    // Where all items in a single list are displayed
-    //! For reusability, could pass this function as a prop to MasterList
-    //! i.e. so that MasterListItem in modal can have its own functionality
-    const handleListItemClick = (listId) => (e) => {
-        history.push(`/manage-lists/${listId}`);
-    };
-
     if (booklists.loading) return <h1>LOADING...</h1>;
 
     return (
         <>
             <Grid container spacing={2}>
+                {/* TODO */
+                /* If search input has a value, filter list */
+                /* if (input.length) {} */}
                 {masterList
                     .filter((booklist) => {
                         /* TODO */
@@ -90,7 +105,8 @@ const MasterList = () => {
                         <MasterListItem
                             key={booklist._id}
                             booklist={booklist}
-                            handleListItemClick={handleListItemClick}
+                            onListItemClick={handleListItemClick}
+                            modal={modal}
                         />
                     ))}
             </Grid>

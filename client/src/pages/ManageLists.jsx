@@ -1,4 +1,4 @@
-import { Switch, Route, useRouteMatch } from "react-router";
+import { Switch, Route, useRouteMatch, useHistory } from "react-router";
 
 // Components
 import { Typography } from "@material-ui/core";
@@ -12,7 +12,14 @@ import useStyles from "./styles";
 
 const ManageLists = () => {
     const { path } = useRouteMatch();
+    const history = useHistory();
     const classes = useStyles();
+
+    const handleListItemClick = (listId) => (e) => {
+        // Navigate to: /manage-lists/:listId
+        // Where all items in a single list are displayed
+        history.push(`/manage-lists/${listId}`);
+    };
 
     return (
         <>
@@ -28,7 +35,7 @@ const ManageLists = () => {
                 <Switch>
                     {/* match.path = /manage-lists */}
                     <Route exact path={path}>
-                        <MasterList />
+                        <MasterList handleListItemClick={handleListItemClick} />
                     </Route>
                     <Route path={`${path}/:listId`}>
                         <Booklist />

@@ -3,12 +3,26 @@ import { makeStyles } from "@material-ui/core";
 export default makeStyles((theme) => ({
     masterListItem: {
         padding: theme.spacing(2),
-        cursor: "pointer",
         transition: "all 0.2s ease",
 
         "&:hover": {
             color: theme.palette.secondary.main,
-            transform: "scale(1.02)",
+            transform: ({ modal }) => (modal ? "scale(1.01)" : "scale(1)"),
+        },
+    },
+    details: {
+        transition: "all 0.2s ease",
+        cursor: "pointer",
+
+        "&:hover": {
+            backgroundColor: "#ECE3F0",
+        },
+    },
+    deleteButton: {
+        transition: "all 0.2s ease",
+        "&:hover": {
+            color: "#AA1945",
+            backgroundColor: "#F1CED4",
         },
     },
 }));

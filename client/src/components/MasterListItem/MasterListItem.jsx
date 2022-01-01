@@ -49,38 +49,68 @@
  */
 
 // Components
-import { Grid, Paper, Typography } from "@material-ui/core";
+import { Grid, IconButton, Paper, Typography } from "@material-ui/core";
+import { Delete } from "@material-ui/icons";
 
 import useStyles from "./styles.js";
 
-const MasterListItem = ({ booklist, handleListItemClick, modal }) => {
+const MasterListItem = ({
+    booklist,
+    onListItemClick: handleListItemClick,
+    modal,
+}) => {
     const { _id, title, description, bookIds } = booklist;
-    const classes = useStyles();
-    return (
-        <Grid
-            onClick={handleListItemClick(_id)}
-            item
-            xs={12}
-            md={modal ? 12 : 6}
-        >
-            <Paper className={classes.masterListItem} elevation={2}>
-                {/* Title */}
-                <Typography component="h2" variant="h3">
-                    {title ? `${title}` : "Unknown Title"}
-                </Typography>
+    const styleProps = { modal };
+    const classes = useStyles(styleProps);
 
-                {/* Description */}
-                {/* <Typography
-                    component="p"
-                    variant="body1"
-                    dangerouslySetInnerHTML={{ __html: description }}
-                /> */}
-                <Typography component="p" variant="body1">
-                    Description: {description}
-                </Typography>
-                <Typography component="p" variant="body1">
-                    bookIds: {bookIds.join(", ")}
-                </Typography>
+    return (
+        <Grid item xs={12}>
+            <Paper className={classes.masterListItem} elevation={2}>
+                <Grid
+                    container
+                    spacing={2}
+                    alignItems="center"
+                    justifyContent="space-between"
+                >
+                    <Grid
+                        item
+                        xs={modal ? 12 : 11}
+                        className={classes.details}
+                        onClick={handleListItemClick(_id)}
+                    >
+                        {/* Title */}
+                        <Typography component="h2" variant="h3">
+                            {title ? `${title}` : "Unknown Title"}
+                        </Typography>
+
+                        {/* Description */}
+                        {/* <Typography
+                                component="p"
+                                variant="body1"
+                                dangerouslySetInnerHTML={{ __html: description }}
+                            /> */}
+                        <Typography component="p" variant="body1">
+                            Description: {description}
+                        </Typography>
+                        <Typography component="p" variant="body1">
+                            bookIds: {bookIds.join(", ")}
+                        </Typography>
+                    </Grid>
+                    {modal ? null : (
+                        <Grid item xs={1}>
+                            <Grid container justifyContent="center">
+                                <IconButton
+                                    className={classes.deleteButton}
+                                    onClick={() =>
+                                        console.log(`Delete booklist: ${_id}`)
+                                    }
+                                >
+                                    <Delete fontSize="large" />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
+                    )}
+                </Grid>
             </Paper>
         </Grid>
     );
