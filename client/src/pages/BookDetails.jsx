@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 
-import MasterListProvider from "contexts/master-list/master-list.provider";
-
 // Custom Hooks
 import useAsyncReducer from "hooks/useAsyncReducer";
 
@@ -19,9 +17,12 @@ const BookDetails = () => {
     // Access bookId Route Param - aliased as bookIdParam
     const { bookId: bookIdParam } = useParams();
     const [search] = useSearchContext();
+
+    // Controls whether AddToBooklistModal is showing or not
+    const [openModal, setOpenModal] = useState(false);
+
     const [book, dispatchStart, dispatchSuccess, dispatchFailed] =
         useAsyncReducer("GET_BOOK_BY_ID");
-    const [openModal, setOpenModal] = useState(false);
 
     console.log("BookDetails", {
         "bookIdParam (route param)": bookIdParam,
@@ -148,6 +149,11 @@ const BookDetails = () => {
     if (book.value) {
         return (
             <>
+                <AddToBooklistModal
+                    book={book.value}
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                />
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <BookDetailsHead
@@ -159,12 +165,6 @@ const BookDetails = () => {
                         <BookDetailsBody book={book.value} />
                     </Grid>
                 </Grid>
-                <MasterListProvider>
-                    <AddToBooklistModal
-                        openModal={openModal}
-                        setOpenModal={setOpenModal}
-                    />
-                </MasterListProvider>
             </>
         );
     }

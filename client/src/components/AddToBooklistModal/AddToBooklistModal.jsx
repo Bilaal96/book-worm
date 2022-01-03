@@ -1,3 +1,6 @@
+// Context
+import MasterListProvider from "contexts/master-list/master-list.provider";
+
 // Components
 import PopupModal from "components/PopupModal/PopupModal";
 import MasterList from "components/MasterList/MasterList";
@@ -21,10 +24,10 @@ import MasterList from "components/MasterList/MasterList";
 
  * SIDE-NOTE: could even create a new AddToList component, containing the add button and PopupModal
  */
-const AddToBooklistModal = ({ openModal, setOpenModal }) => {
-    // Add books ID to bookIds array
-    const handleListItemClick = () => (e) => {
-        console.log("Added books ID to bookIds array");
+const AddToBooklistModal = ({ book, openModal, setOpenModal }) => {
+    // For booklist with id === listId, add book.id to booklist.bookIds array
+    const handleListItemClick = (listId) => (e) => {
+        console.log(`Added ${book.id} to bookIds array in ${listId}`);
     };
 
     return (
@@ -33,7 +36,9 @@ const AddToBooklistModal = ({ openModal, setOpenModal }) => {
             openModal={openModal}
             setOpenModal={setOpenModal}
         >
-            <MasterList handleListItemClick={handleListItemClick} modal />
+            <MasterListProvider>
+                <MasterList handleListItemClick={handleListItemClick} modal />
+            </MasterListProvider>
         </PopupModal>
     );
 };
