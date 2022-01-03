@@ -6,7 +6,7 @@ import BookRating from "components/BookRating/BookRating";
 
 // Icons
 import { AddCircleOutline, Visibility } from "@material-ui/icons";
-import { ReactComponent as GooglePlay } from "assets/google-play-icon.svg";
+// import { ReactComponent as GooglePlay } from "assets/google-play-icon.svg";
 
 // Utils
 import { getBookThumbnail } from "utils/book-data-display";
@@ -30,13 +30,18 @@ const BookDetailsHead = ({ book, setOpenModal }) => {
         <Paper className={classes.cssLayoutContainer} elevation={2}>
             {/* Actions */}
             <div className={classes.bookActions}>
+                {/* Add to a Booklist */}
                 <IconButton
+                    title="Add to a Booklist"
                     className={classes.iconButtons}
                     onClick={() => setOpenModal(true)}
                 >
                     <AddCircleOutline />
                 </IconButton>
+
+                {/* Preview */}
                 <IconButton
+                    title="Preview"
                     className={classes.iconButtons}
                     component="a"
                     href={volumeInfo.previewLink}
@@ -50,14 +55,14 @@ const BookDetailsHead = ({ book, setOpenModal }) => {
                  * Link via -> accessInfo.webReaderLink
                  * NOTE: Link does not always exist -> sometimes not found
                  */}
-                <IconButton
+                {/* <IconButton
                     className={classes.iconButtons}
-                    // component="a"
-                    // href={volumeInfo.previewLink}
-                    // target="_blank"
+                    component="a"
+                    href={volumeInfo.previewLink}
+                    target="_blank"
                 >
                     <GooglePlay className={classes.googlePlayIcon} />
-                </IconButton>
+                </IconButton> */}
             </div>
 
             {/* Book Cover */}
