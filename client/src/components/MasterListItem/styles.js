@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core";
 
 export default makeStyles((theme) => ({
     masterListItem: {
-        padding: theme.spacing(2),
+        // padding: theme.spacing(2),
         transition: "all 0.2s ease",
 
         "&:hover": {
@@ -11,6 +11,7 @@ export default makeStyles((theme) => ({
         },
     },
     details: {
+        padding: theme.spacing(2),
         transition: "all 0.2s ease",
         cursor: "pointer",
 

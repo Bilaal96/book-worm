@@ -66,12 +66,13 @@ const MasterListItem = ({
     return (
         <Grid item xs={12}>
             <Paper className={classes.masterListItem} elevation={2}>
+                {/* Booklist Details & Actions Container */}
                 <Grid
                     container
-                    spacing={2}
                     alignItems="center"
                     justifyContent="space-between"
                 >
+                    {/* Booklist Details */}
                     <Grid
                         item
                         xs={modal ? 12 : 11}
@@ -96,6 +97,8 @@ const MasterListItem = ({
                             bookIds: {bookIds.join(", ")}
                         </Typography>
                     </Grid>
+
+                    {/* Booklist Actions (ManageLists page only) */}
                     {modal ? null : (
                         <Grid item xs={1}>
                             <Grid container justifyContent="center">
