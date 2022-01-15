@@ -1,5 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 
+// Contexts
+import { AuthContext } from "contexts/auth/auth.context";
+import { MasterListContext } from "contexts/master-list/master-list.context";
+
+// Components
 import {
     Accordion,
     AccordionSummary,
@@ -13,14 +18,17 @@ import { ExpandMore, AddCircleOutlined } from "@material-ui/icons";
 import useStyles from "./styles";
 
 const CreateBooklistAccordion = () => {
-    const [expanded, setExpanded] = useState(false);
-    const styleProps = { expanded };
-    const classes = useStyles(styleProps);
+    const { accessToken } = useContext(AuthContext);
+    const { masterList, setMasterList } = useContext(MasterListContext);
 
+    const [expanded, setExpanded] = useState(false);
     const [formFields, setFormFields] = useState({
-        listName: "",
+        title: "",
         description: "",
     });
+
+    const styleProps = { expanded };
+    const classes = useStyles(styleProps);
 
     const handleAccordionExpansion = (e, isExpanded) => {
         setExpanded(isExpanded);
@@ -35,19 +43,50 @@ const CreateBooklistAccordion = () => {
         });
     };
 
-    const cancelListCreation = (e) => {
-        // Clear formFields
+    const clearFormFields = () => {
         setFormFields({
-            listName: "",
+            title: "",
             description: "",
         });
-        // Close accordion
-        setExpanded(false);
     };
 
-    const createNewList = (e) => {
+    const resetAccordion = (e) => {
+        clearFormFields();
+        setExpanded(false); // close/retract accordion
+    };
+
+    const createBooklist = async (e) => {
         e.preventDefault();
         console.log("Create new list submission");
+
+        try {
+            const response = await fetch("http://localhost:5000/booklists", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                    Credentials: "include",
+                },
+                body: JSON.stringify(formFields),
+            });
+
+            // Failed to create list
+            if (!response.ok) {
+                const error = await response.json();
+                throw Error(error.message);
+            }
+
+            // Successfully created list
+            const newBooklist = await response.json();
+            console.log("Booklist created", newBooklist);
+            // Add newBooklist to masterList
+            setMasterList([...masterList, newBooklist]);
+
+            // Clear and close accordion
+            resetAccordion();
+        } catch (err) {
+            console.error(err);
+        }
     };
 
     return (
@@ -63,13 +102,14 @@ const CreateBooklistAccordion = () => {
                 <Typography variant="h6">Create New List</Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.accordionDetails}>
-                <form onSubmit={createNewList}>
+                <form onSubmit={createBooklist}>
                     <TextField
-                        label="List Name"
-                        value={formFields.listName}
+                        label="Title"
+                        value={formFields.title}
                         onChange={handleFormFieldChange}
                         className={classes.textField}
-                        name="listName"
+                        name="title"
+                        variant="outlined"
                         fullWidth
                     />
                     <TextField
@@ -78,16 +118,20 @@ const CreateBooklistAccordion = () => {
                         onChange={handleFormFieldChange}
                         className={classes.textField}
                         name="description"
+                        variant="outlined"
                         fullWidth
+                        multiline
+                        minRows={2}
+                        maxRows={4}
                     />
 
                     <div className={classes.formControls}>
                         <Button
-                            onClick={cancelListCreation}
+                            onClick={resetAccordion}
                             color="secondary"
                             variant="outlined"
                         >
-                            Cancel
+                            Reset
                         </Button>
                         <Button
                             color="primary"
