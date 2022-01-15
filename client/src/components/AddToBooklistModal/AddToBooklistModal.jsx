@@ -8,6 +8,7 @@ import { AuthContext } from "contexts/auth/auth.context";
 import PopupModal from "components/PopupModal/PopupModal";
 import MasterList from "components/MasterList/MasterList";
 import ActionRequiresLoginModal from "components/ActionRequiresLoginModal/ActionRequiresLoginModal";
+import CreateBooklistAccordion from "components/CreateBooklistAccordion/CreateBooklistAccordion";
 
 // --- AddToBooklistModal
 /**       
@@ -55,6 +56,12 @@ const AddToBooklistModal = ({ book, openModal, setOpenModal }) => {
             setOpenModal={setOpenModal}
         >
             <MasterListProvider>
+                {/* TODO Search / filter lists */}
+
+                {/* Accordion containing form to create new list */}
+                <CreateBooklistAccordion />
+
+                {/* MasterList - displays all user booklists */}
                 <MasterList handleListItemClick={handleListItemClick} modal />
             </MasterListProvider>
         </PopupModal>
