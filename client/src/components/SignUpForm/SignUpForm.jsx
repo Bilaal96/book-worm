@@ -5,7 +5,7 @@ import { AuthContext } from "contexts/auth/auth.context";
 import FormWrapper from "components/FormWrapper/FormWrapper";
 import { Grid, TextField, Button, Link, Typography } from "@material-ui/core";
 
-import validate from "utils/auth-form-validators";
+import validate from "utils/form-validators";
 
 import useStyles from "./styles";
 
