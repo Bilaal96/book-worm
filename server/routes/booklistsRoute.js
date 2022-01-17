@@ -59,6 +59,7 @@
 import { Router } from "express";
 
 import booklistsController from "../controllers/booklistsController.js";
+import handleBooklistError from "../middleware/handleBooklistError.js";
 
 // All endpoints below are prefixed with /booklists
 const router = Router();
@@ -88,5 +89,8 @@ router.get("/:listId/books/:bookId", (req, res, next) => {});
 
 // Delete a single book from a booklist
 router.delete("/:listId/books/:bookId", (req, res, next) => {});
+
+// Handle booklist-specific errors
+router.use(handleBooklistError);
 
 export default router;

@@ -14,7 +14,7 @@ const booklistSchema = new mongoose.Schema(
         },
         title: {
             type: String,
-            required: [true, "A Booklist title is required"],
+            required: [true, "A title is required"],
         },
         description: String,
         // Primitive Array - https://mongoosejs.com/docs/schematypes.html#arrays

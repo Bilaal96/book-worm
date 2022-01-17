@@ -1,5 +1,4 @@
 import Booklist from "../models/Booklist.js";
-import CustomError from "../utils/CustomError.js";
 
 /**
  * Only registered users can perform /booklists actions
@@ -24,13 +23,8 @@ const create_booklist_post = async (req, res, next) => {
 
         res.status(201).json(newBooklist);
     } catch (err) {
-        // ! Temporary
         console.error(err);
-        next(CustomError.badRequest("Failed to create Booklist"));
-
-        // Check for Mongoose ValidationError (i.e. no title)
-        // ! Failed to create: 409 Conflict
-        // next(err) //! call this, then check and handle error in middleware
+        next(err);
     }
 };
 
@@ -50,6 +44,8 @@ const all_booklists_get = async (req, res, next) => {
         next(err);
     }
 };
+
+//! ADDING/DELETING BOOK: https://mongoosejs.com/docs/documents.html#updating-using-save
 
 export default {
     create_booklist_post,
