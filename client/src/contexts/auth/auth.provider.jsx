@@ -130,15 +130,19 @@ const AuthProvider = ({ children }) => {
             );
 
             // Test for response outside of 200-299 range
-            if (!response.ok)
+            if (!response.ok) {
+                const err = await response.json();
+                // Return server validation errors (if any)
+                if (err.errors) return err.errors;
+
+                // No validation errors, return generic error message
                 throw new Error(
                     `Authentication request (of type "${authType}") failed with Status: ${response.status} (${response.statusText})`
                 );
+            }
 
             const data = await response.json();
 
-            // Return server validation errors (if any)
-            if (data.errors) return data.errors;
             // No access token was retrieved, throw error
             if (!data.accessToken)
                 throw Error(
