@@ -14,7 +14,7 @@ import { MasterListContext } from "contexts/master-list/master-list.context";
 // if it is, update MasterList context, and render MasterList with MasterListItems
 
 // if not booklists are not cached, fetch from DB (make API request)
-// -- then update MastertList context, and render MasterList with MasterListItems
+// -- then update MasterList context, and render MasterList with MasterListItems
 
 /**
  *! LIST ITEM -> Flex -> has ACTIONS -> which are only rendered if prop is passed -> e.g. MasterListItem actions={{delete:true, add:true}} -> if not passed fallback to a default value for actions property
@@ -75,25 +75,25 @@ const MasterList = ({ handleListItemClick, modal }) => {
     // Track state during and after data fetch
     const booklists = useAsyncEffect(fetchAllBooklists);
 
+    // Update MasterList with fetched data
+    useEffect(() => {
+        if (booklists.value !== null) setMasterList(booklists.value);
+    }, [booklists.value, setMasterList]);
+
+    // Log masterList value; when fetched from DB or loaded from localStorage
     useEffect(() => {
         if (booklists.value !== null) {
-            // Update & log MasterList with fetched data
             console.log("MASTER LIST (FETCHED)", masterList);
-            setMasterList(booklists.value);
         } else {
-            // Log when read from localStorage
-            console.log("MASTER LIST (FROM CACHE)", masterList);
+            console.log("MASTER LIST (DEFAULT / FROM CACHE)", masterList);
         }
-    }, [booklists.value, masterList, setMasterList]);
+    }, [booklists.value, masterList]);
 
     if (booklists.loading) return <h1>LOADING...</h1>;
 
     return (
         <>
             <Grid container spacing={2}>
-                {/* TODO */
-                /* If search input has a value, filter list */
-                /* if (input.length) {} */}
                 {masterList
                     .filter((booklist) => {
                         /* TODO */
