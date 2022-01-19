@@ -1,29 +1,42 @@
 import mongoose from "mongoose";
-import { validate as isEmail } from "email-validator";
 import bcrypt from "bcrypt";
+
+// Validators
+import { validate as isEmail } from "email-validator";
+// -- Custom
+import {
+    MIN_PASSWORD_LENGTH,
+    notEmptyOrWhitespace,
+    checkPasswordComplexity,
+} from "../utils/auth-validation.js";
 
 /** User Doc Outline
  * [auto-gen id]
  * firstName
  * lastName
+ *! consider fullName, in place of firstName & lastName (as it is more universally acceptable)
  * email
  * password
  * createdAt (via Schema option -> { timestamps: true })
  * updatedAt (via Schema option -> { timestamps: true })
+ 
+ * NOTE: validation message is shown if validator function returns false 
  */
 const userSchema = new mongoose.Schema(
     {
         firstName: {
             type: String,
             required: [true, "First name is required"],
+            validate: [notEmptyOrWhitespace, "Please enter a valid first name"],
         },
         lastName: {
             type: String,
             required: [true, "Last name is required"],
+            validate: [notEmptyOrWhitespace, "Please enter a valid last name"],
         },
         email: {
             type: String,
-            required: [true, "Please enter an email"],
+            required: [true, "Email is required"],
             unique: true,
             lowercase: true,
             // validate email format
@@ -31,8 +44,17 @@ const userSchema = new mongoose.Schema(
         },
         password: {
             type: String,
-            required: [true, "Please enter a password"],
-            minlength: [6, "Password must include at least 6 characters"],
+            required: [true, "Password is required"],
+            minlength: [
+                MIN_PASSWORD_LENGTH,
+                `Password must be ${MIN_PASSWORD_LENGTH} or more characters and include at least one of each from: uppercase letter, lowercase letter, digit (0-9) & special character (!@#$%^&*)`,
+            ],
+            validate: {
+                validator: checkPasswordComplexity,
+                // Returns error thrown by validator function
+                // https://mongoosejs.com/docs/api.html#schematype_SchemaType-validate
+                message: (props) => props.reason.message,
+            },
         },
     },
     { timestamps: true } // auto-generates createdAt & updatedAt properties
