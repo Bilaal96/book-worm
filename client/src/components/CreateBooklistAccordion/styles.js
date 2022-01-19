@@ -8,10 +8,10 @@ export default makeStyles((theme) => ({
     accordionSummary: {
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
-        borderTopLeftRadius: "3px",
-        borderTopRightRadius: "3px",
-        borderBottomLeftRadius: ({ expanded }) => (expanded ? "0" : "3px"),
-        borderBottomRightRadius: ({ expanded }) => (expanded ? "0" : "3px"),
+        borderTopLeftRadius: "4px",
+        borderTopRightRadius: "4px",
+        borderBottomLeftRadius: ({ expanded }) => (expanded ? "0" : "4px"),
+        borderBottomRightRadius: ({ expanded }) => (expanded ? "0" : "4px"),
     },
     expandIcon: {
         color: theme.palette.primary.contrastText,
