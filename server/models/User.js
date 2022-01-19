@@ -8,7 +8,7 @@ import {
     MIN_PASSWORD_LENGTH,
     notEmptyOrWhitespace,
     checkPasswordComplexity,
-} from "../utils/auth-validation.js";
+} from "../utils/form-validators.js";
 
 /** User Doc Outline
  * [auto-gen id]

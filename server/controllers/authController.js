@@ -2,7 +2,7 @@
 import User from "../models/User.js";
 
 // Utils
-import { validateLoginCredentials } from "../utils/auth-validation.js";
+import { validateLoginCredentials } from "../utils/form-validators.js";
 import {
     TTL_REF_TOKEN,
     signAccessToken,
