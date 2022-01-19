@@ -2,6 +2,7 @@ import { useEffect, useContext, useCallback } from "react";
 import useAsyncEffect from "hooks/useAsyncEffect";
 
 // Components
+import CreateBooklistAccordion from "components/CreateBooklistAccordion/CreateBooklistAccordion";
 import { Grid } from "@material-ui/core";
 import MasterListItem from "components/MasterListItem/MasterListItem";
 
@@ -93,6 +94,11 @@ const MasterList = ({ handleListItemClick, modal }) => {
 
     return (
         <>
+            {/* TODO Search / filter lists */}
+
+            {/* Accordion containing form to create new list */}
+            <CreateBooklistAccordion />
+
             <Grid container spacing={2}>
                 {masterList
                     .filter((booklist) => {
