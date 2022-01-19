@@ -12,11 +12,15 @@ const create_booklist_post = async (req, res, next) => {
         const userId = req.decodedToken.sub;
         const { title, description } = req.body;
 
+        // Cleanup description containing ONLY whitespace
+        const validDescription =
+            description.trim().length > 0 ? description : "";
+
         // Create booklist
         const newBooklist = await Booklist.create({
             userId, // reference to associated user
-            title: title,
-            description: description ? description : "",
+            title,
+            description: validDescription,
             bookIds: [],
             bookCount: 0,
         });
