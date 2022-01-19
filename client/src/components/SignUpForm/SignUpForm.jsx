@@ -58,14 +58,11 @@ const SignUpForm = () => {
         const errors = {};
 
         // Validate formValues, update errors object if any values are invalid
-        validate.textField(
-            { firstName },
-            errors,
-            "Please enter your first name"
-        );
-        validate.textField({ lastName }, errors, "Please enter your last name");
+        validate.name({ firstName }, errors, "First");
+        validate.name({ lastName }, errors, "Last");
+
         validate.email(email, errors);
-        validate.password(password, errors);
+        validate.signupPassword(password, errors);
 
         // Update formErrors state
         setFormErrors(errors);

@@ -58,7 +58,7 @@ const LoginForm = () => {
 
         // Validate formValues, update errors object if any values are invalid
         validate.email(email, errors);
-        validate.password(password, errors);
+        validate.loginPassword(password, errors);
 
         // Update formErrors state
         setFormErrors(errors);
