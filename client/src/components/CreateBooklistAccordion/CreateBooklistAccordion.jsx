@@ -108,7 +108,6 @@ const CreateBooklistAccordion = () => {
                         headers: {
                             Authorization: `Bearer ${accessToken}`,
                             "Content-Type": "application/json",
-                            Credentials: "include",
                         },
                         body: JSON.stringify(formFields),
                     }

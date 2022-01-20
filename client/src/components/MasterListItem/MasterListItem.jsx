@@ -48,6 +48,12 @@
  * onClick -> navigate to /books/:id; renders BookDetails
  */
 
+import { useContext } from "react";
+
+// Contexts
+import { AuthContext } from "contexts/auth/auth.context.js";
+import { MasterListContext } from "contexts/master-list/master-list.context.js";
+
 // Components
 import { Grid, IconButton, Paper, Typography } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
@@ -59,9 +65,51 @@ const MasterListItem = ({
     onListItemClick: handleListItemClick,
     modal,
 }) => {
-    const { _id, title, description, bookIds } = booklist;
+    const { accessToken, user } = useContext(AuthContext);
+    const { masterList, setMasterList } = useContext(MasterListContext);
+
+    const {
+        _id,
+        title,
+        description,
+        bookIds,
+        userId: booklistOwner,
+    } = booklist;
     const styleProps = { modal };
     const classes = useStyles(styleProps);
+
+    const deleteBooklist = async () => {
+        try {
+            // Prevent user from requesting deletion of a list they do not own
+            if (user.id !== booklistOwner) throw Error("Unauthorized request");
+
+            // User owns booklist, send request to delete it
+            const response = await fetch(
+                `http://localhost:5000/booklists/${_id}`,
+                {
+                    method: "DELETE",
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                }
+            );
+
+            // Request to delete booklist failed
+            if (!response.ok) {
+                const error = await response.json();
+                throw error;
+            }
+
+            // Request to delete booklist succeeded
+            // Update masterList by filtering out the deleted booklist
+            const updatedMasterList = masterList.filter(
+                (list) => list._id !== _id
+            );
+
+            setMasterList(updatedMasterList); // causes MasterList to re-render
+            console.log(`Delete booklist with id: ${_id}`);
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     return (
         <Grid item xs={12}>
@@ -104,9 +152,7 @@ const MasterListItem = ({
                             <Grid container justifyContent="center">
                                 <IconButton
                                     className={classes.deleteButton}
-                                    onClick={() =>
-                                        console.log(`Delete booklist: ${_id}`)
-                                    }
+                                    onClick={deleteBooklist}
                                 >
                                     <Delete fontSize="large" />
                                 </IconButton>

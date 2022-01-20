@@ -77,7 +77,7 @@ router.get("/:listId", (req, res, next) => {});
 // Update (or edit) a single booklist's details (name, description)
 router.put("/:listId", (req, res, next) => {});
 // Delete a single booklist (implicitly deletes all books in the list)
-router.delete("/:listId", (req, res, next) => {});
+router.delete("/:listId", booklistsController.booklist_by_id_delete);
 
 // ----- Book(s) in a single booklist -----
 // Create a book entry in a booklist (i.e. add book id to booklist array)
