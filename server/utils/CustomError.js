@@ -30,6 +30,10 @@ class CustomError {
         return new CustomError(404, msg);
     }
 
+    static conflict(msg = "Conflict") {
+        return new CustomError(409, msg);
+    }
+
     static internalServer(msg = "Internal Server Error") {
         return new CustomError(500, msg);
     }

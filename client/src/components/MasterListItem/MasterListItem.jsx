@@ -34,13 +34,12 @@
 
  *? Items/children rendered by: BookApiListItem
  ** Booklist - NOTE:TBD
- *! onMount: fetch all books using IDs in bookIds array 
- *! renders each book in a single Booklist
+ *! onMount: render all books in a list via masterList
  * Appears in: ManageLists Page (at ROUTE: /manage-lists/:listId)
  * List-item rendered by -> BookApiListItem
  * onClick -> navigate to /books/:id, render BookDetails
  *! EDITABLE: DELETE LIST[ITEM] 
-    - Delete from bookIds array in -> DB & MasterListContext
+    - Delete from books array in -> DB & MasterListContext
  *! EDITABLE (IMPROVEMENT): EDIT CURRENT LISTS DETAILS | ADD TO ANOTHER LIST
  ** Related Books list
  * Appears in: RelatedBooks
@@ -68,13 +67,7 @@ const MasterListItem = ({
     const { accessToken, user } = useContext(AuthContext);
     const { masterList, setMasterList } = useContext(MasterListContext);
 
-    const {
-        _id,
-        title,
-        description,
-        bookIds,
-        userId: booklistOwner,
-    } = booklist;
+    const { _id, title, description, books, userId: booklistOwner } = booklist;
     const styleProps = { modal };
     const classes = useStyles(styleProps);
 
@@ -142,7 +135,8 @@ const MasterListItem = ({
                             Description: {description}
                         </Typography>
                         <Typography component="p" variant="body1">
-                            bookIds: {bookIds.join(", ")}
+                            Id of books stored:{" "}
+                            {books.map((book) => book.id).join(", ")}
                         </Typography>
                     </Grid>
 

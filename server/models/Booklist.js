@@ -17,9 +17,8 @@ const booklistSchema = new mongoose.Schema(
             required: [true, "A title is required"],
         },
         description: String,
-        // Primitive Array - https://mongoosejs.com/docs/schematypes.html#arrays
-        bookIds: [String],
-        bookCount: Number,
+        // Array of Mixed Types - https://mongoosejs.com/docs/schematypes.html#arrays
+        books: [{}],
     },
     { timestamps: true }
 );

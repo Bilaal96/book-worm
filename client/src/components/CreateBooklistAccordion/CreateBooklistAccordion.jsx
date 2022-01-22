@@ -122,9 +122,9 @@ const CreateBooklistAccordion = () => {
 
                 // Successfully created list
                 const newBooklist = await response.json();
-                console.log("Booklist created", newBooklist);
-                // Add newBooklist to masterList
-                setMasterList([...masterList, newBooklist]);
+                console.log("BOOKLIST CREATED:", newBooklist);
+                // Add newBooklist to beginning of masterList
+                setMasterList([newBooklist, ...masterList]);
 
                 // Clear and close accordion
                 resetAccordion();
