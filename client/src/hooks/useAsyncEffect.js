@@ -5,11 +5,12 @@ import { useState, useEffect, useRef } from "react";
  
  * @param { Function } memoizedAsyncCallback - a callback function wrapped in the useCallback hook; this ensures that the callback changes as dependencies change (and prevents linter's hook-dependency warnings)
  */
-const useAsyncEffect = (memoizedAsyncCallback) => {
+const useAsyncEffect = (memoizedAsyncCallback, defaultValue = null) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState(defaultValue);
     const isMountedRef = useRef(true);
+    // console.log({ loading, error, value });
 
     // Side effect that executes whenever the callback arg changes
     useEffect(() => {

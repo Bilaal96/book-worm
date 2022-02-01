@@ -1,14 +1,17 @@
 import { useReducer, useCallback } from "react";
 
-const INITIAL_STATE = {
+const DEFAULT_STATE = {
     value: null,
     isLoading: false,
     error: null,
 };
 
-export default function useAsyncReducer(actionTypePrefix) {
+export default function useAsyncReducer(
+    actionTypePrefix,
+    initialState = DEFAULT_STATE
+) {
     const asyncReducer = createAsyncReducer(actionTypePrefix);
-    const [state, dispatch] = useReducer(asyncReducer, INITIAL_STATE);
+    const [state, dispatch] = useReducer(asyncReducer, initialState);
 
     const dispatchStart = useCallback(
         () => dispatch({ type: `${actionTypePrefix}_START` }),
