@@ -16,16 +16,15 @@ import Alert from "@material-ui/lab/Alert";
  */
 const AddToBooklistModal = ({ book: bookToAdd, openModal, setOpenModal }) => {
     const auth = useContext(AuthContext);
-    const { masterList, setMasterList } = useContext(MasterListContext);
+    const { masterList, setMasterList, getBooklistById } =
+        useContext(MasterListContext);
     const [error, setError] = useState(null);
 
     // For booklist with _id === targetBooklistId, add book to booklist.books array
     const addBookToBooklist = (targetBooklistId) => async (e) => {
         try {
             // Find the booklist that the user wants to add a book to
-            const booklistToUpdate = masterList.find(
-                (booklist) => booklist._id === targetBooklistId
-            );
+            const booklistToUpdate = getBooklistById(targetBooklistId);
 
             // booklistToUpdate was not found
             if (booklistToUpdate === undefined)
