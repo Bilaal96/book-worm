@@ -113,8 +113,8 @@ const BookApiListItem = ({
 BookApiListItem.propTypes = {
     book: PropTypes.object.isRequired,
     onClick: PropTypes.func.isRequired,
-    deletable: PropTypes.bool.isRequired,
-    handleDelete: PropTypes.func.isRequired,
+    deletable: PropTypes.bool,
+    handleDelete: PropTypes.func,
 };
 
 export default BookApiListItem;
