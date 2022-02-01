@@ -3,12 +3,20 @@ import { makeStyles } from "@material-ui/core";
 export default makeStyles((theme) => ({
     bookListItem: {
         overflow: "hidden", // Prevent text and image overflow
-        cursor: "pointer",
         transition: "all 0.2s ease",
 
         "&:hover": {
             color: theme.palette.secondary.main,
-            transform: "scale(1.02)",
+            transform: ({ isDeletable }) =>
+                isDeletable ? "scale(1)" : "scale(1.01)",
+        },
+    },
+    bookDetails: {
+        cursor: "pointer",
+
+        "&:hover": {
+            // Style background of child element with className: bookInfo
+            "& $bookInfo": { backgroundColor: "#ECE3F0" },
         },
     },
     bookCover: {
@@ -24,6 +32,7 @@ export default makeStyles((theme) => ({
     // Container for title, authors, description etc.
     bookInfo: {
         padding: theme.spacing(2),
+        transition: "all 0.2s ease",
     },
     title: {
         fontSize: "1.2rem",
@@ -39,5 +48,13 @@ export default makeStyles((theme) => ({
     },
     description: {
         overflow: "hidden",
+    },
+    deleteButton: {
+        transition: "all 0.2s ease",
+
+        "&:hover": {
+            color: "#AA1945",
+            backgroundColor: "#F1CED4",
+        },
     },
 }));
