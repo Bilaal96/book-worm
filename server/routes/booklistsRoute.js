@@ -71,9 +71,11 @@ router.put("/:listId/books", booklistsController.add_book_to_booklist_put);
 // Get a single book from a booklist
 router.get("/:listId/books/:bookId", (req, res, next) => {});
 
-// TODO
 // Delete a single book from a booklist
-router.delete("/:listId/books/:bookId", (req, res, next) => {});
+router.delete(
+    "/:listId/books/:bookId",
+    booklistsController.remove_book_from_booklist_delete
+);
 
 // Handle booklist-specific errors
 router.use(handleBooklistError);

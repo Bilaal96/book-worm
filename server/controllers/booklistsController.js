@@ -143,9 +143,45 @@ const add_book_to_booklist_put = async (req, res, next) => {
     }
 };
 
+const remove_book_from_booklist_delete = async (req, res, next) => {
+    try {
+        // Get userId from decodedToken
+        const userId = req.decodedToken.sub;
+        // Route parameters
+        const { listId, bookId } = req.params;
+
+        // Query: update & retrieve booklist with _id of "listId"
+        // NOTE: Matching userId ensures that only the owner of the booklist can update it
+        const query = { _id: listId, userId };
+        // From booklist.books array, remove element with id matching: bookId
+        const update = { $pull: { books: { id: bookId } } };
+
+        const updatedBooklist = await Booklist.findOneAndUpdate(
+            query,
+            update,
+            { new: true } // Return the updated booklist
+        );
+
+        // Update operation failed
+        // Throw error if updatedBooklist does not exist (i.e. is null)
+        if (updatedBooklist === null)
+            throw CustomError.notFound(
+                "Failed to delete book from booklist"
+                // "The booklist you're trying to update does not exist"
+            );
+
+        // Send updateBooklist back to client
+        res.status(200).json(updatedBooklist);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
 export default {
     create_booklist_post,
     all_booklists_get,
     booklist_by_id_delete,
     add_book_to_booklist_put,
+    remove_book_from_booklist_delete,
 };
