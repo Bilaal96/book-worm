@@ -106,7 +106,6 @@ const Booklist = () => {
                             key={book.id}
                             book={book}
                             onClick={viewBookDetails(book.id)}
-                            deletable
                             handleDelete={removeBookFromBooklist(book.id)}
                         />
                     ))}

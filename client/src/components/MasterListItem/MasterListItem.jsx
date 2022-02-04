@@ -7,7 +7,7 @@
  ** MasterListItem
  * 2) renders a booklist (i.e. MasterListItem)
  * 2a. adds a book to a booklist
- * 2b. navigates to the booklist, displaying all it's items
+ * 2b. navigates to the booklist, displaying all its items
 
  * ----- To make reusable: ----- 
  ** (1) accept single props (title, description, authors [optional], thumbnail [optional])
@@ -47,7 +47,7 @@
  * onClick -> navigate to /books/:id; renders BookDetails
  */
 
-import { useContext } from "react";
+import { useState, useContext } from "react";
 
 // Contexts
 import { AuthContext } from "contexts/auth/auth.context.js";
@@ -56,6 +56,7 @@ import { MasterListContext } from "contexts/master-list/master-list.context.js";
 // Components
 import { Grid, IconButton, Paper, Typography } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
+import ConfirmActionModal from "components/ConfirmActionModal/ConfirmActionModal";
 
 import useStyles from "./styles.js";
 
@@ -70,6 +71,8 @@ const MasterListItem = ({
     const { _id, title, description, books, userId: booklistOwner } = booklist;
     const styleProps = { modal };
     const classes = useStyles(styleProps);
+
+    const [openModal, setOpenModal] = useState(false);
 
     const deleteBooklist = async () => {
         try {
@@ -105,57 +108,77 @@ const MasterListItem = ({
     };
 
     return (
-        <Grid item xs={12}>
-            <Paper className={classes.masterListItem} elevation={2}>
-                {/* Booklist Details & Actions Container */}
-                <Grid
-                    container
-                    alignItems="center"
-                    justifyContent="space-between"
+        <>
+            <ConfirmActionModal
+                title="Delete Booklist"
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                buttons={{
+                    positive: { text: "Yes", action: deleteBooklist },
+                    negative: { text: "No" },
+                }}
+            >
+                <Typography
+                    style={{ fontSize: "18px", padding: "14px 28px" }}
+                    variant="body1"
                 >
-                    {/* Booklist Details */}
-                    <Grid
-                        item
-                        xs={modal ? 12 : 11}
-                        className={classes.details}
-                        onClick={handleListItemClick(_id)}
-                    >
-                        {/* Title */}
-                        <Typography component="h2" variant="h3">
-                            {title ? `${title}` : "Unknown Title"}
-                        </Typography>
+                    Are you sure you want to permanently delete this booklist
+                    and all of its content?
+                </Typography>
+            </ConfirmActionModal>
 
-                        {/* Description */}
-                        {/* <Typography
+            <Grid item xs={12}>
+                <Paper className={classes.masterListItem} elevation={2}>
+                    {/* Booklist Details & Actions Container */}
+                    <Grid
+                        container
+                        alignItems="center"
+                        justifyContent="space-between"
+                    >
+                        {/* Booklist Details */}
+                        <Grid
+                            item
+                            xs={modal ? 12 : 11}
+                            className={classes.details}
+                            onClick={handleListItemClick(_id)}
+                        >
+                            {/* Title */}
+                            <Typography component="h2" variant="h3">
+                                {title ? `${title}` : "Unknown Title"}
+                            </Typography>
+
+                            {/* Description */}
+                            {/* <Typography
                                 component="p"
                                 variant="body1"
                                 dangerouslySetInnerHTML={{ __html: description }}
                             /> */}
-                        <Typography component="p" variant="body1">
-                            Description: {description}
-                        </Typography>
-                        <Typography component="p" variant="body1">
-                            Id of books stored:{" "}
-                            {books.map((book) => book.id).join(", ")}
-                        </Typography>
-                    </Grid>
-
-                    {/* Booklist Actions (ManageLists page only) */}
-                    {modal ? null : (
-                        <Grid item xs={1}>
-                            <Grid container justifyContent="center">
-                                <IconButton
-                                    className={classes.deleteButton}
-                                    onClick={deleteBooklist}
-                                >
-                                    <Delete fontSize="large" />
-                                </IconButton>
-                            </Grid>
+                            <Typography component="p" variant="body1">
+                                Description: {description}
+                            </Typography>
+                            <Typography component="p" variant="body1">
+                                Id of books stored:{" "}
+                                {books.map((book) => book.id).join(", ")}
+                            </Typography>
                         </Grid>
-                    )}
-                </Grid>
-            </Paper>
-        </Grid>
+
+                        {/* Booklist Actions (ManageLists page only) */}
+                        {modal ? null : (
+                            <Grid item xs={1}>
+                                <Grid container justifyContent="center">
+                                    <IconButton
+                                        className={classes.deleteButton}
+                                        onClick={() => setOpenModal(true)}
+                                    >
+                                        <Delete fontSize="large" />
+                                    </IconButton>
+                                </Grid>
+                            </Grid>
+                        )}
+                    </Grid>
+                </Paper>
+            </Grid>
+        </>
     );
 };
 
