@@ -86,11 +86,12 @@ const CreateBooklistAccordion = () => {
                 description: "",
             });
 
-        // Update formErrors state
-        setFormErrors(errors);
-
         // Derive boolean return value -> indicates if form input is valid
         const isValid = Object.keys(errors).length === 0;
+
+        // Update formErrors state
+        if (!isValid) setFormErrors(errors);
+
         console.log("isValid", isValid);
         return isValid;
     };

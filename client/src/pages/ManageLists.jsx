@@ -23,18 +23,17 @@ const ManageLists = () => {
 
     return (
         <>
-            <Typography
-                variant="h4"
-                component="h1"
-                className={classes.pageHeading}
-            >
-                Manage Lists
-            </Typography>
-
             <MasterListProvider>
                 <Switch>
                     {/* match.path = /manage-lists */}
                     <Route exact path={path}>
+                        <Typography
+                            variant="h4"
+                            component="h1"
+                            className={classes.pageHeading}
+                        >
+                            Manage Lists
+                        </Typography>
                         <MasterList handleListItemClick={handleListItemClick} />
                     </Route>
                     <Route path={`${path}/:listId`}>
