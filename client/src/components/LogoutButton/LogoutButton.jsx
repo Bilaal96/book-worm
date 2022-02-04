@@ -1,11 +1,14 @@
-import { useContext } from "react";
+import PropTypes from "prop-types";
+import { useContext, useState } from "react";
 
 // Contexts
 import { AuthContext } from "contexts/auth/auth.context";
 import { MasterListContext } from "contexts/master-list/master-list.context";
 
 // Components
+import ConfirmActionModal from "components/ConfirmActionModal/ConfirmActionModal";
 import {
+    Typography,
     Button,
     ListItem,
     ListItemIcon,
@@ -15,39 +18,86 @@ import {
 // Icons
 import { PowerSettingsNew } from "@material-ui/icons";
 
+const ConfirmLogoutModal = ({
+    title,
+    openModal,
+    setOpenModal,
+    handleLogout,
+}) => {
+    const positive = {
+        action: handleLogout,
+        startIcon: <PowerSettingsNew />,
+        text: "Log Out",
+    };
+
+    return (
+        <ConfirmActionModal
+            title={title}
+            openModal={openModal}
+            setOpenModal={setOpenModal}
+            buttons={{ positive }}
+        >
+            <Typography
+                style={{ fontSize: "18px", padding: "14px 28px" }}
+                variant="body1"
+            >
+                Are you sure you want to logout?
+            </Typography>
+        </ConfirmActionModal>
+    );
+};
+
+// NOTE: otherProps styles Logout Button in NavTop
 const LogoutButton = ({ listItem, closeDrawer, ...otherProps }) => {
     const auth = useContext(AuthContext);
     const { clearMasterList } = useContext(MasterListContext);
+    const [openModal, setOpenModal] = useState(false);
 
-    const handleLogoutClick = (e) => {
+    const openConfirmationModal = (e) => setOpenModal(true);
+
+    const handleLogout = (e) => {
         clearMasterList();
         auth.logout();
 
         if (listItem) closeDrawer(); // Close NavDrawer
     };
 
+    const confirmLogoutProps = { openModal, setOpenModal, handleLogout };
+
     // Render LogoutButton as ListItem (for NavDrawer)
     if (listItem) {
         return (
-            <ListItem button onClick={handleLogoutClick}>
-                <ListItemIcon>
-                    <PowerSettingsNew />
-                </ListItemIcon>
-                <ListItemText primary="Logout" />
-            </ListItem>
+            <>
+                <ConfirmLogoutModal {...confirmLogoutProps} />
+                <ListItem button onClick={openConfirmationModal}>
+                    <ListItemIcon>
+                        <PowerSettingsNew />
+                    </ListItemIcon>
+                    <ListItemText primary="Logout" />
+                </ListItem>
+            </>
         );
     }
 
     // Render LogoutButton as Button (for NavTop)
     return (
-        <Button
-            startIcon={<PowerSettingsNew />}
-            onClick={handleLogoutClick}
-            {...otherProps}
-        >
-            LOG OUT
-        </Button>
+        <>
+            <ConfirmLogoutModal {...confirmLogoutProps} />
+            <Button
+                startIcon={<PowerSettingsNew />}
+                onClick={openConfirmationModal}
+                {...otherProps}
+            >
+                LOG OUT
+            </Button>
+        </>
     );
+};
+
+LogoutButton.propTypes = {
+    listItem: PropTypes.bool,
+    closeDrawer: PropTypes.func,
+    // ...otherProps,
 };
 
 export default LogoutButton;
