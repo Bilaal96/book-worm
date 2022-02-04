@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useContext, useState, useEffect } from "react";
 
 // Context
@@ -117,6 +118,12 @@ const AddToBooklistModal = ({ book: bookToAdd, openModal, setOpenModal }) => {
             <MasterList handleListItemClick={addBookToBooklist} modal />
         </PopupModal>
     );
+};
+
+AddToBooklistModal.propTypes = {
+    book: PropTypes.object.isRequired,
+    openModal: PropTypes.bool.isRequired,
+    setOpenModal: PropTypes.func.isRequired,
 };
 
 export default AddToBooklistModal;

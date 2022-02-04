@@ -1,31 +1,37 @@
+import PropTypes from "prop-types";
 import { useHistory } from "react-router-dom";
-import PopupModal from "components/PopupModal/PopupModal";
+
+// Components
+import ConfirmActionModal from "components/ConfirmActionModal/ConfirmActionModal";
 import { Typography } from "@material-ui/core";
 import { LockOpen } from "@material-ui/icons";
 
 /**
- * A custom and reusable instance of PopupModal
- * Is rendered to notify user that the action performed requires logging in
- * The "positive" action navigates to the Login page
- * The "negative" action uses default behaviour (i.e. closes modal); see PopupModal for details
+ * A specific instance of ConfirmActionModal, rendered to notify user that the action performed requires logging in.
+ * The "positive" action navigates to the Login page.
+ * The "negative" action uses default behaviour (i.e. closes modal); see ConfirmActionModal for details.
  */
 const ActionRequiresLoginModal = ({ openModal, setOpenModal }) => {
     const history = useHistory();
 
-    const positiveButton = {
-        // Required properties
-        text: "Go To Login ",
+    // Positive button properties
+    const positive = {
+        // Required
         action: () => history.push("/login"),
-        // Optional properties
+        // Optional
+        text: "Go To Login ",
         startIcon: <LockOpen />,
     };
 
+    // Negative button properties (optional)
+    const negative = { text: "Close" };
+
     return (
-        <PopupModal
+        <ConfirmActionModal
             title="Login Required"
             openModal={openModal}
             setOpenModal={setOpenModal}
-            buttons={{ positive: positiveButton }}
+            buttons={{ positive, negative }}
         >
             <Typography
                 style={{ fontSize: "18px", padding: "14px 28px" }}
@@ -33,8 +39,13 @@ const ActionRequiresLoginModal = ({ openModal, setOpenModal }) => {
             >
                 You must login to use this feature
             </Typography>
-        </PopupModal>
+        </ConfirmActionModal>
     );
+};
+
+ActionRequiresLoginModal.propTypes = {
+    openModal: PropTypes.bool.isRequired,
+    setOpenModal: PropTypes.func.isRequired,
 };
 
 export default ActionRequiresLoginModal;
