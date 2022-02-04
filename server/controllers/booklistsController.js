@@ -10,6 +10,8 @@ import CustomError from "../utils/CustomError.js";
  * The accessToken is verified by the middleware: verifyAccessToken
  * If valid, verifyAccessToken forwards the accessToken and it's decodedPayload (as decodedToken) to the next middleware in the stack
  */
+
+// ----- Booklists Collection -----
 const create_booklist_post = async (req, res, next) => {
     try {
         // Get userId from decodedToken
@@ -55,11 +57,56 @@ const all_booklists_get = async (req, res, next) => {
     }
 };
 
+// --- Single Booklist Document ---
+const update_booklist_metadata_patch = async (req, res, next) => {
+    try {
+        // Get userId from decodedToken
+        const userId = req.decodedToken.sub;
+        // ID of booklist to update - sent as Route parameter
+        const { listId } = req.params;
+        // Extract new values (input by user) from request body
+        const { title, description } = req.body;
+
+        // Cleanup description containing ONLY whitespace
+        const validDescription =
+            description.trim().length > 0 ? description : "";
+
+        // Query: update & retrieve booklist with _id of "listId"
+        // NOTE: Matching userId ensures that only the owner of the booklist can update it
+        const query = { _id: listId, userId };
+        // Update title and description of booklist found
+        const update = {
+            title,
+            description: validDescription,
+        };
+
+        // Find booklist that matches "query" and update it
+        // NOTE: validation is handled by booklistSchema
+        const updatedBooklist = await Booklist.findOneAndUpdate(query, update, {
+            new: true, // Return the updated booklist document
+            runValidators: true, // validate fields using Booklist schema
+        });
+
+        // Update operation failed
+        // Throw error if updatedBooklist does not exist (i.e. is null)
+        if (updatedBooklist === null)
+            throw CustomError.notFound("Failed to update booklist details");
+
+        console.log("UPDATED BOOKLIST:", updatedBooklist);
+
+        // Send updatedBooklist to client
+        res.status(200).json(updatedBooklist);
+    } catch (err) {
+        console.error(err);
+        next(err);
+    }
+};
+
 const booklist_by_id_delete = async (req, res, next) => {
     try {
         // Get userId from decodedToken
         const userId = req.decodedToken.sub;
-        // ID of booklist - sent as URL parameter
+        // ID of booklist to delete - sent as Route parameter
         const { listId } = req.params;
 
         // Find and delete the booklist with _id == req.params.listId
@@ -84,15 +131,7 @@ const booklist_by_id_delete = async (req, res, next) => {
     }
 };
 
-//! ADDING/DELETING BOOK: https://mongoosejs.com/docs/documents.html#updating-using-save
-// https://mongoosejs.com/docs/api.html#model_Model.findByIdAndUpdate
-// https://mongoosejs.com/docs/api.html#model_Model.findOneAndUpdate
-// https://mongoosejs.com/docs/api.html#model_Model.updateOne --> does not return doc
-// ? updateOne vs findOneAndUpdate
-// https://stackoverflow.com/questions/36209434/use-cases-for-updateone-over-findoneandupdate-in-mongodb#:~:text=findOneAndUpdate%20returns%20a%20document%20whereas,bit%20of%20time%20and%20bandwidth.
-//? Add to beginning of mongoose array
-// https://mongoosejs.com/docs/api/array.html#mongoosearray_MongooseArray-unshift
-// https://stackoverflow.com/questions/28360526/mongoose-unshift-findandupdatebyid
+// ----- Book(s) in a Single Booklist -----
 const add_book_to_booklist_put = async (req, res, next) => {
     try {
         // Get userId from decodedToken
@@ -179,9 +218,15 @@ const remove_book_from_booklist_delete = async (req, res, next) => {
 };
 
 export default {
+    // Booklist collection
     create_booklist_post,
     all_booklists_get,
+
+    // Booklist document
+    update_booklist_metadata_patch,
     booklist_by_id_delete,
+
+    // Book in Booklist document
     add_book_to_booklist_put,
     remove_book_from_booklist_delete,
 };

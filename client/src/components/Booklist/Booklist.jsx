@@ -16,21 +16,24 @@ import { AuthContext } from "contexts/auth/auth.context";
 
 // Components
 import { Typography, Grid } from "@material-ui/core";
+import BooklistMetadata from "components/BooklistMetadata/BooklistMetadata";
 import BookApiListItem from "components/BookApiListItem/BookApiListItem";
+
+import useStyles from "./styles.js";
 
 const Booklist = () => {
     const { listId } = useParams();
     const history = useHistory();
+    const classes = useStyles();
 
     const { accessToken } = useContext(AuthContext);
-
-    // Get the booklist user wants to view from context
     const { masterList, setMasterList, getBooklistById } =
         useContext(MasterListContext);
 
+    // Get the booklist user wants to view from Master List context
     const booklist = getBooklistById(listId);
 
-    // On list item click, navigate to book details page for: `/books/${book.id}`
+    // On list item click, navigate to BookDetails page for: `/books/${book.id}`
     const viewBookDetails = (bookId) => (e) => history.push(`/books/${bookId}`);
 
     const removeBookFromBooklist = (bookId) => async (e) => {
@@ -77,34 +80,38 @@ const Booklist = () => {
     // No books in list UI
     if (booklist.books?.length === 0)
         return (
-            <Typography
-                variant="h2"
-                component="h1"
-                align="center"
-                color="textSecondary"
-            >
-                There are currently no books in this list
-            </Typography>
+            <div className={classes.flexContainer}>
+                {booklist && <BooklistMetadata booklist={booklist} />}
+                <Typography
+                    variant="h2"
+                    component="h1"
+                    align="center"
+                    color="textSecondary"
+                >
+                    There are currently no books in this list
+                </Typography>
+            </div>
         );
 
     return (
         <>
-            <div>Booklist Title: {booklist && booklist.title}</div>
-            {booklist && booklist.description && (
-                <div>Booklist Description: {booklist.description}</div>
-            )}
+            <div className={classes.flexContainer}>
+                {/* Editable Booklist Title & Description */}
+                {booklist && <BooklistMetadata booklist={booklist} />}
 
-            <Grid container spacing={2}>
-                {booklist.books?.map((book) => (
-                    <BookApiListItem
-                        key={book.id}
-                        book={book}
-                        onClick={viewBookDetails(book.id)}
-                        deletable
-                        handleDelete={removeBookFromBooklist(book.id)}
-                    />
-                ))}
-            </Grid>
+                {/* List of books in a list */}
+                <Grid container spacing={2}>
+                    {booklist.books?.map((book) => (
+                        <BookApiListItem
+                            key={book.id}
+                            book={book}
+                            onClick={viewBookDetails(book.id)}
+                            deletable
+                            handleDelete={removeBookFromBooklist(book.id)}
+                        />
+                    ))}
+                </Grid>
+            </div>
         </>
     );
 };

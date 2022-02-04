@@ -34,27 +34,26 @@ import handleBooklistError from "../middleware/handleBooklistError.js";
 // NOTE: All endpoint paths below are prefixed with "/booklists"
 const router = Router();
 
-// ----- booklists -----
+// ----- Booklists Collection -----
 // Create a new booklist
 router.post("/", booklistsController.create_booklist_post);
 // Get all booklists
 router.get("/", booklistsController.all_booklists_get);
 
-// --- Single booklist ---
+// --- Single Booklist Document ---
 //! DELETION TBD
 //! -- not currently necessary but could be useful for future development
 //! -- accessible via client state from previous requests
 // Get meta-data for a single booklist (id, name, description, booklist array)
 router.get("/:listId", (req, res, next) => {});
 
-// TODO
-// Update (or edit) a single booklist's details (name, description)
-router.put("/:listId", (req, res, next) => {});
+// Update (i.e. edit) a single booklist's details (name, description)
+router.patch("/:listId", booklistsController.update_booklist_metadata_patch);
 
 // Delete a single booklist (implicitly deletes all books in the list)
 router.delete("/:listId", booklistsController.booklist_by_id_delete);
 
-// ----- Book(s) in a single booklist -----
+// ----- Book(s) in a Single Booklist -----
 //! DELETION TBD
 //! -- not currently necessary but could be useful for future development
 //! -- accessible via client state from previous requests
