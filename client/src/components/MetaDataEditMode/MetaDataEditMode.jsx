@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import { useState, useContext } from "react";
+import { useSnackbar } from "notistack";
 
 // Context
 import { AuthContext } from "contexts/auth/auth.context";
@@ -19,8 +20,10 @@ const MetadataEditMode = ({
     setEditMode,
     parentStyles,
 }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const { accessToken } = useContext(AuthContext);
-    const { masterList, setMasterList } = useContext(MasterListContext);
+    const { masterList, setMasterList, getBooklistById } =
+        useContext(MasterListContext);
 
     // Edit metadata form state
     const [formFields, setFormFields] = useState({
@@ -81,6 +84,19 @@ const MetadataEditMode = ({
 
         if (formIsValid) {
             try {
+                // Prevent request if metadata remains unchanged
+                const booklistToUpdate = getBooklistById(listId);
+                if (
+                    booklistToUpdate.title === formFields.title &&
+                    booklistToUpdate.description === formFields.description
+                ) {
+                    // Show notification for "no changes made"
+                    enqueueSnackbar("There were no changes to save 👻", {
+                        variant: "info",
+                    });
+                    return setEditMode(false);
+                }
+
                 // Make PATCH request for partial update of a booklist
                 const response = await fetch(
                     `http://localhost:5000/booklists/${listId}`,
@@ -115,6 +131,11 @@ const MetadataEditMode = ({
 
                 // Return to display mode
                 setEditMode(false);
+
+                // Display success notification
+                const successNotification =
+                    "Changes were saved successfully 📝";
+                enqueueSnackbar(successNotification, { variant: "success" });
             } catch (err) {
                 console.error(err);
 
@@ -124,11 +145,15 @@ const MetadataEditMode = ({
                     setFormErrors(err.errors);
                 } else {
                     // -- internal server error
-                    setFormErrors({
-                        title: "",
-                        description:
-                            "Something went wrong on our end, try again",
-                    });
+                    // Set form errors
+                    const formErrorMessage =
+                        "Something went wrong on our end, try again";
+                    setFormErrors({ title: "", description: formErrorMessage });
+
+                    // Display error notification
+                    const errorNotification =
+                        "Failed to save changes 🤔. If this problem persists please try again later.";
+                    enqueueSnackbar(errorNotification, { variant: "error" });
                 }
             }
         }

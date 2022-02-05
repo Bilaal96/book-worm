@@ -46,8 +46,9 @@
  * List-item rendered by -> BookApiListItem
  * onClick -> navigate to /books/:id; renders BookDetails
  */
-
+import PropTypes from "prop-types";
 import { useState, useContext } from "react";
+import { useSnackbar } from "notistack";
 
 // Contexts
 import { AuthContext } from "contexts/auth/auth.context.js";
@@ -65,6 +66,7 @@ const MasterListItem = ({
     onListItemClick: handleListItemClick,
     modal,
 }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const { accessToken, user } = useContext(AuthContext);
     const { masterList, setMasterList } = useContext(MasterListContext);
 
@@ -102,30 +104,45 @@ const MasterListItem = ({
 
             setMasterList(updatedMasterList); // causes MasterList to re-render
             console.log(`Delete booklist with id: ${_id}`);
+
+            // Display success notification
+            const successNotification = "List deleted successfully 🔫";
+            enqueueSnackbar(successNotification, { variant: "success" });
         } catch (err) {
             console.error(err);
+
+            // Display error notification
+            const errorNotification =
+                "Failed to delete list 🤔. If this problem persists please try again later.";
+            enqueueSnackbar(errorNotification, { variant: "error" });
         }
     };
 
     return (
         <>
-            <ConfirmActionModal
-                title="Delete Booklist"
-                openModal={openModal}
-                setOpenModal={setOpenModal}
-                buttons={{
-                    positive: { text: "Yes", action: deleteBooklist },
-                    negative: { text: "No" },
-                }}
-            >
-                <Typography
-                    style={{ fontSize: "18px", padding: "14px 28px" }}
-                    variant="body1"
+            {/* MasterListItem is not deletable from modal */}
+            {!modal && (
+                <ConfirmActionModal
+                    title="Delete Booklist"
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    buttons={{
+                        positive: {
+                            text: "Delete",
+                            action: deleteBooklist,
+                            startIcon: <Delete />,
+                        },
+                    }}
                 >
-                    Are you sure you want to permanently delete this booklist
-                    and all of its content?
-                </Typography>
-            </ConfirmActionModal>
+                    <Typography
+                        style={{ fontSize: "18px", padding: "14px 28px" }}
+                        variant="body1"
+                    >
+                        Are you sure you want to permanently delete this
+                        booklist and all of its content?
+                    </Typography>
+                </ConfirmActionModal>
+            )}
 
             <Grid item xs={12}>
                 <Paper className={classes.masterListItem} elevation={2}>
@@ -180,6 +197,12 @@ const MasterListItem = ({
             </Grid>
         </>
     );
+};
+
+MasterListItem.propTypes = {
+    booklist: PropTypes.object.isRequired,
+    onListItemClick: PropTypes.func.isRequired,
+    modal: PropTypes.bool,
 };
 
 export default MasterListItem;

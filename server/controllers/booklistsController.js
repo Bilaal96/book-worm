@@ -160,7 +160,7 @@ const add_book_to_booklist_put = async (req, res, next) => {
         // Prevent user from adding duplicate books to a single list
         if (booklistToUpdate.books.some((book) => book.id === bookToAdd.id))
             throw CustomError.conflict(
-                "That book already exists in this booklist"
+                "That book already exists in the selected booklist"
             );
 
         // Add book to the beginning of booklist.books array

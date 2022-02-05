@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
-import { useContext, useState, useEffect } from "react";
+import { useContext } from "react";
+import { useSnackbar } from "notistack";
 
 // Context
 import { AuthContext } from "contexts/auth/auth.context";
@@ -9,17 +10,17 @@ import { MasterListContext } from "contexts/master-list/master-list.context";
 import PopupModal from "components/PopupModal/PopupModal";
 import MasterList from "components/MasterList/MasterList";
 import ActionRequiresLoginModal from "components/ActionRequiresLoginModal/ActionRequiresLoginModal";
-import Alert from "@material-ui/lab/Alert";
 
 /** TODO
  * Search box - used to filter list
  * Notifications
  */
 const AddToBooklistModal = ({ book: bookToAdd, openModal, setOpenModal }) => {
+    const { enqueueSnackbar } = useSnackbar();
+
     const auth = useContext(AuthContext);
     const { masterList, setMasterList, getBooklistById } =
         useContext(MasterListContext);
-    const [error, setError] = useState(null);
 
     // For booklist with _id === targetBooklistId, add book to booklist.books array
     const addBookToBooklist = (targetBooklistId) => async (e) => {
@@ -38,9 +39,16 @@ const AddToBooklistModal = ({ book: bookToAdd, openModal, setOpenModal }) => {
                 throw Error("Unauthorized request");
 
             // If list already contains a book, prevent duplication
-            if (booklistToUpdate.books.some((book) => book.id === bookToAdd.id))
-                throw Error("That book already exists in this booklist");
+            if (
+                booklistToUpdate.books.some((book) => book.id === bookToAdd.id)
+            ) {
+                const error = new Error(
+                    "That book already exists in the selected booklist"
+                );
 
+                error.name = "DuplicateError";
+                throw error;
+            }
             // Make request to add book to list
             // -- i.e. insert bookToAdd into targetBooklist.books array
             const response = await fetch(
@@ -73,22 +81,28 @@ const AddToBooklistModal = ({ book: bookToAdd, openModal, setOpenModal }) => {
             updatedMasterList.unshift(updatedBooklist);
             setMasterList(updatedMasterList);
 
-            // Clear any errors shown for previous action(s)
-            setError(null);
             // Close modal
             setOpenModal(false);
+
+            // Display success notification
+            const successNotification = `Added ${
+                `"${bookToAdd.volumeInfo?.title}"` || "book"
+            } to list: "${updatedBooklist.title}" 🤓`;
+            enqueueSnackbar(successNotification, { variant: "success" });
         } catch (err) {
             console.error(err.message);
-            setError(err);
+
+            // Display error notification
+            // Duplicate error
+            if (err.name === "DuplicateError")
+                return enqueueSnackbar(err.message, { variant: "error" });
+
+            // Other errors: e.g. network error
+            const errorNotification =
+                "Failed to add book to list 🤔. If this problem persists please try again later.";
+            enqueueSnackbar(errorNotification, { variant: "error" });
         }
     };
-
-    // Hide error (if any) after 3 seconds
-    useEffect(() => {
-        if (error === null) return;
-        const errorTimeout = setTimeout(() => setError(null), 3000);
-        return () => clearTimeout(errorTimeout);
-    }, [error]);
 
     // Guest User
     // Notify user that login is required for this functionality
@@ -108,12 +122,6 @@ const AddToBooklistModal = ({ book: bookToAdd, openModal, setOpenModal }) => {
             openModal={openModal}
             setOpenModal={setOpenModal}
         >
-            {/* Display Request Error (if any) */}
-            {error && (
-                <Alert style={{ margin: "0 0 16px" }} severity="error">
-                    {error.message}
-                </Alert>
-            )}
             {/* MasterList - displays all user booklists */}
             <MasterList handleListItemClick={addBookToBooklist} modal />
         </PopupModal>

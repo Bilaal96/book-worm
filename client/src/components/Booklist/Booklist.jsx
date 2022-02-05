@@ -9,6 +9,7 @@
 
 import { useContext } from "react";
 import { useParams, useHistory } from "react-router-dom";
+import { useSnackbar } from "notistack";
 
 // Context
 import { MasterListContext } from "contexts/master-list/master-list.context";
@@ -22,6 +23,7 @@ import BookApiListItem from "components/BookApiListItem/BookApiListItem";
 import useStyles from "./styles.js";
 
 const Booklist = () => {
+    const { enqueueSnackbar } = useSnackbar();
     const { listId } = useParams();
     const history = useHistory();
     const classes = useStyles();
@@ -72,8 +74,17 @@ const Booklist = () => {
 
             // Update masterList state
             setMasterList(updatedMasterList);
+
+            // Display success notification
+            const successNotification =
+                "Book was successfully removed from list 🔫";
+            enqueueSnackbar(successNotification, { variant: "success" });
         } catch (err) {
             console.error(err);
+            // Display error notification
+            const errorNotification =
+                "Failed to remove book from list 🤔. If this problem persists please try again later.";
+            enqueueSnackbar(errorNotification, { variant: "error" });
         }
     };
 

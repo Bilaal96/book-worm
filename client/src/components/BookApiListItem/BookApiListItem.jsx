@@ -51,8 +51,11 @@ const BookApiListItem = ({
                     openModal={openModal}
                     setOpenModal={setOpenModal}
                     buttons={{
-                        positive: { text: "Yes", action: handleDelete },
-                        negative: { text: "No" },
+                        positive: {
+                            text: "Delete",
+                            action: handleDelete,
+                            startIcon: <Delete />,
+                        },
                     }}
                 >
                     <Typography

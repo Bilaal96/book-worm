@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { useSnackbar } from "notistack";
 
 // Contexts
 import { AuthContext } from "contexts/auth/auth.context";
@@ -21,6 +22,7 @@ import validate from "utils/form-validators";
 import useStyles from "./styles";
 
 const CreateBooklistAccordion = () => {
+    const { enqueueSnackbar } = useSnackbar();
     const { accessToken } = useContext(AuthContext);
     const { masterList, setMasterList } = useContext(MasterListContext);
 
@@ -36,6 +38,8 @@ const CreateBooklistAccordion = () => {
 
     const handleAccordionExpansion = (e, isExpanded) => {
         setExpanded(isExpanded);
+        //
+        if (Object.keys(formErrors).length > 0) setFormErrors({});
     };
 
     const handleFormFieldChange = (e) => {
@@ -129,6 +133,10 @@ const CreateBooklistAccordion = () => {
 
                 // Clear and close accordion
                 resetAccordion();
+
+                // Display success notification
+                const successNotification = "List created successfully 😎";
+                enqueueSnackbar(successNotification, { variant: "success" });
             } catch (err) {
                 console.error(err);
 
@@ -138,11 +146,15 @@ const CreateBooklistAccordion = () => {
                     setFormErrors(err.errors);
                 } else {
                     // -- internal server error
-                    setFormErrors({
-                        title: "",
-                        description:
-                            "Something went wrong on our end, try again",
-                    });
+                    // Set form errors
+                    const formErrorMessage =
+                        "Something went wrong on our end, try again";
+                    setFormErrors({ title: "", description: formErrorMessage });
+
+                    // Display error notification
+                    const errorNotification =
+                        "Failed to create list 🤔. If this problem persists please try again later.";
+                    enqueueSnackbar(errorNotification, { variant: "error" });
                 }
             }
         }
