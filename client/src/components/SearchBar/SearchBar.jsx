@@ -1,5 +1,6 @@
-import { useState } from "react";
 import PropTypes from "prop-types";
+import { useState } from "react";
+import { useSnackbar } from "notistack";
 
 // Contexts
 import { useSearchContext } from "contexts/search/search.context";
@@ -16,6 +17,7 @@ import { isValidSearchString } from "utils/string-validators";
 import useStyles from "./styles";
 
 const SearchBar = ({ fetchBooks, setSelectedPage }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
     const [searchInput, setSearchInput] = useState("");
     const [search, dispatchSearch] = useSearchContext();
@@ -31,6 +33,9 @@ const SearchBar = ({ fetchBooks, setSelectedPage }) => {
         if ((e.type === "keydown" && e.key === "Enter") || e.type === "click") {
             // Invalid search term provided
             if (!isValidSearchString(searchInput)) {
+                enqueueSnackbar("Please enter a valid search term", {
+                    variant: "warning",
+                });
                 return console.info(
                     "%c Search box requires a valid search term ",
                     "background: rgba(0, 0, 0, 0.4); color: crimson"
@@ -39,6 +44,8 @@ const SearchBar = ({ fetchBooks, setSelectedPage }) => {
 
             // Prevent resubmission of previous search
             if (searchInput === search.submission) {
+                const notification = `Already showing results for "${searchInput}" 😀`;
+                enqueueSnackbar(notification, { variant: "info" });
                 return console.info(
                     `%c Already showing results for "${searchInput}" `,
                     "background: rgba(0, 0, 0, 0.4); color: #bada55"

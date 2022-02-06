@@ -30,9 +30,9 @@ const books_by_search_get = async (req, res, next) => {
         // Check if response status' ok (i.e. within success range or not)
         if (!response.ok) {
             // HTTP status range: 400-500
-            // Catch-block will intercept this ApiError instance
+            // Catch-block will intercept this CustomError instance
             throw CustomError.badRequest(
-                `${response.statusText} (${response.status}) - ${response.url}`
+                `Search attempt failed 🤔. If this problem persists please try again later.`
             );
         }
 
@@ -48,7 +48,7 @@ const books_by_search_get = async (req, res, next) => {
         } else {
             // No books found
             throw CustomError.notFound(
-                "Not Found (404) - No books found that match the search criteria"
+                "No books found that match the search criteria"
             );
         }
     } catch (err) {

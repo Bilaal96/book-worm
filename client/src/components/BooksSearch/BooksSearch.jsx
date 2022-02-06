@@ -14,6 +14,7 @@
     -> can store detailed position info (private to user) - down to the resolution of a word
  */
 import { useState } from "react";
+import { useSnackbar } from "notistack";
 
 // Contexts
 import { useSearchContext } from "contexts/search/search.context";
@@ -41,6 +42,7 @@ const getInitialSelectedPage = () => {
 };
 
 const BooksSearch = () => {
+    const { enqueueSnackbar } = useSnackbar();
     const [selectedPage, setSelectedPage] = useState(getInitialSelectedPage);
     const [search, dispatchSearch] = useSearchContext();
 
@@ -97,10 +99,23 @@ const BooksSearch = () => {
 
             // Cache fetched books in sessionStorage
             sessionStorage.setItem("search-results", JSON.stringify(books));
+
+            // Display success notification
+            enqueueSnackbar("Results found 🎉", { variant: "success" });
         } catch (err) {
             console.error(err.message);
             // update SearchContext with error, and exit loading state
             dispatchSearch({ type: "FETCH_BOOKS_FAILED", payload: err });
+
+            // Display "no results found" notification
+            if (err.code === 404) {
+                const noResultsNotification =
+                    "No results found 🤷‍♂️ try searching for something else";
+                return enqueueSnackbar(noResultsNotification);
+            }
+
+            // Display error notification
+            enqueueSnackbar(err.message, { variant: "error" });
         }
     }
 
