@@ -2,10 +2,14 @@ import { useState, useEffect, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import Cookies from "js-cookie";
+import { useSnackbar } from "notistack";
+
+// Context
 import { AuthContext } from "./auth.context";
 
 // Provides app with ability to access & update AuthContext
 const AuthProvider = ({ children }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const history = useHistory();
     const [accessToken, setAccessToken] = useState(null);
     const [user, setUser] = useState(null);
@@ -157,6 +161,15 @@ const AuthProvider = ({ children }) => {
             setAccessToken(data.accessToken);
             setUser(user);
 
+            // Display welcome notification
+            enqueueSnackbar(`Welcome ${user.firstName}! 😊`, {
+                variant: "success",
+                anchorOrigin: {
+                    vertical: "bottom",
+                    horizontal: "center",
+                },
+            });
+
             // null indicates no form errors
             return null;
         } catch (err) {
@@ -193,6 +206,15 @@ const AuthProvider = ({ children }) => {
 
                 // Redirect to /login page
                 history.push("/login");
+
+                // Display goodbye notification message
+                enqueueSnackbar("Goodbye! See you again soon 👋", {
+                    variant: "info",
+                    anchorOrigin: {
+                        vertical: "bottom",
+                        horizontal: "center",
+                    },
+                });
 
                 // guard response.ok check below as 301 will trigger it
                 return;
