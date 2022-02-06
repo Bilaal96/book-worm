@@ -29,6 +29,7 @@ import {
  * @property { Function } positive.action - positive button onClick handler.
  * @property { JSX } [positive.startIcon] - positive button icon; ignored if not specified.
  * @property { String } [positive.text] - positive button text.
+ * @property { Boolean } [positive.hide] - Prevents rendering of the positive button
 
  * @namespace { Object } [negative] - container for following properties.
  * @property { Function } [negative.action] - negative button onClick handler.
@@ -79,9 +80,9 @@ const ConfirmActionModal = ({
                 {children}
             </DialogContent>
 
-            {/* Actions [ OPTIONAL ] */}
+            {/* Actions */}
             <DialogActions>
-                <PositiveButton />
+                {positive?.hide ? null : <PositiveButton />}
                 <NegativeButton />
             </DialogActions>
         </Dialog>
