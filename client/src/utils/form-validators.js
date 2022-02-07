@@ -95,6 +95,14 @@ const validateSignupPassword = (password, errors) => {
     }
 };
 
+const validateConfirmPassword = (password, confirmPassword, errors) => {
+    if (confirmPassword.length === 0) {
+        errors.confirmPassword = "Confirm password is required";
+    } else if (password !== confirmPassword) {
+        errors.confirmPassword = "Passwords do not match";
+    }
+};
+
 /** 
  * --- Password Complexity Checker ---
  * Checks if password contains at least one of each character type from:
@@ -158,6 +166,7 @@ const validators = {
     email: validateEmail,
     loginPassword: validateLoginPassword,
     signupPassword: validateSignupPassword,
+    confirmPassword: validateConfirmPassword,
 };
 
 export default validators;

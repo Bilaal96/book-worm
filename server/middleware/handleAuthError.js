@@ -2,11 +2,17 @@
 export function handleSignupError(err, req, res, next) {
     const errors = {};
 
+    // Passwords do not match error (manually thrown)
+    if (err.message === "Passwords do not match") {
+        errors.confirmPassword = "Passwords do not match";
+        return res.status(403).json({ errors });
+    }
+
     // Duplicate Key Error (Email already in-use)
     if (err.name === "MongoServerError" && err.code === 11000) {
         console.error(`${err.name} - ${err.message}`);
         errors.email = "That email is already in use";
-        return res.status(400).json({ errors });
+        return res.status(403).json({ errors });
     }
 
     // Handle ValidationError thrown by Mongoose
@@ -40,7 +46,7 @@ export function handleLoginError(err, req, res, next) {
     // Login credentials are invalid (i.e. delivered in unexpected format)
     if (err.message === "invalid login credentials") {
         console.log("INVALID LOGIN CREDENTIALS");
-        return res.status(400).json({ errors: err.validationErrors });
+        return res.status(403).json({ errors: err.validationErrors });
     }
 
     // Email / password don't match what's stored in DB

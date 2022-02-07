@@ -72,6 +72,7 @@ import {
     signAccessToken,
     signRefreshToken,
 } from "../utils/sign-auth-tokens.js";
+import CustomError from "../utils/CustomError.js";
 
 // Redis Client instance
 import redisClient from "../config/init_redis.js";
@@ -102,9 +103,12 @@ const shadowCookieOptions = {
 // POST /auth/signup
 const signup_post = async (req, res, next) => {
     console.log("\n", "--- signup_post ---");
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, confirmPassword } = req.body;
 
     try {
+        if (password !== confirmPassword)
+            throw CustomError.forbidden("Passwords do not match");
+
         /** User.create() - attempt to create user
          * Form data validation is handled by mongoose (at schema level)
          * Errors are thrown if user credentials are invalid, or user already exists

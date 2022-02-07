@@ -24,6 +24,7 @@ const SignUpForm = () => {
         lastName: "",
         email: "",
         password: "",
+        confirmPassword: "",
     });
     const [formErrors, setFormErrors] = useState({});
 
@@ -59,7 +60,8 @@ const SignUpForm = () => {
     // Validates inputs, constructs errors object and updates errors state
     const validateForm = (formValues) => {
         console.log("Validating form values...");
-        const { firstName, lastName, email, password } = formValues;
+        const { firstName, lastName, email, password, confirmPassword } =
+            formValues;
         const errors = {};
 
         // Validate formValues, update errors object if any values are invalid
@@ -68,6 +70,7 @@ const SignUpForm = () => {
 
         validate.email(email, errors);
         validate.signupPassword(password, errors);
+        validate.confirmPassword(password, confirmPassword, errors);
 
         // Update formErrors state
         setFormErrors(errors);
@@ -151,11 +154,24 @@ const SignUpForm = () => {
                     <Grid item xs={12}>
                         <PasswordField
                             onChange={handleChange}
-                            name="password"
                             autoComplete="new-password"
                             fullWidth
                             helperText={formErrors.password}
                             error={formErrors.hasOwnProperty("password")}
+                        />
+                    </Grid>
+
+                    {/* Confirm Password */}
+                    <Grid item xs={12}>
+                        <PasswordField
+                            onChange={handleChange}
+                            label="Confirm Password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            autoComplete="new-password"
+                            fullWidth
+                            helperText={formErrors.confirmPassword}
+                            error={formErrors.hasOwnProperty("confirmPassword")}
                         />
                     </Grid>
 
