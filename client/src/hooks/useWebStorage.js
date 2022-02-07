@@ -11,12 +11,12 @@ export function useLocalStorage(key, value) {
 // Allows initialisation of state via storageObject (local/session storage)
 export default function useWebStorage(key, defaultValue, storageObject) {
     const [value, setValue] = useState(() => {
-        // Init value by retrieving existing value from storageObject
+        // Init value by retrieving existing value from storageObject (if it exists)
         const jsonValue = storageObject.getItem(key);
-        if (jsonValue !== null) return JSON.parse(jsonValue); // parse JSON value if not empty
+        if (jsonValue !== null) return JSON.parse(jsonValue);
 
         // Value doesn't exist in storageObject
-        // Initialise value via defaultValue, invoke function if passed
+        // Initialise value via defaultValue, invoking function if passed
         if (typeof defaultValue === "function") {
             return defaultValue();
         } else {
@@ -24,15 +24,18 @@ export default function useWebStorage(key, defaultValue, storageObject) {
         }
     });
 
+    const remove = useCallback(() => {
+        // Remove from storageObject
+        storageObject.removeItem(key);
+        // Prevent re-setting the storageObject item via useEffect (see below)
+        setValue(undefined);
+    }, [storageObject, key, setValue]);
+
+    // If value is not undefined, set value in storageObject
     useEffect(() => {
-        // Remove value if set to undefined via remove func (see below)
-        if (value === undefined) return storageObject.removeItem(key);
+        if (value === undefined) return;
         storageObject.setItem(key, JSON.stringify(value));
     }, [key, value, storageObject]);
-
-    const remove = useCallback(() => {
-        setValue(undefined);
-    }, [setValue]);
 
     return [value, setValue, remove];
 }
