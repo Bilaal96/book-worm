@@ -2,14 +2,18 @@ import jwt from "jsonwebtoken";
 import redisClient from "../config/init_redis.js";
 import CustomError from "./CustomError.js";
 
-// Calculate Token Time-To-Live (TTL); i.e. Lifetime (in seconds)
+/** NOTE:
+ * Token expiration is defined in seconds
+ * Cookie expiration is defined in milliseconds
+ 
+ * Calculate Token Time-To-Live (TTL); i.e. Lifetime (in seconds) */
 export const TTL_ACC_TOKEN = 15 * 60; // 15 minutes in seconds
 
 // NOTE: TTL of Refresh Cookie (in milliseconds) = TTL_REF_TOKEN * 1000
 const SECONDS_PER_DAY = 60 * 60 * 24;
 const REF_DAYS_TO_EXPIRY = 30;
 export const TTL_REF_TOKEN = REF_DAYS_TO_EXPIRY * SECONDS_PER_DAY;
-// export const TTL_REF_TOKEN = 10; //! TESTING-ONLY (10 seconds)
+// export const TTL_REF_TOKEN = 5; //! TESTING ONLY
 
 /** Notes on Token Signing
  * Token Claims Reference: https://iana.org/assignments/jwt/jwt.xhtml
@@ -31,7 +35,6 @@ export const signAccessToken = (user) => {
         };
         const secret = process.env.ACCESS_TOKEN_SECRET;
         const options = { expiresIn: TTL_ACC_TOKEN };
-        // const options = { expiresIn: 10 }; //! TESTING-ONLY (10 seconds)
 
         // Sign access token with secret
         jwt.sign(payload, secret, options, (err, accessToken) => {

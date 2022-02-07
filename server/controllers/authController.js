@@ -1,3 +1,67 @@
+/**
+ * ----- JWT Auth - Implementation Overview -----
+ * To authorize user requests we use an Access Token and Refresh Token
+ * NOTE: If a JWT is left exposed on the client it can easily be intercepted and decoded by a malicious user 
+ * We have taken the following steps to ensure that the JWTs are less accessible from the client:
+    - the Access Token is stored in-memory (i.e. client state/variable) allowing us to identify a user in our app
+    - the Refresh Token is stored in an HTTP-only Cookie -> inaccessible to the client
+ 
+ * ----- Access Token -----
+ * The Access Token is used to identify a user (via its payload) and authorize their requests
+ * When sent back to the server, the Access Token is verified
+ * It will be denied if it expires or has been tampered with 
+    
+ * An Access Token is short-lived (15 mins lifespan) to minimise the risk of a malicious user intercepting the token and posing as the user
+ * As a result of this, if we ONLY used an Access Token, a user would have to re-authenticate (or login) every time it expires (i.e. every 15 mins) 
+ * Having to login back in so often isn't a great user experience
+
+ * ----- Persisting User via Token Rotation -----
+ * This is where the Refresh JWT-Cookie comes into play
+ * On expiration of an Access Token, we use a Refresh JWT-Cookie to refresh our tokens - i.e. retrieve a fresh Access Token & Refresh JWT-Cookie pair
+ * This "rotation" of tokens prevents a user from having to log back in every time the Access Token expires (i.e. every 15 minutes)
+ * When we refresh/rotate tokens seamlessly in the background it is known as "Silent Authentication"
+ 
+ * The refresh JWT-Cookie has a longer lifespan than the Access Token
+ * We have set it to 30 days, but this can easily be changed to a year 
+ * On user logout, both JWT-Cookies are destroyed 
+ 
+ * So as long as a user does not logout, every time the Access Token expires, a Refresh JWT-Cookie will be sent to this server to retrieve a new JWT pair; thus allowing a user to remain logged in
+
+ * The request for Silent Authentication (SA) is issued by the client
+ * A user can only be SA'd if a Refresh Token exists, however remember that for security purposes our Refresh Token is stored in a HTTP-only Cookie 
+ * As a result of this, the client cannot directly determine if a Refresh Token exists or not
+ 
+ * --- How can we check if a HTTP-only Cookie exists? ---
+ * To work around this, we created a 3rd "PERSIST_SESSION" (PS) Cookie  
+ * PS Cookie contains no sensitive data, is accessible from the client and only exists if a Refresh JWT-Cookie exists (i.e. it is a "shadow" of the Refresh JWT-Cookie)
+ * So the client can indirectly check for a Refresh JWT-Cookie through a valid PS Cookie 
+ 
+ * If a Refresh JWT-Cookie expires then a user can't be silently authenticated, so they are logged out and can't get a new JWT pair until they re-authenticate (i.e. log back in)
+
+ * --- Tracking Validity of JWTs --- 
+ * Redis is used to cache & track valid Access & Refresh Tokens
+ * Terminology:
+    - blacklisted -> added to Redis DB to indicate token is invalid
+    - whitelisted -> added to Redis DB to indicate token is valid
+
+ * If an Access Token (AT) is:
+    - valid -> it is sent to and stored in-memory by the client  
+    - invalid -> it is blacklisted
+ * We compare incoming ATs against the blacklist
+ * If it is blacklisted, the sender is unauthorized to make requests
+
+ * If a Refresh Token (RT) is:
+    - valid -> it is whitelisted 
+    - invalid -> removed from whitelist
+ * Incoming RTs are compared against the whitelist
+ * Tokens can only be refreshed/renewed if the RT exists in the whitelist
+ 
+ NOTE: 
+ * Redis will automatically clear expired tokens (white/blacklisted)  
+ * Token expiration is defined in seconds
+ * Cookie expiration is defined in milliseconds
+ */
+
 // User Model
 import User from "../models/User.js";
 
