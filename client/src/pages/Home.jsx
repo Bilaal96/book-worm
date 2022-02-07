@@ -1,8 +1,7 @@
 import { Route, useRouteMatch } from "react-router";
 
-// Provider
+// Context
 import { SearchProvider } from "contexts/search/search.provider";
-import MasterListProvider from "contexts/master-list/master-list.provider";
 
 // Components
 import BooksSearch from "components/BooksSearch/BooksSearch";
@@ -14,15 +13,13 @@ const Home = () => {
     return (
         <>
             <SearchProvider>
-                <MasterListProvider>
-                    {/* match.path = /books */}
-                    <Route exact path={`${path}`}>
-                        <BooksSearch />
-                    </Route>
-                    <Route path={`${path}/:bookId`}>
-                        <BookDetails />
-                    </Route>
-                </MasterListProvider>
+                {/* match.path = /books */}
+                <Route exact path={`${path}`}>
+                    <BooksSearch />
+                </Route>
+                <Route path={`${path}/:bookId`}>
+                    <BookDetails />
+                </Route>
             </SearchProvider>
         </>
     );

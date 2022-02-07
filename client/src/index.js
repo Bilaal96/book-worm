@@ -6,6 +6,7 @@ import { SnackbarProvider } from "notistack";
 
 import theme from "config/mui-theme";
 import AuthProvider from "contexts/auth/auth.provider";
+import MasterListProvider from "contexts/master-list/master-list.provider";
 import App from "./App";
 
 ReactDOM.render(
@@ -13,9 +14,11 @@ ReactDOM.render(
     <Router>
         <ThemeProvider theme={theme}>
             <SnackbarProvider maxSnack={3}>
-                <AuthProvider>
-                    <App />
-                </AuthProvider>
+                <MasterListProvider>
+                    <AuthProvider>
+                        <App />
+                    </AuthProvider>
+                </MasterListProvider>
             </SnackbarProvider>
         </ThemeProvider>
     </Router>,

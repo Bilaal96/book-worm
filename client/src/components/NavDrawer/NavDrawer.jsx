@@ -2,7 +2,6 @@ import { useState, useContext, useEffect } from "react";
 
 // Contexts
 import { AuthContext } from "contexts/auth/auth.context";
-import MasterListProvider from "contexts/master-list/master-list.provider";
 
 // Components
 import { Link as RouterLink } from "react-router-dom";
@@ -97,12 +96,10 @@ const NavDrawer = ({ navigationMap }) => {
 
                             {/* Render LogoutButton if user is logged in */}
                             {auth.user && (
-                                <MasterListProvider>
-                                    <LogoutButton
-                                        listItem
-                                        closeDrawer={() => setIsOpen(false)}
-                                    />
-                                </MasterListProvider>
+                                <LogoutButton
+                                    listItem
+                                    closeDrawer={() => setIsOpen(false)}
+                                />
                             )}
                         </List>
                     </div>
