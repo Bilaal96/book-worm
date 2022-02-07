@@ -1,10 +1,15 @@
 import { useState, useContext, useEffect } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 
+// Context
 import { AuthContext } from "contexts/auth/auth.context";
-import FormWrapper from "components/FormWrapper/FormWrapper";
-import { Grid, TextField, Button, Link, Typography } from "@material-ui/core";
 
+// Components
+import { Grid, TextField, Button, Link, Typography } from "@material-ui/core";
+import FormWrapper from "components/FormWrapper/FormWrapper";
+import PasswordField from "components/PasswordField/PasswordField";
+
+// Utils
 import validate from "utils/form-validators";
 
 import useStyles from "./styles";
@@ -108,6 +113,7 @@ const LoginForm = () => {
 
             <form onSubmit={handleLogin} noValidate>
                 <Grid container spacing={2}>
+                    {/* Email */}
                     <Grid item xs={12}>
                         <TextField
                             label="Email"
@@ -124,21 +130,20 @@ const LoginForm = () => {
                             error={formErrors.hasOwnProperty("email")}
                         />
                     </Grid>
+
+                    {/* Password */}
                     <Grid item xs={12}>
-                        <TextField
-                            label="Password"
-                            id="password"
-                            name="password"
+                        <PasswordField
                             onChange={handleChange}
-                            type="password"
-                            variant="outlined"
-                            required
-                            fullWidth
+                            name="password"
                             autoComplete="current-password"
+                            fullWidth
                             helperText={formErrors.password}
                             error={formErrors.hasOwnProperty("password")}
                         />
                     </Grid>
+
+                    {/* Submit Button */}
                     <Grid item xs={12}>
                         <Button
                             className={classes.submit}
@@ -150,6 +155,8 @@ const LoginForm = () => {
                             Submit
                         </Button>
                     </Grid>
+
+                    {/* Link to Sign Up form */}
                     <Grid item>
                         <Typography>
                             Don't have an account?{" "}
