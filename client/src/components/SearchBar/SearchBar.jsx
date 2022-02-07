@@ -60,7 +60,15 @@ const SearchBar = ({ fetchBooks, setSelectedPage }) => {
             });
 
             // Request books data (for page 1) from Books API and updates SearchContext when appropriate
-            fetchBooks({ search: searchInput });
+            await fetchBooks({ search: searchInput });
+
+            // Display success notification if search results are found
+            const resultsFound =
+                JSON.parse(sessionStorage.getItem("search-results")) !== null;
+
+            if (resultsFound) {
+                enqueueSnackbar("Results found 🎉", { variant: "success" });
+            }
 
             // Reset page (in state and sessionStorage) to 1
             setSelectedPage(1);

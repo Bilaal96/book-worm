@@ -84,6 +84,11 @@ const BooksSearch = () => {
             // Fetch failed: HTTP status code is NOT WITHIN success range (200-299)
             if (!response.ok) {
                 const error = await response.json();
+
+                // Set "search-results" item in sessionStorage to null
+                // SearchBar checks for null value to determine when to display "Results found" snackbar notification
+                sessionStorage.setItem("search-results", JSON.stringify(null));
+
                 throw error;
             }
 
@@ -99,9 +104,6 @@ const BooksSearch = () => {
 
             // Cache fetched books in sessionStorage
             sessionStorage.setItem("search-results", JSON.stringify(books));
-
-            // Display success notification
-            enqueueSnackbar("Results found 🎉", { variant: "success" });
         } catch (err) {
             console.error(err.message);
             // update SearchContext with error, and exit loading state
