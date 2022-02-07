@@ -3,7 +3,6 @@ import { useContext, useState } from "react";
 
 // Contexts
 import { AuthContext } from "contexts/auth/auth.context";
-import { MasterListContext } from "contexts/master-list/master-list.context";
 
 // Components
 import ConfirmActionModal from "components/ConfirmActionModal/ConfirmActionModal";
@@ -50,13 +49,11 @@ const ConfirmLogoutModal = ({
 // NOTE: otherProps styles Logout Button in NavTop
 const LogoutButton = ({ listItem, closeDrawer, ...otherProps }) => {
     const auth = useContext(AuthContext);
-    const { clearMasterList } = useContext(MasterListContext);
     const [openModal, setOpenModal] = useState(false);
 
     const openConfirmationModal = (e) => setOpenModal(true);
 
     const handleLogout = (e) => {
-        clearMasterList();
         auth.logout();
 
         if (listItem) closeDrawer(); // Close NavDrawer

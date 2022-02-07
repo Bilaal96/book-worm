@@ -4,14 +4,14 @@ import { useParams } from "react-router";
 // Custom Hooks
 import useAsyncReducer from "hooks/useAsyncReducer";
 
+// Context
+import { useSearchContext } from "contexts/search/search.context";
+
 // Components
 import { Grid, Typography } from "@material-ui/core";
 import BookDetailsHead from "components/BookDetailsHead/BookDetailsHead";
 import BookDetailsBody from "components/BookDetailsBody/BookDetailsBody";
 import AddToBooklistModal from "components/AddToBooklistModal/AddToBooklistModal";
-
-// Helpers
-import { useSearchContext } from "contexts/search/search.context";
 
 const BookDetails = () => {
     // Access bookId Route Param - aliased as bookIdParam

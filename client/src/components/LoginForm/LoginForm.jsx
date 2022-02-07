@@ -92,7 +92,17 @@ const LoginForm = () => {
                     className={classes.protectedRouteMessage}
                     align="center"
                 >
-                    You must login to access this page
+                    You must login to access that page
+                </Typography>
+            )}
+
+            {/* Display message if redirected due to expired session */}
+            {location.state?.sessionExpired && (
+                <Typography
+                    className={classes.protectedRouteMessage}
+                    align="center"
+                >
+                    Your session has expired, please log back in to continue
                 </Typography>
             )}
 

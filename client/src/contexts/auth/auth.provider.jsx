@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import Cookies from "js-cookie";
@@ -6,21 +6,28 @@ import { useSnackbar } from "notistack";
 
 // Context
 import { AuthContext } from "./auth.context";
+import { MasterListContext } from "contexts/master-list/master-list.context";
+
+// Components
+import ConfirmActionModal from "components/ConfirmActionModal/ConfirmActionModal";
+import { Typography } from "@material-ui/core";
 
 // Provides app with ability to access & update AuthContext
 const AuthProvider = ({ children }) => {
-    const { enqueueSnackbar } = useSnackbar();
+    const { clearMasterList } = useContext(MasterListContext);
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const history = useHistory();
     const [accessToken, setAccessToken] = useState(null);
     const [user, setUser] = useState(null);
+    const [openModal, setOpenModal] = useState(false);
 
-    // Track "login" state values when updated
+    // Track auth state values when updated
     useEffect(
         () => console.log("AUTH CONTEXT:", { accessToken, user }),
         [accessToken, user]
     );
 
-    // Decode (access) token and return user data
+    // Decode access token and return user data
     const getUserFromToken = (token) => {
         const decoded = jwt_decode(token);
         return {
@@ -45,7 +52,7 @@ const AuthProvider = ({ children }) => {
         try {
             const response = await fetch("http://localhost:5000/auth/refresh", {
                 headers: { "Content-Type": "application/json" },
-                credentials: "include",
+                credentials: "include", // required to send refresh cookie
             });
 
             if (!response.ok && response.status !== 401) {
@@ -54,7 +61,6 @@ const AuthProvider = ({ children }) => {
             }
 
             const data = await response.json();
-
             return data;
         } catch (err) {
             console.error(err);
@@ -62,8 +68,11 @@ const AuthProvider = ({ children }) => {
         }
     };
 
-    // Attempts to fetch new authentication tokens
-    // Updates authContext on successful token renewal
+    /** silentlyAuthenticateUser
+     * Attempts to fetch new authentication tokens
+     * Called on app mount & on access token expiration
+     * Updates authContext on successful token renewal
+     */
     const silentlyAuthenticateUser = useCallback(async () => {
         try {
             const data = await fetchNewAuthTokens();
@@ -82,35 +91,68 @@ const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    /** ON MOUNT: Attempt to silently authenticate user
+    // Clear user data (i.e. log them out) from client application
+    const clearUserState = useCallback(() => {
+        setAccessToken(null);
+        setUser(null);
+        clearMasterList();
+        closeSnackbar(); // Clear any prior notification(s)
+    }, [clearMasterList, closeSnackbar]);
+
+    /**
+     * ----- PERSIST_SESSION Cookie Explained -----
      * We only want to silently authenticate if the browser has stored a Refresh Cookie
      * The Refresh Cookie is HTTP-only, so cannot be accessed by React
      * As a workaround, a non-HTTP-only cookie (PERSIST_SESSION) is set alongside the Refresh Cookie; with the same expiration time
-     * PERSIST_SESSION only exists when the Refresh Cookie exists & contains NO sensitive data
-     * With this, we can test for PERSIST_SESSION on mount, and only attempt silent auth if the cookie exists
+     * PERSIST_SESSION contains NO sensitive data & only exists when the Refresh Cookie exists
      */
+    // Determine whether to re-authenticate user or log user out
+    const handleAuthTokenExpiration = useCallback(async () => {
+        if (Cookies.get("PERSIST_SESSION")) {
+            // Access token expired, refresh token is valid
+            // Request new auth tokens to persist user
+            silentlyAuthenticateUser();
+        } else {
+            // Refresh token is invalid, log user out of app
+            clearUserState();
+
+            // Redirect to /login page & display modal with message to user
+            history.push("/login", { sessionExpired: true });
+            setOpenModal(true);
+        }
+    }, [silentlyAuthenticateUser, clearUserState, history]);
+
+    // ON MOUNT: only attempt silent auth if PERSIST_SESSION Cookie exists
     useEffect(() => {
         if (Cookies.get("PERSIST_SESSION")) return silentlyAuthenticateUser();
     }, [silentlyAuthenticateUser]);
 
-    // ON ACCESS TOKEN EXPIRATION: Attempt to silently authenticate user
+    /** Renew auth tokens when Access Token (AT) expires
+     * For a valid AT, this effect sets a timer/interval (which ends when AT expires)
+     * At the end of the interval if a valid Refresh Token:
+        - exists -> the Access Token is renewed and the timer is reset
+        - DOES NOT exist -> the user is logged out
+     */
     useEffect(() => {
         const ttlAccessToken = getTokenTimeToLive(accessToken);
-        console.log("Token Time-to-Live", ttlAccessToken);
 
-        // if accessToken exists, ttlAccessToken > 0
-        // if accessToken DOES NOT exist, ttlAccessToken === 0
-        // As a result, tokenRefreshTimer is only set / cleared if an accessToken exists
+        /**
+         * if accessToken exists, ttlAccessToken > 0
+         * if accessToken DOES NOT exist, ttlAccessToken === 0
+         * As a result, tokenRefreshTimer is only set if a VALID accessToken exists (i.e. the token has not expired)
+         */
         if (ttlAccessToken > 0) {
-            const tokenRefreshTimer = setInterval(async () => {
-                console.log("REFRESH TOKEN ON EXPIRY");
-                // No access token means user is not logged in
-                // Prevent refresh without accessToken
-                if (accessToken) silentlyAuthenticateUser();
-            }, ttlAccessToken * 1000);
+            // const refreshInterval = 6 * 1000; //! TESTING ONLY
+            const refreshInterval = ttlAccessToken * 1000;
+            const tokenRefreshTimer = setInterval(
+                handleAuthTokenExpiration,
+                refreshInterval // determines when to call handleAuthTokenExpiration
+            );
+
+            // Stop tokenRefreshTimer
             return () => clearInterval(tokenRefreshTimer);
         }
-    }, [accessToken, silentlyAuthenticateUser]);
+    }, [accessToken, handleAuthTokenExpiration]);
 
     /** authenticate()
      * This function handles authentication for both login and signup
@@ -121,8 +163,11 @@ const AuthProvider = ({ children }) => {
     const authenticate = async (authType, credentials) => {
         try {
             if (authType !== "login" && authType !== "signup")
-                throw Error(`Invalid endpoint passed as argument: ${authType}`);
+                throw Error(
+                    `Invalid authType passed on authentication attempt: ${authType}`
+                );
 
+            // Send authentication request with user credentials
             const response = await fetch(
                 `http://localhost:5000/auth/${authType}`,
                 {
@@ -139,9 +184,9 @@ const AuthProvider = ({ children }) => {
                 // Return server validation errors (if any)
                 if (err.errors) return err.errors;
 
-                // No validation errors, return generic error message
+                // Authentication failed, return generic error message
                 throw new Error(
-                    `Authentication request (of type "${authType}") failed with Status: ${response.status} (${response.statusText})`
+                    `Authentication request (${authType}) failed with Status: ${response.status} (${response.statusText})`
                 );
             }
 
@@ -153,16 +198,15 @@ const AuthProvider = ({ children }) => {
                     `Access denied, something went wrong during ${authType} attempt`
                 );
 
-            // Extract user from token
-            const user = getUserFromToken(data.accessToken);
-            console.log("USER FROM TOKEN", user);
+            // Authentication successful, extract user data from token
+            const userData = getUserFromToken(data.accessToken);
 
             // Log retrieved user into app
             setAccessToken(data.accessToken);
-            setUser(user);
+            setUser(userData);
 
             // Display welcome notification
-            enqueueSnackbar(`Welcome ${user.firstName}! 😊`, {
+            enqueueSnackbar(`Welcome ${userData.firstName}! 😊`, {
                 variant: "success",
                 anchorOrigin: {
                     vertical: "bottom",
@@ -173,7 +217,8 @@ const AuthProvider = ({ children }) => {
             // null indicates no form errors
             return null;
         } catch (err) {
-            // e.g. in case no accessToken is retrieved
+            // Return generic form error
+            // e.g. in a case where no accessToken is retrieved
             console.error(err);
             return { email: "", password: "Something went wrong, try again" };
         }
@@ -190,6 +235,7 @@ const AuthProvider = ({ children }) => {
                     // If not specified, refresh cookie is not deleted
                     "Cache-Control": "no-cache",
                 },
+                // required to remove refreshToken from Redis whitelist
                 credentials: "include",
             });
 
@@ -201,8 +247,7 @@ const AuthProvider = ({ children }) => {
                 console.log("LOGOUT SUCCESS:", data.message);
 
                 // Log user out of app
-                setAccessToken(null);
-                setUser(null);
+                clearUserState();
 
                 // Redirect to /login page
                 history.push("/login");
@@ -224,6 +269,18 @@ const AuthProvider = ({ children }) => {
             if (!response.ok) throw Error(`HTTP Error: ${response.status}`);
         } catch (err) {
             console.error(err);
+
+            // Display goodbye notification message
+            enqueueSnackbar(
+                "Logout failed 🤔. If this problem persists please try again later.",
+                {
+                    variant: "error",
+                    anchorOrigin: {
+                        vertical: "bottom",
+                        horizontal: "center",
+                    },
+                }
+            );
         }
     };
 
@@ -238,6 +295,26 @@ const AuthProvider = ({ children }) => {
                 logout,
             }}
         >
+            {/* On refresh token expiration, display modal to notify user that their "session" has ended */}
+            <ConfirmActionModal
+                title="🔒 Session Expired"
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                buttons={{
+                    positive: { hide: true },
+                    negative: { text: "Close" },
+                }}
+            >
+                <Typography
+                    style={{ fontSize: "18px", padding: "14px 28px" }}
+                    variant="body1"
+                >
+                    You were automatically logged out because your session has
+                    expired. Please log back in to continue.
+                </Typography>
+            </ConfirmActionModal>
+
+            {/* Render children */}
             {children}
         </AuthContext.Provider>
     );
