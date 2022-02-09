@@ -8,6 +8,7 @@ import {
     DialogActions,
     Button,
 } from "@material-ui/core";
+import AsyncButton from "components/AsyncButton/AsyncButton";
 
 /** 
  * A custom & reusable MUI Dialog component.
@@ -31,6 +32,10 @@ import {
  * @property { String } [positive.text] - positive button text.
  * @property { Boolean } [positive.hide] - Prevents rendering of the positive button
 
+ * @property { Object } [positive.async] - existence is used to determine when to render AsyncButton
+ * @property { Boolean } [positive.async.loading] - prop that determines styles of AsyncButton (i.e. When to show spinner icon and altText property)
+ * @property { String } [positive.async.altText] - alternative text shown during async process triggered by PositiveButton 
+
  * @namespace { Object } [negative] - container for following properties.
  * @property { Function } [negative.action] - negative button onClick handler.
  * @property { String } [negative.text] - negative button text.
@@ -49,22 +54,41 @@ const ConfirmActionModal = ({
 
     const closeModal = () => setOpenModal(false);
 
-    const PositiveButton = () => (
-        <Button
-            onClick={positive.action} // required
-            variant="contained"
-            color="primary"
-            startIcon={positive.startIcon}
-        >
-            {positive.text || "Ok"}
-        </Button>
-    );
+    const positiveButtonProps = {
+        onClick: positive.action, // required
+        variant: "contained",
+        color: "primary",
+        startIcon: positive.startIcon,
+        loading: positive.async?.loading,
+    };
+
+    const PositiveButton = () => {
+        // If PositiveButton triggers an async process, render AsyncButton
+        if (positive.hasOwnProperty("async")) {
+            const { loading, altText } = positive.async;
+
+            return (
+                <AsyncButton {...positiveButtonProps}>
+                    {loading
+                        ? altText || "Working on it"
+                        : positive.text || "Ok"}
+                </AsyncButton>
+            );
+        }
+
+        // Otherwise render regular MUI Button
+        return (
+            <Button {...positiveButtonProps}>{positive.text || "Ok"}</Button>
+        );
+    };
 
     const NegativeButton = () => (
         <Button
             onClick={negative?.action || closeModal}
             variant="outlined"
             color="secondary"
+            // Disable negative button if clicking positive button results in async action
+            disabled={positive.async?.loading}
         >
             {negative?.text || "Cancel"}
         </Button>
