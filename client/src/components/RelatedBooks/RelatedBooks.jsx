@@ -76,8 +76,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
     );
 
     // Used to handle app state when fetching related books
-    const [relatedBooks, dispatchStart, dispatchSuccess, dispatchFailed] =
-        useAsyncReducer(actionTypePrefix);
+    const [relatedBooks, dispatch] = useAsyncReducer(actionTypePrefix);
 
     console.log("Related Books", {
         relatedBooks,
@@ -103,7 +102,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
             });
 
             try {
-                dispatchStart(); // init loading state
+                dispatch.start();
 
                 // Perform search for related books
                 const response = await fetch(booksRequestURI, {
@@ -146,7 +145,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
                 );
 
                 // Update relatedBooks.value & end loading state
-                dispatchSuccess(filteredBooks);
+                dispatch.success(filteredBooks);
 
                 // Cache fetched books in sessionStorage
                 sessionStorage.setItem(
@@ -158,7 +157,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
                 if (!abortController.signal.aborted) {
                     console.error(err.message);
                     // Update relatedBooks.error & end loading state
-                    dispatchFailed(err);
+                    dispatch.failed(err);
                 }
             }
         };
@@ -175,7 +174,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
          */
         if (cachedRelatedBooks?.length) {
             console.log("LOADED RELATED BOOKS FROM CACHE");
-            dispatchSuccess(cachedRelatedBooks);
+            dispatch.success(cachedRelatedBooks);
         } else {
             fetchRelatedBooks(bookLink);
         }
@@ -185,16 +184,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
             abortController.abort();
             console.log(`${storageKey} unmounted`);
         };
-    }, [
-        book,
-        bookLinkKey,
-        bookLink,
-        searchPrefix,
-        storageKey,
-        dispatchStart,
-        dispatchSuccess,
-        dispatchFailed,
-    ]);
+    }, [book, bookLinkKey, bookLink, searchPrefix, storageKey, dispatch]);
 
     const handleRelatedBookClick = (bookId) => (e) => {
         // Clear all "related books" from cache
@@ -212,7 +202,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
     }
 
     // bookLink Listed, render Loading UI
-    if (relatedBooks.isLoading) {
+    if (relatedBooks.loading) {
         return <Typography>Loading...</Typography>;
     }
 

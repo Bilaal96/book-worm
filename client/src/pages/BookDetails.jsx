@@ -21,8 +21,7 @@ const BookDetails = () => {
     // Controls whether AddToBooklistModal is showing or not
     const [openModal, setOpenModal] = useState(false);
 
-    const [book, dispatchStart, dispatchSuccess, dispatchFailed] =
-        useAsyncReducer("GET_BOOK_BY_ID");
+    const [book, dispatch] = useAsyncReducer("GET_BOOK_BY_ID");
 
     console.log("BookDetails", {
         "bookIdParam (route param)": bookIdParam,
@@ -34,7 +33,7 @@ const BookDetails = () => {
     useEffect(() => {
         console.log("-------------------GET BOOK BY ID-------------------");
 
-        dispatchStart(); // init loading state
+        dispatch.start(); // init loading state
 
         //! TEST Fetch book
         // const abortController = new AbortController();
@@ -46,7 +45,7 @@ const BookDetails = () => {
         const viewedBooks = JSON.parse(sessionStorage.getItem("viewed-books"));
         if (viewedBooks && viewedBooks[bookIdParam]) {
             console.log("Retrieved from CACHE", viewedBooks[bookIdParam]);
-            dispatchSuccess(viewedBooks[bookIdParam]);
+            dispatch.success(viewedBooks[bookIdParam]);
             return;
         }
 
@@ -57,7 +56,7 @@ const BookDetails = () => {
         );
         if (bookByIdFromResults) {
             console.log("Retrieved from CONTEXT", bookByIdFromResults);
-            dispatchSuccess(bookByIdFromResults); // update reducer state
+            dispatch.success(bookByIdFromResults); // update reducer state
 
             // mark book as viewed - cache in sessionStorage as "viewed-books"
             const newViewedBooks = {
@@ -100,12 +99,12 @@ const BookDetails = () => {
 
                 // Fetch succeeded: HTTP status code is WITHIN success range (200-299)
                 const bookById = await response.json();
-                dispatchSuccess(bookById); // update reducer state
+                dispatch.success(bookById); // update reducer state
                 return;
             } catch (err) {
                 if (!abortSignal.aborted) {
                     console.error(err.message);
-                    dispatchFailed(err); // update reducer state
+                    dispatch.failed(err); // update reducer state
                 }
             }
         }
@@ -117,10 +116,10 @@ const BookDetails = () => {
         return () => {
             abortController.abort();
         };
-    }, [bookIdParam, dispatchStart, dispatchSuccess, dispatchFailed, search]);
+    }, [bookIdParam, dispatch, search]);
 
     // Render loading UI
-    if (book.isLoading) {
+    if (book.loading) {
         return (
             <Typography
                 variant="h2"
