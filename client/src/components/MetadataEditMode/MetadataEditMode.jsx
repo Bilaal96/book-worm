@@ -9,6 +9,7 @@ import { MasterListContext } from "contexts/master-list/master-list.context";
 // Components
 import { Typography, TextField, Button } from "@material-ui/core";
 import { Save } from "@material-ui/icons";
+import AsyncButton from "components/AsyncButton/AsyncButton";
 
 // Utils
 import validate from "utils/form-validators";
@@ -31,6 +32,7 @@ const MetadataEditMode = ({
         description,
     });
     const [formErrors, setFormErrors] = useState({});
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleFormFieldChange = (e) => {
         const { name, value } = e.target;
@@ -84,20 +86,22 @@ const MetadataEditMode = ({
 
         if (formIsValid) {
             try {
-                // Prevent request if metadata remains unchanged
                 const booklistToUpdate = getBooklistById(listId);
+
+                // Prevent request if metadata remains unchanged
                 if (
                     booklistToUpdate.title === formFields.title &&
                     booklistToUpdate.description === formFields.description
                 ) {
                     // Show notification for "no changes made"
-                    enqueueSnackbar("There were no changes to save 👻", {
+                    enqueueSnackbar("There are no changes to save 👻", {
                         variant: "info",
                     });
                     return setEditMode(false);
                 }
 
                 // Make PATCH request for partial update of a booklist
+                setIsSaving(true); // init loading state
                 const response = await fetch(
                     `http://localhost:5000/booklists/${listId}`,
                     {
@@ -128,6 +132,7 @@ const MetadataEditMode = ({
                 // Append new booklist to the beginning of masterList
                 updatedMasterList.unshift(updatedBooklist);
                 setMasterList(updatedMasterList);
+                setIsSaving(false); // end loading state
 
                 // Return to display mode
                 setEditMode(false);
@@ -138,6 +143,7 @@ const MetadataEditMode = ({
                 enqueueSnackbar(successNotification, { variant: "success" });
             } catch (err) {
                 console.error(err);
+                setIsSaving(false); // end loading state
 
                 // Display server-side errors in UI
                 if (err.errors) {
@@ -179,6 +185,7 @@ const MetadataEditMode = ({
                     fullWidth
                     helperText={formErrors.title}
                     error={formErrors.hasOwnProperty("title")}
+                    disabled={isSaving}
                 />
 
                 <TextField
@@ -193,25 +200,28 @@ const MetadataEditMode = ({
                     maxRows={4}
                     helperText={formErrors.description}
                     error={formErrors.hasOwnProperty("description")}
+                    disabled={isSaving}
                 />
 
                 {/* Save Button */}
                 <div className={parentStyles.actions}>
-                    <Button
+                    <AsyncButton
                         className={parentStyles.saveButton}
                         color="primary"
                         variant="contained"
                         startIcon={<Save />}
                         type="submit"
+                        loading={isSaving}
                     >
-                        Save Details
-                    </Button>
+                        {isSaving ? "Saving Changes" : "Save Details"}
+                    </AsyncButton>
 
                     {/* Cancel Button */}
                     <Button
                         color="secondary"
                         variant="outlined"
                         onClick={() => setEditMode(false)}
+                        disabled={isSaving}
                     >
                         Cancel
                     </Button>

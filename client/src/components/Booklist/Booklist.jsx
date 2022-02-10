@@ -7,7 +7,7 @@
  *? Endpoint: PUT /booklists/:listId/books
  */
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
 
@@ -32,6 +32,8 @@ const Booklist = () => {
     const { masterList, setMasterList, getBooklistById } =
         useContext(MasterListContext);
 
+    const [isDeleting, setIsDeleting] = useState(false);
+
     // Get the booklist user wants to view from Master List context
     const booklist = getBooklistById(listId);
 
@@ -41,6 +43,7 @@ const Booklist = () => {
     const removeBookFromBooklist = (bookId) => async (e) => {
         try {
             // Request deletion of book (with id of 'bookId') from booklist (with id of 'listId')
+            setIsDeleting(true); // init loading state
             const response = await fetch(
                 `http://localhost:5000/booklists/${listId}/books/${bookId}`,
                 {
@@ -74,6 +77,7 @@ const Booklist = () => {
 
             // Update masterList state
             setMasterList(updatedMasterList);
+            setIsDeleting(false); // end loading state
 
             // Display success notification
             const successNotification =
@@ -81,6 +85,7 @@ const Booklist = () => {
             enqueueSnackbar(successNotification, { variant: "success" });
         } catch (err) {
             console.error(err);
+            setIsDeleting(false); // end loading state
             // Display error notification
             const errorNotification =
                 "Failed to remove book from list 🤔. If this problem persists please try again later.";
@@ -118,6 +123,7 @@ const Booklist = () => {
                             book={book}
                             onClick={viewBookDetails(book.id)}
                             handleDelete={removeBookFromBooklist(book.id)}
+                            isDeleting={isDeleting}
                         />
                     ))}
                 </Grid>

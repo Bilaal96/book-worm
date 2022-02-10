@@ -75,6 +75,7 @@ const MasterListItem = ({
     const classes = useStyles(styleProps);
 
     const [openModal, setOpenModal] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const deleteBooklist = async () => {
         try {
@@ -82,6 +83,7 @@ const MasterListItem = ({
             if (user.id !== booklistOwner) throw Error("Unauthorized request");
 
             // User owns booklist, send request to delete it
+            setIsDeleting(true); // init loading state
             const response = await fetch(
                 `http://localhost:5000/booklists/${_id}`,
                 {
@@ -104,12 +106,14 @@ const MasterListItem = ({
 
             setMasterList(updatedMasterList); // causes MasterList to re-render
             console.log(`Delete booklist with id: ${_id}`);
+            setIsDeleting(false); // end loading state
 
             // Display success notification
             const successNotification = "List deleted successfully 🔫";
             enqueueSnackbar(successNotification, { variant: "success" });
         } catch (err) {
             console.error(err);
+            setIsDeleting(false); // end loading state
 
             // Display error notification
             const errorNotification =
@@ -128,9 +132,10 @@ const MasterListItem = ({
                     setOpenModal={setOpenModal}
                     buttons={{
                         positive: {
-                            text: "Delete",
                             action: deleteBooklist,
+                            async: { loading: isDeleting, altText: "Deleting" },
                             startIcon: <Delete />,
+                            text: "Delete",
                         },
                     }}
                 >

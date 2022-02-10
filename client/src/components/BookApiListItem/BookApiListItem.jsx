@@ -19,6 +19,7 @@ const BookApiListItem = ({
     book,
     onClick: handleClick,
     handleDelete, // optional
+    isDeleting,
 }) => {
     const { volumeInfo, searchInfo } = book;
 
@@ -52,9 +53,10 @@ const BookApiListItem = ({
                     setOpenModal={setOpenModal}
                     buttons={{
                         positive: {
-                            text: "Delete",
                             action: handleDelete,
+                            async: { loading: isDeleting, altText: "Deleting" },
                             startIcon: <Delete />,
+                            text: "Delete",
                         },
                     }}
                 >
@@ -153,6 +155,7 @@ BookApiListItem.propTypes = {
     book: PropTypes.object.isRequired,
     onClick: PropTypes.func.isRequired,
     handleDelete: PropTypes.func,
+    loading: PropTypes.bool,
 };
 
 export default BookApiListItem;

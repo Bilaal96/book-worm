@@ -15,6 +15,7 @@ import {
     Button,
 } from "@material-ui/core";
 import { ExpandMore, AddCircleOutlined } from "@material-ui/icons";
+import AsyncButton from "components/AsyncButton/AsyncButton";
 
 // Utils
 import validate from "utils/form-validators";
@@ -32,6 +33,7 @@ const CreateBooklistAccordion = () => {
         description: "",
     });
     const [formErrors, setFormErrors] = useState({});
+    const [isCreating, setIsCreating] = useState(false);
 
     const styleProps = { expanded };
     const classes = useStyles(styleProps);
@@ -106,6 +108,7 @@ const CreateBooklistAccordion = () => {
 
         if (formIsValid) {
             try {
+                setIsCreating(true); // init loading state
                 const response = await fetch(
                     "http://localhost:5000/booklists",
                     {
@@ -130,6 +133,7 @@ const CreateBooklistAccordion = () => {
                 console.log("BOOKLIST CREATED:", newBooklist);
                 // Add newBooklist to beginning of masterList
                 setMasterList([newBooklist, ...masterList]);
+                setIsCreating(false); // end loading state
 
                 // Clear and close accordion
                 resetAccordion();
@@ -139,6 +143,7 @@ const CreateBooklistAccordion = () => {
                 enqueueSnackbar(successNotification, { variant: "success" });
             } catch (err) {
                 console.error(err);
+                setIsCreating(false); // end loading state
 
                 // Display server-side errors in UI
                 if (err.errors) {
@@ -185,6 +190,7 @@ const CreateBooklistAccordion = () => {
                         fullWidth
                         helperText={formErrors.title}
                         error={formErrors.hasOwnProperty("title")}
+                        disabled={isCreating}
                     />
                     <TextField
                         label="Description"
@@ -199,21 +205,24 @@ const CreateBooklistAccordion = () => {
                         maxRows={4}
                         helperText={formErrors.description}
                         error={formErrors.hasOwnProperty("description")}
+                        disabled={isCreating}
                     />
 
                     <div className={classes.formControls}>
-                        <Button
+                        <AsyncButton
                             color="primary"
                             variant="contained"
                             startIcon={<AddCircleOutlined />}
                             type="submit"
+                            loading={isCreating}
                         >
-                            Create
-                        </Button>
+                            {isCreating ? "Working on it" : "Create"}
+                        </AsyncButton>
                         <Button
                             onClick={resetAccordion}
                             color="secondary"
                             variant="outlined"
+                            disabled={isCreating}
                         >
                             Reset
                         </Button>
