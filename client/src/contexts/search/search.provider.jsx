@@ -40,7 +40,7 @@ function searchReducer(state, action) {
 
 const INITIAL_STATE = {
     submission: "",
-    results: {},
+    results: null,
     isFetching: false,
     error: null,
 };

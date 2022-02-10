@@ -6,7 +6,8 @@ import { useSnackbar } from "notistack";
 import { useSearchContext } from "contexts/search/search.context";
 
 // Components
-import { InputBase, Button } from "@material-ui/core";
+import { InputBase } from "@material-ui/core";
+import AsyncButton from "components/AsyncButton/AsyncButton";
 
 // MUI Icons
 import { Search as SearchIcon } from "@material-ui/icons";
@@ -90,16 +91,17 @@ const SearchBar = ({ fetchBooks, setSelectedPage }) => {
                 />
             </div>
 
-            <Button
+            <AsyncButton
                 className={classes.searchSubmit}
                 variant="contained"
                 color="secondary"
                 onClick={handleSearchSubmit}
                 disableElevation
+                loading={search.isFetching}
                 disabled={search.isFetching}
             >
-                Search
-            </Button>
+                {search.isFetching ? "Searching" : "Search"}
+            </AsyncButton>
         </div>
     );
 };

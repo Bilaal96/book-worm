@@ -11,7 +11,7 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
     const [search] = useSearchContext();
 
     // No searches made, prompt user
-    if (!search.results) {
+    if (search.results === null) {
         return (
             <Typography variant="h4" component="p" align="center">
                 Find books using the search bar above
