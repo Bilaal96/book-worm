@@ -23,8 +23,11 @@ const ConfirmLogoutModal = ({
     setOpenModal,
     handleLogout,
 }) => {
+    const { authInProgress } = useContext(AuthContext);
+
     const positive = {
         action: handleLogout,
+        async: { loading: authInProgress, altText: "Logging Out" },
         startIcon: <PowerSettingsNew />,
         text: "Log Out",
     };

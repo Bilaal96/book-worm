@@ -9,6 +9,7 @@ export const AuthContext = createContext({
 
     authenticate: () => {},
     logout: () => {},
+    authInProgress: false,
 });
 
 AuthContext.displayName = "AuthContext";

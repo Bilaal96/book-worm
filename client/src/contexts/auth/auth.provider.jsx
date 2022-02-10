@@ -17,15 +17,17 @@ const AuthProvider = ({ children }) => {
     const { clearMasterList } = useContext(MasterListContext);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const history = useHistory();
+    const [authInProgress, setAuthInProgress] = useState(false);
     const [accessToken, setAccessToken] = useState(null);
     const [user, setUser] = useState(null);
     const [openModal, setOpenModal] = useState(false);
 
     // Track auth state values when updated
     useEffect(
-        () => console.log("AUTH CONTEXT:", { accessToken, user }),
-        [accessToken, user]
+        () => authInProgress && console.log("AUTH IN PROGRESS"),
+        [authInProgress]
     );
+    useEffect(() => console.log("USER:", user), [user]);
 
     // Decode access token and return user data
     const getUserFromToken = (token) => {
@@ -167,6 +169,8 @@ const AuthProvider = ({ children }) => {
                     `Invalid authType passed on authentication attempt: ${authType}`
                 );
 
+            setAuthInProgress(true); // init loading state
+
             // Send authentication request with user credentials
             const response = await fetch(
                 `http://localhost:5000/auth/${authType}`,
@@ -181,8 +185,12 @@ const AuthProvider = ({ children }) => {
             // Test for response outside of 200-299 range
             if (!response.ok) {
                 const err = await response.json();
+
                 // Return server validation errors (if any)
-                if (err.errors) return err.errors;
+                if (err.errors) {
+                    setAuthInProgress(false); // end loading state
+                    return err.errors;
+                }
 
                 // Authentication failed, return generic error message
                 throw new Error(
@@ -191,6 +199,7 @@ const AuthProvider = ({ children }) => {
             }
 
             const data = await response.json();
+            setAuthInProgress(false); // end loading state
 
             // No access token was retrieved, throw error
             if (!data.accessToken)
@@ -219,6 +228,7 @@ const AuthProvider = ({ children }) => {
         } catch (err) {
             // Return generic form error
             // e.g. in a case where no accessToken is retrieved
+            setAuthInProgress(false); // end loading state
             console.error(err);
             return { email: "", password: "Something went wrong, try again" };
         }
@@ -227,6 +237,8 @@ const AuthProvider = ({ children }) => {
     // Handles logging authenticated user out
     const logout = async () => {
         try {
+            setAuthInProgress(true); // init loading state
+
             const response = await fetch("http://localhost:5000/auth/logout", {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
@@ -248,6 +260,7 @@ const AuthProvider = ({ children }) => {
 
                 // Log user out of app
                 clearUserState();
+                setAuthInProgress(false); // end loading state
 
                 // Redirect to /login page
                 history.push("/login");
@@ -269,6 +282,7 @@ const AuthProvider = ({ children }) => {
             if (!response.ok) throw Error(`HTTP Error: ${response.status}`);
         } catch (err) {
             console.error(err);
+            setAuthInProgress(false); // end loading state
 
             // Display goodbye notification message
             enqueueSnackbar(
@@ -293,6 +307,7 @@ const AuthProvider = ({ children }) => {
                 setAccessToken,
                 authenticate,
                 logout,
+                authInProgress,
             }}
         >
             {/* On refresh token expiration, display modal to notify user that their "session" has ended */}

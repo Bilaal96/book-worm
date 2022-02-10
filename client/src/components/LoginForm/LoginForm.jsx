@@ -5,20 +5,22 @@ import { Link as RouterLink, useLocation } from "react-router-dom";
 import { AuthContext } from "contexts/auth/auth.context";
 
 // Components
-import { Grid, TextField, Button, Link, Typography } from "@material-ui/core";
+import { Grid, TextField, Link, Typography } from "@material-ui/core";
 import FormWrapper from "components/FormWrapper/FormWrapper";
 import PasswordField from "components/PasswordField/PasswordField";
+import AsyncButton from "components/AsyncButton/AsyncButton";
 
 // Utils
 import validate from "utils/form-validators";
 
 import useStyles from "./styles";
+import { LockOpen } from "@material-ui/icons";
 
 const LoginForm = () => {
     const classes = useStyles();
     const location = useLocation();
 
-    const { authenticate } = useContext(AuthContext);
+    const { authenticate, authInProgress } = useContext(AuthContext);
 
     const [formFields, setFormFields] = useState({
         email: "",
@@ -29,9 +31,7 @@ const LoginForm = () => {
     //! DEV-ONLY
     useEffect(() => {
         if (Object.keys(formErrors).length > 0) {
-            console.log("FORM ERRORS (CLIENT)", formErrors);
-        } else {
-            console.log("NO CLIENT ERRORS");
+            console.log("FORM ERRORS:", formErrors);
         }
     }, [formErrors]);
 
@@ -128,6 +128,7 @@ const LoginForm = () => {
                             autoFocus
                             helperText={formErrors.email}
                             error={formErrors.hasOwnProperty("email")}
+                            disabled={authInProgress}
                         />
                     </Grid>
 
@@ -140,20 +141,23 @@ const LoginForm = () => {
                             fullWidth
                             helperText={formErrors.password}
                             error={formErrors.hasOwnProperty("password")}
+                            disabled={authInProgress}
                         />
                     </Grid>
 
                     {/* Submit Button */}
                     <Grid item xs={12}>
-                        <Button
+                        <AsyncButton
                             className={classes.submit}
                             type="submit"
                             color="secondary"
                             variant="contained"
                             fullWidth
+                            startIcon={<LockOpen />}
+                            loading={authInProgress}
                         >
-                            Submit
-                        </Button>
+                            {authInProgress ? "Logging in" : "Submit"}
+                        </AsyncButton>
                     </Grid>
 
                     {/* Link to Sign Up form */}
