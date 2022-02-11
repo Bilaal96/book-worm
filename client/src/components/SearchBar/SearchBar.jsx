@@ -2,14 +2,14 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import { useSnackbar } from "notistack";
 
-// Contexts
-import { useSearchContext } from "contexts/search/search.context";
+// Custom Hooks
+import useSearchContext from "hooks/useSearchContext.js";
 
 // Components
 import { InputBase } from "@material-ui/core";
 import AsyncButton from "components/AsyncButton/AsyncButton";
 
-// MUI Icons
+// Icons
 import { Search as SearchIcon } from "@material-ui/icons";
 
 // Utils
@@ -55,7 +55,7 @@ const SearchBar = ({ fetchBooks, setSelectedPage }) => {
 
             // Store submitted search term in SearchContext
             // -- for making paginated requests and preventing resubmissions
-            dispatchSearch({
+            dispatchSearch.native({
                 type: "UPDATE_SEARCH_SUBMISSION",
                 payload: searchInput,
             });
@@ -87,7 +87,7 @@ const SearchBar = ({ fetchBooks, setSelectedPage }) => {
                     onChange={handleChange}
                     onKeyDown={handleSearchSubmit}
                     placeholder="e.g. The Great Gatsby"
-                    disabled={search.isFetching}
+                    disabled={search.loading}
                 />
             </div>
 
@@ -97,10 +97,10 @@ const SearchBar = ({ fetchBooks, setSelectedPage }) => {
                 color="secondary"
                 onClick={handleSearchSubmit}
                 disableElevation
-                loading={search.isFetching}
-                disabled={search.isFetching}
+                loading={search.loading}
+                disabled={search.loading}
             >
-                {search.isFetching ? "Searching" : "Search"}
+                {search.loading ? "Searching" : "Search"}
             </AsyncButton>
         </div>
     );

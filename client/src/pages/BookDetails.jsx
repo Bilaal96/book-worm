@@ -3,15 +3,16 @@ import { useParams } from "react-router";
 
 // Custom Hooks
 import useAsyncReducer from "hooks/useAsyncReducer";
-
-// Context
-import { useSearchContext } from "contexts/search/search.context";
+import useSearchContext from "hooks/useSearchContext.js";
 
 // Components
 import { Grid, Typography } from "@material-ui/core";
 import BookDetailsHead from "components/BookDetailsHead/BookDetailsHead";
 import BookDetailsBody from "components/BookDetailsBody/BookDetailsBody";
 import AddToBooklistModal from "components/AddToBooklistModal/AddToBooklistModal";
+
+// Utils
+import { createAsyncReducer } from "utils/create-reducer";
 
 const BookDetails = () => {
     // Access bookId Route Param - aliased as bookIdParam
@@ -21,7 +22,11 @@ const BookDetails = () => {
     // Controls whether AddToBooklistModal is showing or not
     const [openModal, setOpenModal] = useState(false);
 
-    const [book, dispatch] = useAsyncReducer("GET_BOOK_BY_ID");
+    // Init async state (i.e. loading, value, error)
+    // Used to handle app state when fetching single book to display details
+    const actionTypePrefix = "GET_BOOK_BY_ID";
+    const [bookReducer] = createAsyncReducer(actionTypePrefix);
+    const [book, dispatch] = useAsyncReducer(actionTypePrefix, bookReducer);
 
     console.log("BookDetails", {
         "bookIdParam (route param)": bookIdParam,
@@ -33,7 +38,7 @@ const BookDetails = () => {
     useEffect(() => {
         console.log("-------------------GET BOOK BY ID-------------------");
 
-        dispatch.start(); // init loading state
+        dispatch.load(); // init loading state
 
         //! TEST Fetch book
         // const abortController = new AbortController();

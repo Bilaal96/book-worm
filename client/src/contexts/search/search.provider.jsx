@@ -1,79 +1,47 @@
-import { useReducer } from "react";
+import { createAsyncReducer } from "utils/create-reducer";
+import useAsyncReducer from "hooks/useAsyncReducer";
 
 import { SearchStateContext, SearchDispatchContext } from "./search.context";
 
-// booksReducer - handles app state during and after requests for books
-function searchReducer(state, action) {
-    switch (action.type) {
-        case "UPDATE_SEARCH_SUBMISSION":
-            return {
-                ...state,
-                submission: action.payload,
-            };
-        case "FETCH_BOOKS_START":
-            console.log("------------FETCH BOOKS START--------------");
-            return {
-                ...state,
-                isFetching: true,
-                error: null,
-            };
-        case "FETCH_BOOKS_SUCCESS":
-            console.log("------------FETCH BOOKS SUCCESS--------------");
-            return {
-                ...state,
-                results: action.payload,
-                isFetching: false,
-                error: null,
-            };
-        case "FETCH_BOOKS_FAILED":
-            console.log("------------FETCH BOOKS FAILED--------------");
-            return {
-                ...state,
-                results: {},
-                isFetching: false,
-                error: action.payload,
-            };
-        default:
-            return state;
-    }
-}
-
-const INITIAL_STATE = {
-    submission: "",
-    results: null,
-    isFetching: false,
-    error: null,
-};
-
-// Provides SearchContext to consuming child components
-export const SearchProvider = ({ stateOnly, dispatchOnly, children }) => {
-    const [search, dispatchSearch] = useReducer(searchReducer, INITIAL_STATE);
+// To consume context values of this provider see: utils/useSearchContext.js
+export const SearchProvider = ({ children }) => {
+    // Define arguments to createAsyncReducer
+    const actionTypePrefix = "FETCH_BOOKS";
+    // Set additional state & its respective state handler
+    // Stores the current search term
+    // -- for making paginated requests and preventing resubmissions
+    const additionalState = { submission: "" };
+    const additionalStateHandlers = {
+        UPDATE_SEARCH_SUBMISSION: (state, action) => ({
+            ...state,
+            submission: action.payload,
+        }),
+    };
 
     /**
-     *! TBD - is this optimisation necessary?
-     * Passing either stateOnly / dispatchOnly as props will provide a specific context
-     * The distinction between the providers below allow us to be selective of which context values we want
-     * This increases flexibility and ensures that we aren't needlessly rendering a Provider that is not in use
+     * Creates searchReducer (responsible for updating initialState)
+     * NOTE: both searchReducer & initialState are passed as args to useAsyncReducer
      */
-    // For use when only Search State is required
-    if (stateOnly)
-        return (
-            <SearchStateContext.Provider value={search}>
-                {children}
-            </SearchStateContext.Provider>
-        );
+    const [searchReducer, initialState] = createAsyncReducer(
+        actionTypePrefix,
+        // Custom state - an addition to async state (loading, value, error)
+        additionalState,
+        additionalStateHandlers
+    );
 
-    // For use when only Search Dispatch is required
-    if (dispatchOnly)
-        return (
-            <SearchDispatchContext.Provider value={dispatchSearch}>
-                {children}
-            </SearchDispatchContext.Provider>
-        );
+    /**
+     * search object properties: loading, value, error, submission
+     * dispatch object contains methods to update the states outlined above
+     */
+    const [search, dispatch] = useAsyncReducer(
+        actionTypePrefix,
+        searchReducer,
+        initialState
+    );
 
     return (
         <SearchStateContext.Provider value={search}>
-            <SearchDispatchContext.Provider value={dispatchSearch}>
+            <SearchDispatchContext.Provider value={dispatch}>
                 {children}
             </SearchDispatchContext.Provider>
         </SearchStateContext.Provider>

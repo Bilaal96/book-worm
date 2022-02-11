@@ -1,56 +1,49 @@
 import { useReducer, useCallback, useMemo } from "react";
 
-// Default value for 'initialState' arg passed to useReducer
-// NOTE: Can be overridden if additional properties are required
-const DEFAULT_STATE = {
-    value: null,
-    loading: false,
-    error: null,
-};
+// Default value for 'initialState' parameter passed to useAsyncReducer (see below)
+// NOTE: Default values can be overridden using createAsyncReducer util function
+import { ASYNC_STATE } from "utils/create-reducer";
 
 /** 
  * --- useAsyncReducer ---
  
- * A reducer that handles populating state for asynchronous tasks 
- * e.g. fetch requests / any promise-based task
- * Useful when you need to MANUALLY set the loading state
+ * A custom hook that wraps useReducer.
+ * It provides a neat interface for dispatching actions that update state for common asynchronous tasks.
+ * Useful for MANUALLY setting loading state when retrieving a value that is not immediately available. For example, via fetch requests / any promise-based task.
+
+ * Best used in conjunction with createAsyncReducer util function.
  
- * @param { String } actionTypePrefix - prefix to the name of action.type properties.
- * Passed as argument to createAsyncReducer function (see below).
+ * @param { String } actionTypePrefix - A prefix to the key of a type property within an action object used to update async state.
+ * e.g. actionTypePrefix = FETCH_DATA -> resulting actions: FETCH_DATA_LOAD, FETCH_DATA_SUCCESS, FETCH_DATA_FAILED.
  
- * @param { Func } [createAsyncReducer] - returns an async reducer function.
- * The returned reducer is passed as first argument to useReducer.
- * Defaults to createDefaultAsyncReducer.
+ * @param { Function } asyncReducer - Responsible for updating state when actions are dispatched.
+ * Passed as first argument to useReducer.
  
- * @param { Object } [initialState] - object containing state-values to be handled asynchronously
+ * @param { Object } [ initialState ] - Defines initial state of a reducer. 
+ * Defaults to ASYNC_STATE if not passed as argument manually.
  * Passed as second argument to useReducer.
- * Defaults to DEFAULT_STATE (see definition above).
- 
- * @returns asyncReducer - an Array with 2 elements.
+
+ * @return Tuple with 2 elements.
  * @property { Object } index0 - state updated throughout the async process.
- * @namespace { Object } index1 - namespace for action-dispatch functions used to update state asynchronously.
+
+ * @namespace { Object } index1 - action-dispatch functions used to update state asynchronously.
  * @method start - initialises loading state
  * @method success - sets value property when task completes successfully. Ends loading state.
  * @method failed - sets error property when task fails to complete. Ends loading state.
  * @method native - the default action-dispatch function returned by useReducer.
  * If custom initialState arg is provided, use dispatch.native() to dispatch custom-actions & update custom-state. 
- 
- * --- Passing Custom State ---
-
- * If additional state values are required, pass custom arguments for createAsyncReducer & initialState.
- * Model your custom reducer function after createAsyncReducer. 
- * Custom actions in your reducer can be dispatched using dispatch.native().
  */
 export default function useAsyncReducer(
     actionTypePrefix,
-    createAsyncReducer = createDefaultAsyncReducer,
-    initialState = DEFAULT_STATE
+    asyncReducer,
+    initialState = ASYNC_STATE
 ) {
-    const asyncReducer = createAsyncReducer(actionTypePrefix);
     const [state, dispatch] = useReducer(asyncReducer, initialState);
+    console.log("useAsyncReducer:", state);
 
-    const dispatchStart = useCallback(
-        () => dispatch({ type: `${actionTypePrefix}_START` }),
+    // Defined custom dispatch functions, each responsible for updating state at certain points of an async task
+    const dispatchLoad = useCallback(
+        () => dispatch({ type: `${actionTypePrefix}_LOAD` }),
         [dispatch, actionTypePrefix]
     );
 
@@ -65,48 +58,17 @@ export default function useAsyncReducer(
         [dispatch, actionTypePrefix]
     );
 
-    // IMPORTANT: Prevents value of dispatch functions from changing on every render
+    // IMPORTANT: useMemo prevents value of dispatch functions from changing on every render
     const customDispatch = useMemo(
         () => ({
-            start: dispatchStart,
+            load: dispatchLoad,
             success: dispatchSuccess,
             failed: dispatchFailed,
             // original dispatch function returned by useReducer
             native: dispatch,
         }),
-        [dispatchStart, dispatchSuccess, dispatchFailed]
+        [dispatchLoad, dispatchSuccess, dispatchFailed]
     );
 
     return [state, customDispatch];
-}
-
-// returns a reducer that handles async processes (including loading state)
-function createDefaultAsyncReducer(actionTypePrefix) {
-    return function defaultAsyncReducer(state, action) {
-        switch (action.type) {
-            case `${actionTypePrefix}_START`:
-                console.log(`ACTION DISPATCHED: ${actionTypePrefix}_START`);
-                return {
-                    ...state,
-                    loading: true,
-                    error: null,
-                };
-            case `${actionTypePrefix}_SUCCESS`:
-                console.log(`ACTION DISPATCHED: ${actionTypePrefix}_SUCCESS`);
-                return {
-                    ...state,
-                    value: action.payload,
-                    loading: false,
-                };
-            case `${actionTypePrefix}_FAILED`:
-                console.log(`ACTION DISPATCHED: ${actionTypePrefix}_FAILED`);
-                return {
-                    ...state,
-                    error: action.payload,
-                    loading: false,
-                };
-            default:
-                return state;
-        }
-    };
 }

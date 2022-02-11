@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
-// Contexts
-import { useSearchContext } from "contexts/search/search.context";
+// Custom Hooks
+import useSearchContext from "hooks/useSearchContext.js";
 
 // Components
 import { Typography } from "@material-ui/core";
@@ -10,17 +10,17 @@ import BooksGrid from "components/BooksGrid/BooksGrid";
 const SearchResults = ({ resultsPagination: ResultsPagination }) => {
     const [search] = useSearchContext();
 
-    // No searches made, prompt user
-    if (search.results === null) {
+    // No results found that match the search term entered
+    if (search.value === undefined) {
         return (
             <Typography variant="h4" component="p" align="center">
-                Find books using the search bar above
+                No results found, try searching for something else
             </Typography>
         );
     }
 
     // Books found, display in paginated BooksGrid
-    if (search.results.items?.length > 0) {
+    if (search.value?.items.length > 0) {
         return (
             <>
                 <Typography variant="h5" component="p" align="center">
@@ -28,15 +28,15 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
                 </Typography>
 
                 {ResultsPagination}
-                <BooksGrid booksFound={search.results} />
+                <BooksGrid booksFound={search.value} />
                 {ResultsPagination}
             </>
         );
     } else {
-        // No results found that match the search term entered
+        // No searches made, prompt user
         return (
             <Typography variant="h4" component="p" align="center">
-                No results found, try searching for something else
+                Find books using the search bar above
             </Typography>
         );
     }
@@ -44,7 +44,7 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
 
 // Allowing null values: https://github.com/facebook/react/issues/3163
 SearchResults.propTypes = {
-    resultsPagination: PropTypes.object.isRequired,
+    resultsPagination: PropTypes.element.isRequired,
 };
 
 export default SearchResults;

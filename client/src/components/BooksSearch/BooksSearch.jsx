@@ -16,8 +16,8 @@
 import { useState } from "react";
 import { useSnackbar } from "notistack";
 
-// Contexts
-import { useSearchContext } from "contexts/search/search.context";
+// Custom Hooks
+import useSearchContext from "hooks/useSearchContext.js";
 
 // Components
 import { Typography } from "@material-ui/core";
@@ -54,7 +54,7 @@ const BooksSearch = () => {
     /**
      * ----- fetchBooks() -----
      * Builds Request URI - see getBooksRequestURI() below
-     * Makes an async requests to the URI for books data
+     * Makes an async request for Books API data (using URI) 
      * Updates the SearchContext during and after the async request
      * Caches results of the request in sessionStorage
      
@@ -76,7 +76,7 @@ const BooksSearch = () => {
 
         try {
             // Enter loading state
-            dispatchSearch({ type: "FETCH_BOOKS_START" });
+            dispatchSearch.load();
 
             // Fetch books from Google Books API
             const response = await fetch(booksRequestURI);
@@ -97,17 +97,14 @@ const BooksSearch = () => {
             // console.log("fetchBooks response:", books);
 
             // Update SearchContext with fetched data, and exit loading state
-            dispatchSearch({
-                type: "FETCH_BOOKS_SUCCESS",
-                payload: books,
-            });
+            dispatchSearch.success(books);
 
             // Cache fetched books in sessionStorage
             sessionStorage.setItem("search-results", JSON.stringify(books));
         } catch (err) {
             console.error(err.message);
             // update SearchContext with error, and exit loading state
-            dispatchSearch({ type: "FETCH_BOOKS_FAILED", payload: err });
+            dispatchSearch.failed(err);
 
             // Display "no results found" notification
             if (err.code === 404) {
@@ -132,7 +129,7 @@ const BooksSearch = () => {
             selectedPage={selectedPage}
             setSelectedPage={setSelectedPage}
             pageCount={10}
-            isFetchingBooks={search.isFetching}
+            isFetchingBooks={search.loading}
         />
     );
 
@@ -149,7 +146,7 @@ const BooksSearch = () => {
             />
 
             {/* Renders appropriate UI based on "books" state */}
-            {search.isFetching ? (
+            {search.loading ? (
                 <Typography variant="h4" component="p" align="center">
                     Loading...
                 </Typography>

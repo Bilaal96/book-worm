@@ -10,6 +10,7 @@ import { Typography, Grid } from "@material-ui/core";
 import BookApiListItem from "components/BookApiListItem/BookApiListItem";
 
 // Utils
+import { createAsyncReducer } from "utils/create-reducer";
 import { getBooksRequestURI } from "utils/api-query-builder";
 
 /**
@@ -75,8 +76,13 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
         [book, bookLinkKey]
     );
 
+    // Init async state (i.e. loading, value, error)
     // Used to handle app state when fetching related books
-    const [relatedBooks, dispatch] = useAsyncReducer(actionTypePrefix);
+    const [relatedBooksReducer] = createAsyncReducer(actionTypePrefix);
+    const [relatedBooks, dispatch] = useAsyncReducer(
+        actionTypePrefix,
+        relatedBooksReducer
+    );
 
     console.log("Related Books", {
         relatedBooks,
@@ -102,7 +108,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
             });
 
             try {
-                dispatch.start();
+                dispatch.load(); // init loading state
 
                 // Perform search for related books
                 const response = await fetch(booksRequestURI, {

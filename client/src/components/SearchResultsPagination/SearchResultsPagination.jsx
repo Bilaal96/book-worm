@@ -1,7 +1,8 @@
 import PropTypes from "prop-types";
+import { useSnackbar } from "notistack";
 
-// Contexts
-import { useSearchContext } from "contexts/search/search.context";
+// Custom Hooks
+import useSearchContext from "hooks/useSearchContext.js";
 
 // Components
 import Pagination from "@material-ui/lab/Pagination";
@@ -18,6 +19,7 @@ const SearchResultsPagination = ({
     pageCount,
     isFetchingBooks,
 }) => {
+    const { enqueueSnackbar } = useSnackbar();
     const classes = useStyles();
     const [search] = useSearchContext();
 
@@ -41,8 +43,11 @@ const SearchResultsPagination = ({
     const handlePageChange = (event, pageNum) => {
         // If page has not changed, do not re-fetch books
         const cachedPage = JSON.parse(sessionStorage.getItem("results-page"));
-        if (cachedPage === pageNum)
-            return console.log("Currently showing this page");
+        if (cachedPage === pageNum) {
+            const infoNotification = "You're currently on this page";
+            enqueueSnackbar(infoNotification, { variant: "info" });
+            return console.log(infoNotification);
+        }
 
         // Calculate the startIndex queryParam, using the currently selected page
         const startIndex = getStartIndex(pageNum);
