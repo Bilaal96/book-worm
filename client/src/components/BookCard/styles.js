@@ -5,7 +5,7 @@ export default makeStyles((theme) => ({
     header: {
         // Used in conjunction with "noWrap" prop to truncate text with ellipsis
         display: "block",
-        backgroundColor: "#faf4fc",
+        backgroundColor: theme.palette.accent.light,
     },
     media: {
         backgroundSize: "contain",
@@ -16,7 +16,7 @@ export default makeStyles((theme) => ({
         },
     },
     actionsOne: {
-        backgroundColor: "#e8d2f0",
+        backgroundColor: theme.palette.accent.main,
     },
     content: {
         height: "150px", // main style that determines card's overall size

@@ -17,8 +17,8 @@ import {
 
 // Icons
 import {
-    FavoriteBorder,
-    Favorite,
+    // FavoriteBorder,
+    // Favorite,
     AddCircleOutline,
     RemoveCircle,
     Visibility,
@@ -105,13 +105,13 @@ const BookCard = ({ book }) => {
                     </IconButton>
 
                     {/* Add to Favourites */}
-                    <IconButton title="Add to Favourites">
+                    {/* <IconButton title="Add to Favourites">
                         {false ? (
                             <Favorite color="secondary" />
                         ) : (
                             <FavoriteBorder />
                         )}
-                    </IconButton>
+                    </IconButton> */}
                 </CardActions>
                 <CardContent className={classes.content}>
                     <Typography

@@ -174,6 +174,7 @@ const MetadataEditMode = ({
             <form
                 className={parentStyles.editForm}
                 onSubmit={updateBooklistMetadata}
+                noValidate
             >
                 {/* Form Inputs */}
                 <TextField
@@ -186,10 +187,12 @@ const MetadataEditMode = ({
                     helperText={formErrors.title}
                     error={formErrors.hasOwnProperty("title")}
                     disabled={isSaving}
+                    required
                 />
 
                 <TextField
                     label="Description"
+                    placeholder="Optional summary of list contents"
                     value={formFields.description}
                     onChange={handleFormFieldChange}
                     name="description"

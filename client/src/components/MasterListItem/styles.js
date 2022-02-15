@@ -17,14 +17,14 @@ export default makeStyles((theme) => ({
 
         "&:hover": {
             borderRadius: "4px",
-            backgroundColor: "#ECE3F0",
+            backgroundColor: theme.palette.accent.light,
         },
     },
     deleteButton: {
         transition: "all 0.2s ease",
         "&:hover": {
-            color: "#AA1945",
-            backgroundColor: "#F1CED4",
+            color: theme.palette.error.main,
+            backgroundColor: theme.palette.error.light,
         },
     },
 }));

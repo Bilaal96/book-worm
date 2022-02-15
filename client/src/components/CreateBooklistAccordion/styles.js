@@ -3,7 +3,16 @@ import { makeStyles } from "@material-ui/core";
 export default makeStyles((theme) => ({
     accordion: {
         margin: theme.spacing(0, 0, 2),
-        borderRadius: "3px",
+        borderRadius: "5px",
+
+        // Hide visual bug of MUI Accordion
+        "&::before": {
+            backgroundColor: "transparent",
+        },
+
+        "&.Mui-expanded": {
+            margin: theme.spacing(0, 0, 2),
+        },
     },
     accordionSummary: {
         backgroundColor: theme.palette.primary.main,

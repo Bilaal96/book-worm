@@ -175,11 +175,15 @@ const CreateBooklistAccordion = () => {
                 className={classes.accordionSummary}
                 expandIcon={<ExpandMore className={classes.expandIcon} />}
             >
-                <Typography variant="h6">Create New List</Typography>
+                <Typography variant="h6">
+                    {expanded
+                        ? "Create New List"
+                        : "👉 Click here to create a new list"}
+                </Typography>
             </AccordionSummary>
 
             <AccordionDetails className={classes.accordionDetails}>
-                <form onSubmit={createBooklist}>
+                <form onSubmit={createBooklist} noValidate>
                     <TextField
                         label="Title"
                         value={formFields.title}
@@ -191,9 +195,11 @@ const CreateBooklistAccordion = () => {
                         helperText={formErrors.title}
                         error={formErrors.hasOwnProperty("title")}
                         disabled={isCreating}
+                        required
                     />
                     <TextField
                         label="Description"
+                        placeholder="Optional summary of list contents"
                         value={formFields.description}
                         onChange={handleFormFieldChange}
                         className={classes.textField}

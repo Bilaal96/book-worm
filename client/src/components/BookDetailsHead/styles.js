@@ -32,7 +32,7 @@ export default makeStyles((theme) => ({
         justifyContent: "center",
         gridArea: "actions",
         order: 2,
-        backgroundColor: "#e8d2f0",
+        backgroundColor: theme.palette.accent.main,
 
         [theme.breakpoints.up("sm")]: {
             flexDirection: "column",
