@@ -5,7 +5,7 @@ import { SearchProvider } from "contexts/search/search.provider";
 
 // Components
 import WidthContainer from "components/WidthContainer/WidthContainer";
-import BooksSearch from "components/BooksSearch/BooksSearch";
+import BooksSearch from "pages/BooksSearch";
 import BookDetails from "pages/BookDetails";
 
 const Home = () => {
