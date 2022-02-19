@@ -1,9 +1,17 @@
 import PropTypes from "prop-types";
-import { Box } from "@material-ui/core";
+
+import { Box, makeStyles } from "@material-ui/core";
+
+const useStyles = makeStyles((theme) => ({
+    tabContent: {
+        backgroundColor: theme.palette.background.default,
+    },
+}));
 
 // The box/panel in which the data for a specific tab is shown
 const TabPanel = (props) => {
     const { children, value, index, ...other } = props;
+    const classes = useStyles();
 
     return (
         <div
@@ -13,7 +21,11 @@ const TabPanel = (props) => {
             aria-labelledby={`scrollable-auto-tab-${index}`}
             {...other}
         >
-            {value === index && <Box p={2}>{children}</Box>}
+            {value === index && (
+                <Box className={classes.tabContent} p={2}>
+                    {children}
+                </Box>
+            )}
         </div>
     );
 };

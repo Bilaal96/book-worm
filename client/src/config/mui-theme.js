@@ -38,9 +38,9 @@ let theme = createTheme({
     heroBanner: {
         height: {
             min: {
-                smDown: "20vh",
-                smUp: "25vh",
-                md: "30vh",
+                smDown: "15vh",
+                smUp: "20vh",
+                md: "25vh",
             },
         },
     },

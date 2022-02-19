@@ -7,12 +7,25 @@ import useSearchContext from "hooks/useSearchContext.js";
 
 // Components
 import { Grid, Typography } from "@material-ui/core";
+import HeroBanner from "components/HeroBanner/HeroBanner";
+import WidthContainer from "components/WidthContainer/WidthContainer";
+import ContentSpinner from "components/ContentSpinner/ContentSpinner";
 import BookDetailsHead from "components/BookDetailsHead/BookDetailsHead";
 import BookDetailsBody from "components/BookDetailsBody/BookDetailsBody";
 import AddToBooklistModal from "components/AddToBooklistModal/AddToBooklistModal";
 
 // Utils
 import { createAsyncReducer } from "utils/create-reducer";
+
+// Assets
+import heroImage from "assets/book-details-hero-image.jpg";
+
+const BookDetailsWrapper = ({ children, ...containerProps }) => (
+    <>
+        <HeroBanner image={heroImage} heading="Book Details" />
+        <WidthContainer {...containerProps}>{children}</WidthContainer>
+    </>
+);
 
 const BookDetails = () => {
     // Access bookId Route Param - aliased as bookIdParam
@@ -29,21 +42,14 @@ const BookDetails = () => {
     const [book, dispatch] = useAsyncReducer(actionTypePrefix, bookReducer);
 
     console.log("BookDetails", {
+        "book (async reducer)": book,
         "bookIdParam (route param)": bookIdParam,
         "search (context)": search,
-        "book (async reducer)": book,
     });
 
     // Retrieve Book Details on mount, using bookIdParam
     useEffect(() => {
-        console.log("-------------------GET BOOK BY ID-------------------");
-
         dispatch.load(); // init loading state
-
-        //! TEST Fetch book
-        // const abortController = new AbortController();
-        // fetchBookById(bookIdParam, abortController.signal);
-        // return;
 
         // If selected book has been previously viewed by user
         // retrieve book from "viewed-books" cache in sessionStorage
@@ -126,33 +132,36 @@ const BookDetails = () => {
     // Render loading UI
     if (book.loading) {
         return (
-            <Typography
-                variant="h2"
-                component="h1"
-                align="center"
-                color="textSecondary"
-            >
-                Loading details...
-            </Typography>
+            <BookDetailsWrapper component="section">
+                <ContentSpinner
+                    text="Loading details"
+                    open={true}
+                    size={60}
+                    position="absolute"
+                    rounded
+                />
+            </BookDetailsWrapper>
         );
     }
 
     // Render error UI
     if (book.error) {
         return (
-            <Typography
-                variant="h2"
-                component="h1"
-                align="center"
-                color="textSecondary"
-            >{`Book (with ID: ${bookIdParam}) does not exist`}</Typography>
+            <BookDetailsWrapper padding={{ top: 2.6, bottom: 2.6 }}>
+                <Typography
+                    variant="h2"
+                    component="h1"
+                    align="center"
+                    color="textSecondary"
+                >{`Book (with ID: ${bookIdParam}) does not exist`}</Typography>
+            </BookDetailsWrapper>
         );
     }
 
     // Render retrieved Book Details
     if (book.value) {
         return (
-            <>
+            <BookDetailsWrapper padding={{ top: 2.6, bottom: 2.6 }}>
                 <AddToBooklistModal
                     book={book.value}
                     openModal={openModal}
@@ -169,7 +178,7 @@ const BookDetails = () => {
                         <BookDetailsBody book={book.value} />
                     </Grid>
                 </Grid>
-            </>
+            </BookDetailsWrapper>
         );
     }
 

@@ -1,12 +1,9 @@
 import { makeStyles } from "@material-ui/core";
 
 export default makeStyles((theme) => ({
-    root: {
-        flexGrow: 1,
-        width: "100%",
-        backgroundColor: theme.primary,
-    },
-    cssLayoutContainer: {
+    paper: {
+        position: "relative",
         padding: theme.spacing(2),
+        flexGrow: 1,
     },
 }));

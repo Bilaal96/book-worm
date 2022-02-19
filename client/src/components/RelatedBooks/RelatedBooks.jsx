@@ -1,6 +1,6 @@
+import PropTypes from "prop-types";
 import { useMemo, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import PropTypes from "prop-types";
 
 // Custom Hooks
 import useAsyncReducer from "hooks/useAsyncReducer";
@@ -8,6 +8,7 @@ import useAsyncReducer from "hooks/useAsyncReducer";
 // Components
 import { Typography, Grid } from "@material-ui/core";
 import BookApiListItem from "components/BookApiListItem/BookApiListItem";
+import ContentSpinner from "components/ContentSpinner/ContentSpinner";
 
 // Utils
 import { createAsyncReducer } from "utils/create-reducer";
@@ -209,7 +210,15 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
 
     // bookLink Listed, render Loading UI
     if (relatedBooks.loading) {
-        return <Typography>Loading...</Typography>;
+        return (
+            <ContentSpinner
+                text="Finding related books"
+                open={true}
+                size={40}
+                position="static"
+                rounded
+            />
+        );
     }
 
     if (relatedBooks.value?.length) {
