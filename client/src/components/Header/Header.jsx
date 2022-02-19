@@ -37,7 +37,7 @@ const Header = () => {
 
     // Render NavDrawer / NavTop at the appropriate breakpoints
     return (
-        <AppBar>
+        <AppBar className={classes.appBar}>
             <Container maxWidth="lg" disableGutters>
                 <Toolbar className={classes.toolBar} disableGutters>
                     {/* Mobile Navigation */}

@@ -1,4 +1,4 @@
-import { createTheme } from "@material-ui/core";
+import { createTheme, responsiveFontSizes } from "@material-ui/core";
 
 /**
  *? PREVIOUS PALETTE - for reference
@@ -31,7 +31,19 @@ import { createTheme } from "@material-ui/core";
  * https://www.canva.com/colors/color-palettes/in-the-blue/
  */
 
-const theme = createTheme({
+let theme = createTheme({
+    header: {
+        height: "64px",
+    },
+    heroBanner: {
+        height: {
+            min: {
+                smDown: "20vh",
+                smUp: "25vh",
+                md: "30vh",
+            },
+        },
+    },
     palette: {
         primary: {
             main: "#01949A",
@@ -53,7 +65,16 @@ const theme = createTheme({
             light: "#F1CED4",
             main: "#AA1945",
         },
+        common: {
+            subtleWhite: "#F3F3F3",
+        },
+    },
+    zIndex: {
+        fixedSpinner: 1150,
     },
 });
+
+// https://v4.mui.com/customization/typography/#responsive-font-sizes
+theme = responsiveFontSizes(theme);
 
 export default theme;

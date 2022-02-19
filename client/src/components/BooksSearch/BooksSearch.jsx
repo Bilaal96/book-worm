@@ -20,13 +20,16 @@ import { useSnackbar } from "notistack";
 import useSearchContext from "hooks/useSearchContext.js";
 
 // Components
-import { Typography } from "@material-ui/core";
+import HeroBanner from "components/HeroBanner/HeroBanner";
 import SearchBar from "components/SearchBar/SearchBar";
 import SearchResultsPagination from "components/SearchResultsPagination/SearchResultsPagination";
 import SearchResults from "components/SearchResults/SearchResults";
 
 // Utils
 import { getBooksRequestURI } from "utils/api-query-builder";
+
+// Assets
+import heroImage from "assets/home-hero-image-medium.jpg";
 
 // Initialises selectedPage state - the currently selected page
 const getInitialSelectedPage = () => {
@@ -123,7 +126,7 @@ const BooksSearch = () => {
         - React Docs - Composition Pattern Example:
         - https://reactjs.org/docs/context.html#before-you-use-context
      */
-    const resultsPagination = (
+    const ResultsPagination = (
         <SearchResultsPagination
             fetchBooks={fetchBooks}
             selectedPage={selectedPage}
@@ -135,24 +138,20 @@ const BooksSearch = () => {
 
     return (
         <>
-            <Typography variant="h2" component="h1" align="center">
-                Discover
-            </Typography>
+            <HeroBanner
+                image={heroImage}
+                heading="Discover"
+                ctaText="From the largest online collection of literature"
+            >
+                {/* Search Bar */}
+                <SearchBar
+                    fetchBooks={fetchBooks}
+                    setSelectedPage={setSelectedPage}
+                />
+            </HeroBanner>
 
-            {/* Search Bar */}
-            <SearchBar
-                fetchBooks={fetchBooks}
-                setSelectedPage={setSelectedPage}
-            />
-
-            {/* Renders appropriate UI based on "books" state */}
-            {search.loading ? (
-                <Typography variant="h4" component="p" align="center">
-                    Loading...
-                </Typography>
-            ) : (
-                <SearchResults resultsPagination={resultsPagination} />
-            )}
+            {/* Renders appropriate UI based on Books API search results */}
+            <SearchResults resultsPagination={ResultsPagination} />
         </>
     );
 };
