@@ -14,18 +14,20 @@ import useStyles from "./styles";
  * [OPTIONAL PROPS]
  * text - provides context on what is happening (e.g. what is loading)
  * size - size of spinner - defaults to 40
- * contained - styles ContentSpinner relative to parent container
+ * position 
+    - sets css position property of Backdrop (options listed below)
+    - [fixed] | static | absolute
  * rounded - adds CSS border-radius
  */
-const ContentSpinner = ({ text, open, size, contained, rounded }) => {
-    const styleProps = { contained, rounded };
-    const classes = useStyles(styleProps);
+const ContentSpinner = ({ text, open, size, position, rounded }) => {
+    const classes = useStyles();
 
-    // if "contained", position absolute - i.e. relative to next (relative/absolute positioned) parent container
     const backdropClasses = clsx({
         [classes.root]: true, // default styles
-        [classes.backdropFixed]: !contained, // position: fixed
-        [classes.backdropAbsolute]: contained, // position: absolute
+        [classes.backdropFixed]: position === "fixed" || !position, // [ DEFAULT ]
+        [classes.backdropStatic]: position === "static",
+        [classes.backdropAbsolute]: position === "absolute",
+        [classes.backdropRounded]: rounded,
     });
 
     return (
@@ -52,7 +54,7 @@ ContentSpinner.propTypes = {
     text: PropTypes.string,
     open: PropTypes.bool.isRequired,
     size: PropTypes.number,
-    contained: PropTypes.bool,
+    position: PropTypes.string,
     rounded: PropTypes.bool,
 };
 

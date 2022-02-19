@@ -8,17 +8,25 @@ export default makeStyles((theme) => ({
         alignItems: "center",
         gap: theme.spacing(3), // Space between spinner & text
     },
-    // By default MUIs Backdrop is position: fixed - and takes up entire viewport
+    // Default MUI Backdrop position is "fixed" & takes up entire viewport
+    // Also used explicitly with prop: position="fixed"
     backdropFixed: {
         marginTop: theme.header.height, // header offset
         zIndex: theme.zIndex.fixedSpinner,
     },
-    // Customised to position relative to parent container
-    // To use backdropAbsolute, pass prop: contained
+    // Used with prop: position="static"
+    backdropStatic: {
+        position: "static",
+        padding: theme.spacing(4, 2),
+    },
+    // Relative to closest positioned parent container (with relative/absolute positioning)
+    // Used with prop: position="absolute"
     backdropAbsolute: {
         position: "absolute",
         inset: theme.spacing(2), // shorthand for t / r / b / l
-        borderRadius: ({ rounded }) => (rounded ? "4px" : "0px"),
+    },
+    backdropRounded: {
+        borderRadius: "4px",
     },
     spinner: {},
     spinnerText: {

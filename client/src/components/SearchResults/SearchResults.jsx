@@ -20,7 +20,8 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
                     text="Finding books"
                     open={true}
                     size={60}
-                    contained // position relative to WidthContainer
+                    // position relative to WidthContainer
+                    position="absolute"
                     rounded
                 />
             </WidthContainer>
