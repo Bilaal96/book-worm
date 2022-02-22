@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { useContext } from "react";
 import { useSnackbar } from "notistack";
+import { makeStyles } from "@material-ui/core";
 
 // Context
 import { AuthContext } from "contexts/auth/auth.context";
@@ -11,11 +12,18 @@ import PopupModal from "components/PopupModal/PopupModal";
 import MasterList from "components/MasterList/MasterList";
 import ActionRequiresLoginModal from "components/ActionRequiresLoginModal/ActionRequiresLoginModal";
 
+const useStyles = makeStyles((theme) => ({
+    popupModalContent: {
+        background: theme.palette.background.default,
+    },
+}));
+
 /** TODO
  * Search box - used to filter list
  * Notifications
  */
 const AddToBooklistModal = ({ book: bookToAdd, openModal, setOpenModal }) => {
+    const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
 
     const auth = useContext(AuthContext);
@@ -121,6 +129,7 @@ const AddToBooklistModal = ({ book: bookToAdd, openModal, setOpenModal }) => {
             title="Select A List To Add A Book To"
             openModal={openModal}
             setOpenModal={setOpenModal}
+            className={classes.popupModalContent}
         >
             {/* MasterList - displays all user booklists */}
             <MasterList handleListItemClick={addBookToBooklist} modal />

@@ -1,7 +1,19 @@
 import PropTypes from "prop-types";
+import clsx from "clsx";
 
 // Components
-import { Dialog, DialogTitle, DialogContent } from "@material-ui/core";
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    makeStyles,
+} from "@material-ui/core";
+
+const useStyles = makeStyles((theme) => ({
+    dialogContent: {
+        maxHeight: 600,
+    },
+}));
 
 // --- PopupModal Resources
 // https://v4.mui.com/components/dialogs/#responsive-full-screen
@@ -27,7 +39,15 @@ import { Dialog, DialogTitle, DialogContent } from "@material-ui/core";
  
  * @param { JSX } children - modal content; rendered in DialogContent.
  */
-const PopupModal = ({ title, openModal, setOpenModal, children }) => {
+const PopupModal = ({
+    title,
+    openModal,
+    setOpenModal,
+    className,
+    children,
+}) => {
+    const classes = useStyles();
+
     const closeModal = () => setOpenModal(false);
 
     return (
@@ -36,7 +56,10 @@ const PopupModal = ({ title, openModal, setOpenModal, children }) => {
             {title && <DialogTitle>{title}</DialogTitle>}
 
             {/* Content */}
-            <DialogContent style={{ maxHeight: 600 }} dividers>
+            <DialogContent
+                className={clsx(classes.dialogContent, className)}
+                dividers
+            >
                 {children}
             </DialogContent>
         </Dialog>
@@ -47,6 +70,8 @@ PopupModal.propTypes = {
     title: PropTypes.string,
     openModal: PropTypes.bool.isRequired,
     setOpenModal: PropTypes.func.isRequired,
+    className: PropTypes.string,
+    children: PropTypes.node,
 };
 
 export default PopupModal;
