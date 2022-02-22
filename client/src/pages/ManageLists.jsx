@@ -1,10 +1,13 @@
 import { Switch, Route, useRouteMatch, useHistory } from "react-router";
 
 // Components
-import { Typography } from "@material-ui/core";
+import HeroBanner from "components/HeroBanner/HeroBanner";
 import WidthContainer from "components/WidthContainer/WidthContainer";
 import MasterList from "components/MasterList/MasterList";
 import Booklist from "components/Booklist/Booklist";
+
+// Assets
+import masterListHeroImage from "assets/master-list-hero-image.jpg";
 
 const ManageLists = () => {
     const { path } = useRouteMatch();
@@ -18,20 +21,28 @@ const ManageLists = () => {
 
     return (
         <>
-            <WidthContainer padding={{ top: 2.6 }}>
-                <Switch>
-                    {/* match.path = /manage-lists */}
-                    <Route exact path={path}>
-                        <Typography variant="h4" component="h1" gutterBottom>
-                            Manage Lists
-                        </Typography>
+            <HeroBanner
+                image={masterListHeroImage}
+                heading="Master List"
+                ctaText="The one-stop for all your books"
+            />
+
+            {/* NOTE: match.path = /manage-lists */}
+            <Switch>
+                <Route exact path={path}>
+                    <WidthContainer padding={{ top: 2.6 }}>
+                        {/* List of all user created booklists */}
                         <MasterList handleListItemClick={handleListItemClick} />
-                    </Route>
-                    <Route path={`${path}/:listId`}>
+                    </WidthContainer>
+                </Route>
+
+                <Route path={`${path}/:listId`}>
+                    <WidthContainer padding={{ top: 2.6 }}>
+                        {/* List of all books in a single booklist */}
                         <Booklist />
-                    </Route>
-                </Switch>
-            </WidthContainer>
+                    </WidthContainer>
+                </Route>
+            </Switch>
         </>
     );
 };

@@ -3,6 +3,7 @@ import useAsyncEffect from "hooks/useAsyncEffect";
 
 // Components
 import CreateBooklistAccordion from "components/CreateBooklistAccordion/CreateBooklistAccordion";
+import ContentSpinner from "components/ContentSpinner/ContentSpinner";
 import { Grid } from "@material-ui/core";
 import MasterListItem from "components/MasterListItem/MasterListItem";
 
@@ -90,7 +91,16 @@ const MasterList = ({ handleListItemClick, modal }) => {
         }
     }, [booklists.value, masterList]);
 
-    if (booklists.loading) return <h1>LOADING...</h1>;
+    if (booklists.loading)
+        return (
+            <ContentSpinner
+                text="Loading your lists"
+                open={true}
+                size={60}
+                position={modal ? "static" : "absolute"}
+                rounded
+            />
+        );
 
     return (
         <>
