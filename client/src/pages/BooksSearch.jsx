@@ -109,15 +109,27 @@ const BooksSearch = () => {
             // update SearchContext with error, and exit loading state
             dispatchSearch.failed(err);
 
-            // Display "no results found" notification
+            // Default enqueueSnackbar() arguments
+            const snackbar = {
+                message: err.message,
+                options: { variant: "error" },
+            };
+
+            // "No results found" notification
             if (err.code === 404) {
-                const noResultsNotification =
+                snackbar.message =
                     "No results found 🤷‍♂️ try searching for something else";
-                return enqueueSnackbar(noResultsNotification);
+                snackbar.options = { variant: "default" };
             }
 
-            // Display error notification
-            enqueueSnackbar(err.message, { variant: "error" });
+            // Internal Server Error notification
+            if (err.code === 500) {
+                snackbar.message =
+                    "Search failed 🤔. If this problem persists, please try again later.";
+            }
+
+            // Display notification
+            enqueueSnackbar(snackbar.message, snackbar.options);
         }
     }
 
