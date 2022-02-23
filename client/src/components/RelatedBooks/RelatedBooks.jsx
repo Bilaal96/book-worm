@@ -8,7 +8,7 @@ import useAsyncReducer from "hooks/useAsyncReducer";
 // Components
 import { Typography, Grid } from "@material-ui/core";
 import BookApiListItem from "components/BookApiListItem/BookApiListItem";
-import ContentSpinner from "components/ContentSpinner/ContentSpinner";
+import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop";
 
 // Utils
 import { createAsyncReducer } from "utils/create-reducer";
@@ -211,7 +211,8 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
     // bookLink Listed, render Loading UI
     if (relatedBooks.loading) {
         return (
-            <ContentSpinner
+            <CustomBackdrop
+                withSpinner
                 text="Finding related books"
                 open={true}
                 size={40}

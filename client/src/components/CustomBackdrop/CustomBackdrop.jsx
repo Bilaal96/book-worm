@@ -19,7 +19,14 @@ import useStyles from "./styles";
     - [fixed] | static | absolute
  * rounded - adds CSS border-radius
  */
-const ContentSpinner = ({ text, open, size, position, rounded }) => {
+const CustomBackdrop = ({
+    withSpinner,
+    text,
+    open,
+    size,
+    position,
+    rounded,
+}) => {
     const classes = useStyles();
 
     const backdropClasses = clsx({
@@ -32,15 +39,18 @@ const ContentSpinner = ({ text, open, size, position, rounded }) => {
 
     return (
         <Backdrop className={backdropClasses} open={open}>
-            <CircularProgress
-                color="secondary"
-                className={classes.spinner}
-                size={size || 40}
-            />
+            {withSpinner && (
+                <CircularProgress
+                    color="secondary"
+                    className={classes.spinner}
+                    size={size || 40}
+                />
+            )}
+
             {text && (
                 <Typography
                     className={classes.spinnerText}
-                    variant="h5"
+                    variant={withSpinner ? "h5" : "h4"}
                     align="center"
                 >
                     {text}
@@ -50,7 +60,8 @@ const ContentSpinner = ({ text, open, size, position, rounded }) => {
     );
 };
 
-ContentSpinner.propTypes = {
+CustomBackdrop.propTypes = {
+    withSpinner: PropTypes.bool,
     text: PropTypes.string,
     open: PropTypes.bool.isRequired,
     size: PropTypes.number,
@@ -58,4 +69,4 @@ ContentSpinner.propTypes = {
     rounded: PropTypes.bool,
 };
 
-export default ContentSpinner;
+export default CustomBackdrop;

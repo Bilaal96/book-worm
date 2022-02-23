@@ -6,7 +6,7 @@ import useSearchContext from "hooks/useSearchContext.js";
 // Components
 import { Typography } from "@material-ui/core";
 import WidthContainer from "components/WidthContainer/WidthContainer";
-import ContentSpinner from "components/ContentSpinner/ContentSpinner";
+import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop";
 import BooksGrid from "components/BooksGrid/BooksGrid";
 import UserAppeal from "components/UserAppeal/UserAppeal";
 
@@ -17,7 +17,8 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
     if (search.loading) {
         return (
             <WidthContainer component="section">
-                <ContentSpinner
+                <CustomBackdrop
+                    withSpinner
                     text="Finding books"
                     open={true}
                     size={60}

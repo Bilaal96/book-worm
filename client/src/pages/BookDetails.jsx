@@ -9,7 +9,7 @@ import useSearchContext from "hooks/useSearchContext.js";
 import { Grid, Typography } from "@material-ui/core";
 import HeroBanner from "components/HeroBanner/HeroBanner";
 import WidthContainer from "components/WidthContainer/WidthContainer";
-import ContentSpinner from "components/ContentSpinner/ContentSpinner";
+import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop";
 import BookDetailsHead from "components/BookDetailsHead/BookDetailsHead";
 import BookDetailsBody from "components/BookDetailsBody/BookDetailsBody";
 import AddToBooklistModal from "components/AddToBooklistModal/AddToBooklistModal";
@@ -133,7 +133,8 @@ const BookDetails = () => {
     if (book.loading) {
         return (
             <BookDetailsWrapper component="section">
-                <ContentSpinner
+                <CustomBackdrop
+                    withSpinner
                     text="Loading details"
                     open={true}
                     size={60}

@@ -3,7 +3,7 @@ import useAsyncEffect from "hooks/useAsyncEffect";
 
 // Components
 import CreateBooklistAccordion from "components/CreateBooklistAccordion/CreateBooklistAccordion";
-import ContentSpinner from "components/ContentSpinner/ContentSpinner";
+import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop";
 import { Grid } from "@material-ui/core";
 import MasterListItem from "components/MasterListItem/MasterListItem";
 
@@ -93,7 +93,8 @@ const MasterList = ({ handleListItemClick, modal }) => {
 
     if (booklists.loading)
         return (
-            <ContentSpinner
+            <CustomBackdrop
+                withSpinner
                 text="Loading your lists"
                 open={true}
                 size={60}

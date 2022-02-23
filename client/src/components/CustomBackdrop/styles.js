@@ -7,6 +7,7 @@ export default makeStyles((theme) => ({
         justifyContent: "center",
         alignItems: "center",
         gap: theme.spacing(3), // Space between spinner & text
+        padding: theme.spacing(3),
     },
     // Default MUI Backdrop position is "fixed" & takes up entire viewport
     // Also used explicitly with prop: position="fixed"
@@ -17,7 +18,7 @@ export default makeStyles((theme) => ({
     // Used with prop: position="static"
     backdropStatic: {
         position: "static",
-        padding: theme.spacing(4, 2),
+        padding: theme.spacing(10, 2),
     },
     // Relative to closest positioned parent container (with relative/absolute positioning)
     // Used with prop: position="absolute"
