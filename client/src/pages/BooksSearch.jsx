@@ -122,8 +122,8 @@ const BooksSearch = () => {
                 snackbar.options = { variant: "default" };
             }
 
-            // Internal Server Error notification
-            if (err.code === 500) {
+            // Books API or Internal Server Error notification
+            if (err.code === "ENOTFOUND" || err.code === 500) {
                 snackbar.message =
                     "Search failed 🤔. If this problem persists, please try again later.";
             }
@@ -152,6 +152,7 @@ const BooksSearch = () => {
         <>
             <HeroBanner
                 image={heroImage}
+                uniformMinHeight="40vh"
                 heading="Discover"
                 ctaText="From the largest online collection of literature"
             >

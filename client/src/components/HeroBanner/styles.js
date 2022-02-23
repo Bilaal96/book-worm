@@ -11,7 +11,10 @@ export default makeStyles((theme) => ({
         padding: theme.spacing(2),
 
         position: "relative", // for ::before overlay
-        minHeight: theme.heroBanner.height.min.smDown,
+        minHeight: ({ uniformMinHeight }) =>
+            !!uniformMinHeight
+                ? uniformMinHeight
+                : theme.heroBanner.height.min.smDown,
         maxHeight: "max-content",
         color: theme.palette.common.subtleWhite,
 
@@ -35,12 +38,18 @@ export default makeStyles((theme) => ({
         },
 
         [theme.breakpoints.up("sm")]: {
-            minHeight: theme.heroBanner.height.min.smUp,
             padding: theme.spacing(4, 2),
+            minHeight: ({ uniformMinHeight }) =>
+                !!uniformMinHeight
+                    ? uniformMinHeight
+                    : theme.heroBanner.height.min.smUp,
         },
 
         [theme.breakpoints.up("md")]: {
-            minHeight: theme.heroBanner.height.min.md,
+            minHeight: ({ uniformMinHeight }) =>
+                !!uniformMinHeight
+                    ? uniformMinHeight
+                    : theme.heroBanner.height.min.md,
         },
     },
     ctaHeading: {},

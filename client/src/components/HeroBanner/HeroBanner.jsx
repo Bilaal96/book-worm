@@ -5,14 +5,18 @@ import { Typography } from "@material-ui/core";
 
 import useStyles from "./styles";
 
-/**
- * Displays hero image with overlay; path to image is a required prop
- * Optional props: heading, ctaText and additional content as children
- 
- * NOTE: ctaText -> call-to-action text
- */
-const HeroBanner = ({ image: heroImage, heading, ctaText, children }) => {
-    const styleProps = { heroImage };
+// Displays hero image with overlay
+const HeroBanner = ({
+    // Required props
+    image: heroImage, // the path to the image file
+
+    // Optional props
+    uniformMinHeight, // use single minHeight for all breakpoints
+    heading,
+    ctaText, // "cta" is an abbreviation for: "call-to-action"
+    children, // additional content
+}) => {
+    const styleProps = { heroImage, uniformMinHeight };
     const classes = useStyles(styleProps);
 
     return (
@@ -46,6 +50,7 @@ const HeroBanner = ({ image: heroImage, heading, ctaText, children }) => {
 
 HeroBanner.propTypes = {
     image: PropTypes.string.isRequired,
+    uniformMinHeight: PropTypes.string,
     heading: PropTypes.string,
     ctaText: PropTypes.string,
     children: PropTypes.node,
