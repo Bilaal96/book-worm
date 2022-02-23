@@ -8,6 +8,7 @@ import { Typography } from "@material-ui/core";
 import WidthContainer from "components/WidthContainer/WidthContainer";
 import ContentSpinner from "components/ContentSpinner/ContentSpinner";
 import BooksGrid from "components/BooksGrid/BooksGrid";
+import UserAppeal from "components/UserAppeal/UserAppeal";
 
 const SearchResults = ({ resultsPagination: ResultsPagination }) => {
     const [search] = useSearchContext();
@@ -55,14 +56,9 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
             </>
         );
     } else {
-        // No searches made, prompt user
-        return (
-            <WidthContainer component="section" padding={{ top: 6 }}>
-                <Typography variant="h4" component="p" align="center">
-                    Find books using the search bar above
-                </Typography>
-            </WidthContainer>
-        );
+        // Default home page content, shown when no searches have been made
+        // Explains use-cases of the application to the user
+        return <UserAppeal />;
     }
 };
 
