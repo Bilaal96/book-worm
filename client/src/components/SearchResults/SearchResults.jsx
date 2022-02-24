@@ -34,9 +34,13 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
     if (search.value === undefined) {
         return (
             <WidthContainer component="section" padding={{ top: 6 }}>
-                <Typography variant="h4" component="p" align="center">
-                    No results found, try searching for something else
-                </Typography>
+                <CustomBackdrop
+                    text="No results found"
+                    open={true}
+                    // position relative to WidthContainer
+                    position="absolute"
+                    rounded
+                />
             </WidthContainer>
         );
     }

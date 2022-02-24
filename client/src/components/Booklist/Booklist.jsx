@@ -16,9 +16,10 @@ import { MasterListContext } from "contexts/master-list/master-list.context";
 import { AuthContext } from "contexts/auth/auth.context";
 
 // Components
-import { Typography, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import BooklistMetadata from "components/BooklistMetadata/BooklistMetadata";
 import BookApiListItem from "components/BookApiListItem/BookApiListItem";
+import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop.jsx";
 
 import useStyles from "./styles.js";
 
@@ -93,19 +94,20 @@ const Booklist = () => {
         }
     };
 
-    // No books in list UI
+    // Empty booklist UI - no books in list
     if (booklist.books?.length === 0)
         return (
             <div className={classes.flexContainer}>
+                {/* Editable Booklist Title & Description */}
                 {booklist && <BooklistMetadata booklist={booklist} />}
-                <Typography
-                    variant="h2"
-                    component="h1"
-                    align="center"
-                    color="textSecondary"
-                >
-                    There are currently no books in this list
-                </Typography>
+
+                {/* Notify user on booklist status */}
+                <CustomBackdrop
+                    text="There are currently no books in this list"
+                    open={true}
+                    position="static"
+                    rounded
+                />
             </div>
         );
 

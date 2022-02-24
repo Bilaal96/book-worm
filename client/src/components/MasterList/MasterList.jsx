@@ -111,6 +111,19 @@ const MasterList = ({ handleListItemClick, modal }) => {
             <CreateBooklistAccordion />
 
             <Grid container spacing={2}>
+                {/* Master List is empty */}
+                {masterList.length === 0 && (
+                    <Grid item xs={12}>
+                        <CustomBackdrop
+                            text="There are currently no lists"
+                            open={true}
+                            position="static"
+                            rounded
+                        />
+                    </Grid>
+                )}
+
+                {/* Render list of existing booklists (if any) */}
                 {masterList
                     .filter((booklist) => {
                         /* TODO */

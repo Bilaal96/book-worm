@@ -6,7 +6,7 @@ import useAsyncReducer from "hooks/useAsyncReducer";
 import useSearchContext from "hooks/useSearchContext.js";
 
 // Components
-import { Grid, Typography } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import HeroBanner from "components/HeroBanner/HeroBanner";
 import WidthContainer from "components/WidthContainer/WidthContainer";
 import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop";
@@ -23,7 +23,9 @@ import heroImage from "assets/book-details-hero-image.jpg";
 const BookDetailsWrapper = ({ children, ...containerProps }) => (
     <>
         <HeroBanner image={heroImage} heading="Book Details" />
-        <WidthContainer {...containerProps}>{children}</WidthContainer>
+        <WidthContainer component="section" {...containerProps}>
+            {children}
+        </WidthContainer>
     </>
 );
 
@@ -132,7 +134,7 @@ const BookDetails = () => {
     // Render loading UI
     if (book.loading) {
         return (
-            <BookDetailsWrapper component="section">
+            <BookDetailsWrapper>
                 <CustomBackdrop
                     withSpinner
                     text="Loading details"
@@ -148,13 +150,13 @@ const BookDetails = () => {
     // Render error UI
     if (book.error) {
         return (
-            <BookDetailsWrapper padding={{ top: 2.6, bottom: 2.6 }}>
-                <Typography
-                    variant="h2"
-                    component="h1"
-                    align="center"
-                    color="textSecondary"
-                >{`Book (with ID: ${bookIdParam}) does not exist`}</Typography>
+            <BookDetailsWrapper>
+                <CustomBackdrop
+                    text={`Book failed to load or does not exist`}
+                    open={true}
+                    position="absolute"
+                    rounded
+                />
             </BookDetailsWrapper>
         );
     }

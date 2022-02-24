@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import useAsyncReducer from "hooks/useAsyncReducer";
 
 // Components
-import { Typography, Grid } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import BookApiListItem from "components/BookApiListItem/BookApiListItem";
 import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop";
 
@@ -204,7 +204,12 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
     // No bookLink listed (in book.volumeInfo[bookLinkKey])
     if (!bookLink) {
         return (
-            <Typography>{`The ${relation} of this book is unknown`}</Typography>
+            <CustomBackdrop
+                text={`The ${relation} of this book is unknown`}
+                open={true}
+                position="static"
+                rounded
+            />
         );
     }
 
@@ -238,9 +243,12 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
     } else {
         // No relatedBooks Found
         return (
-            <Typography>
-                {`No books related by ${relation} can be found`}
-            </Typography>
+            <CustomBackdrop
+                text={`No books related by ${relation} can be found`}
+                open={true}
+                position="static"
+                rounded
+            />
         );
     }
 };
