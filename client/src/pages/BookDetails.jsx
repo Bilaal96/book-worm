@@ -136,12 +136,9 @@ const BookDetails = () => {
         return (
             <BookDetailsWrapper>
                 <CustomBackdrop
-                    withSpinner
                     text="Loading details"
-                    open={true}
-                    size={60}
                     position="absolute"
-                    rounded
+                    spinner={60}
                 />
             </BookDetailsWrapper>
         );
@@ -153,9 +150,7 @@ const BookDetails = () => {
             <BookDetailsWrapper>
                 <CustomBackdrop
                     text={`Book failed to load or does not exist`}
-                    open={true}
                     position="absolute"
-                    rounded
                 />
             </BookDetailsWrapper>
         );

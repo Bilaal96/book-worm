@@ -94,12 +94,9 @@ const MasterList = ({ handleListItemClick, modal }) => {
     if (booklists.loading)
         return (
             <CustomBackdrop
-                withSpinner
                 text="Loading your lists"
-                open={true}
-                size={60}
                 position={modal ? "static" : "absolute"}
-                rounded
+                spinner={60}
             />
         );
 
@@ -116,9 +113,7 @@ const MasterList = ({ handleListItemClick, modal }) => {
                     <Grid item xs={12}>
                         <CustomBackdrop
                             text="There are currently no lists"
-                            open={true}
                             position="static"
-                            rounded
                         />
                     </Grid>
                 )}

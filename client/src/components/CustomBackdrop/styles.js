@@ -8,6 +8,7 @@ export default makeStyles((theme) => ({
         alignItems: "center",
         gap: theme.spacing(3), // Space between spinner & text
         padding: theme.spacing(3),
+        borderRadius: "4px",
     },
     // Default MUI Backdrop position is "fixed" & takes up entire viewport
     // Also used explicitly with prop: position="fixed"
@@ -26,8 +27,8 @@ export default makeStyles((theme) => ({
         position: "absolute",
         inset: theme.spacing(2), // shorthand for t / r / b / l
     },
-    backdropRounded: {
-        borderRadius: "4px",
+    backdropSquared: {
+        borderRadius: 0,
     },
     spinner: {},
     spinnerText: {

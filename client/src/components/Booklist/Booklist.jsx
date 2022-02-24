@@ -104,9 +104,7 @@ const Booklist = () => {
                 {/* Notify user on booklist status */}
                 <CustomBackdrop
                     text="There are currently no books in this list"
-                    open={true}
                     position="static"
-                    rounded
                 />
             </div>
         );

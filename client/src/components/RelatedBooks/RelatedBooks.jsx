@@ -206,9 +206,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
         return (
             <CustomBackdrop
                 text={`The ${relation} of this book is unknown`}
-                open={true}
                 position="static"
-                rounded
             />
         );
     }
@@ -217,12 +215,9 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
     if (relatedBooks.loading) {
         return (
             <CustomBackdrop
-                withSpinner
                 text="Finding related books"
-                open={true}
-                size={40}
                 position="static"
-                rounded
+                spinner
             />
         );
     }
@@ -245,9 +240,7 @@ const RelatedBooks = ({ relatedBy: relation, book }) => {
         return (
             <CustomBackdrop
                 text={`No books related by ${relation} can be found`}
-                open={true}
                 position="static"
-                rounded
             />
         );
     }

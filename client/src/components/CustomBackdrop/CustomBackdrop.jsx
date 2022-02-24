@@ -7,50 +7,51 @@ import { Backdrop, CircularProgress, Typography } from "@material-ui/core";
 import useStyles from "./styles";
 
 /**
- * A spinner (loading) screen to be displayed when waiting for data to load/fetch
+ * A custom implementation of MUIs Backdrop component
+ * Allows you to:
+    - dynamically render a Backdrop
+    - create a loading screen (via "spinner" prop) to display when fetching data
 
- * open - required - dictates when Backdrop component is shown 
-
- * [OPTIONAL PROPS]
- * text - provides context on what is happening (e.g. what is loading)
- * size - size of spinner - defaults to 40
- * position 
-    - sets css position property of Backdrop (options listed below)
-    - [fixed] | static | absolute
- * rounded - adds CSS border-radius
+ * NOTE: To create a "loading page", pass CustomBackdrop as immediate child of WidthContainer and set position="absolute" 
+ 
+ * @param { Boolean } [open] - dictates when Backdrop component is shown. Computed using dynamic value if passed, otherwise defaults to true.
+ * @param { String } [text] - provides context of why backdrop is being shown (e.g. loading content or content was not found).
+ * @param { String } [position] - sets css "position" property of Backdrop. Options include: fixed (default) | static | absolute.
+ * @param { Boolean | Number } [spinner] - renders a spinner component inside Backdrop. Has default size of 40 when passed as boolean. Custom size can be assigned by passing as number. 
+ * @param { Boolean } [squared] - set css "border-radius" to zero.
  */
-const CustomBackdrop = ({
-    withSpinner,
-    text,
-    open,
-    size,
-    position,
-    rounded,
-}) => {
+const CustomBackdrop = ({ open, text, position, spinner, squared }) => {
     const classes = useStyles();
 
+    // Apply css classes based on props received
     const backdropClasses = clsx({
-        [classes.root]: true, // default styles
-        [classes.backdropFixed]: position === "fixed" || !position, // [ DEFAULT ]
+        [classes.root]: true, // always applied
+        [classes.backdropFixed]: position === "fixed" || !position, // DEFAULT
         [classes.backdropStatic]: position === "static",
         [classes.backdropAbsolute]: position === "absolute",
-        [classes.backdropRounded]: rounded,
+        [classes.backdropSquared]: squared,
     });
 
     return (
-        <Backdrop className={backdropClasses} open={open}>
-            {withSpinner && (
+        <Backdrop
+            className={backdropClasses}
+            open={open === undefined ? true : open} // use dynamic value if passed
+        >
+            {/* Conditionally rendered backdrop spinner */}
+            {spinner && (
                 <CircularProgress
                     color="secondary"
                     className={classes.spinner}
-                    size={size || 40}
+                    // Fallback to default if size is not specified
+                    size={typeof spinner === "boolean" ? 40 : spinner}
                 />
             )}
 
+            {/* Conditionally rendered backdrop text */}
             {text && (
                 <Typography
                     className={classes.spinnerText}
-                    variant={withSpinner ? "h5" : "h4"}
+                    variant={spinner ? "h5" : "h4"}
                     align="center"
                 >
                     {text}
@@ -61,12 +62,11 @@ const CustomBackdrop = ({
 };
 
 CustomBackdrop.propTypes = {
-    withSpinner: PropTypes.bool,
+    open: PropTypes.bool,
     text: PropTypes.string,
-    open: PropTypes.bool.isRequired,
-    size: PropTypes.number,
     position: PropTypes.string,
-    rounded: PropTypes.bool,
+    spinner: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
+    squared: PropTypes.bool,
 };
 
 export default CustomBackdrop;

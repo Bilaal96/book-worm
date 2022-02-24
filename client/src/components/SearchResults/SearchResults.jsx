@@ -18,13 +18,9 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
         return (
             <WidthContainer component="section">
                 <CustomBackdrop
-                    withSpinner
                     text="Finding books"
-                    open={true}
-                    size={60}
-                    // position relative to WidthContainer
-                    position="absolute"
-                    rounded
+                    position="absolute" // relative to WidthContainer
+                    spinner={60}
                 />
             </WidthContainer>
         );
@@ -36,10 +32,7 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
             <WidthContainer component="section" padding={{ top: 6 }}>
                 <CustomBackdrop
                     text="No results found"
-                    open={true}
-                    // position relative to WidthContainer
-                    position="absolute"
-                    rounded
+                    position="absolute" // relative to WidthContainer
                 />
             </WidthContainer>
         );
