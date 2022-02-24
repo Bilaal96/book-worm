@@ -21,24 +21,29 @@ const ManageLists = () => {
 
     return (
         <>
-            <HeroBanner
-                image={masterListHeroImage}
-                heading="Master List"
-                ctaText="The one-stop for all your books"
-            />
-
-            {/* NOTE: match.path = /manage-lists */}
             <Switch>
+                {/* MasterList - List of all user created booklists */}
+                {/* path = /manage-lists */}
                 <Route exact path={path}>
-                    <WidthContainer padding={{ top: 2.6 }}>
-                        {/* List of all user created booklists */}
+                    <HeroBanner
+                        image={masterListHeroImage}
+                        heading="Master List"
+                        ctaText="The one-stop for all your booklists"
+                    />
+                    <WidthContainer padding={{ top: 2.6, bottom: 2.6 }}>
                         <MasterList handleListItemClick={handleListItemClick} />
                     </WidthContainer>
                 </Route>
 
+                {/* Booklist - List of all books in a single booklist */}
+                {/* path = /manage-lists/:listId */}
                 <Route path={`${path}/:listId`}>
-                    <WidthContainer padding={{ top: 2.6 }}>
-                        {/* List of all books in a single booklist */}
+                    <HeroBanner
+                        image={masterListHeroImage}
+                        heading="Book List"
+                        ctaText="Your unique collection of books"
+                    />
+                    <WidthContainer padding={{ top: 2.6, bottom: 2.6 }}>
                         <Booklist />
                     </WidthContainer>
                 </Route>

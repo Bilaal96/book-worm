@@ -76,15 +76,16 @@ const UserAppeal = () => {
 
                 {/* Marketing Pitch */}
                 <Pitch title="👷‍♂️ Work 🔨" classNameSuffix="one">
-                    Stuck at work? Exploring uncharted territory? Find the books
-                    to assist you with decision making in the workplace.
+                    Stuck at work? Exploring uncharted territory? Find the tools
+                    that will assist you with decision making in the workplace.
                 </Pitch>
                 <Pitch title="📖 Study 🧠" classNameSuffix="two">
                     Are you a student or researcher? Use Book Worm to help you
                     find references for your assignments, research & theses!
                 </Pitch>
+                {/* Unearth the kindle that will */}
                 <Pitch title="✨ Passion 🔥" classNameSuffix="three">
-                    Unearth the kindle that will ignite your next passion
+                    Unearth the books that will ignite your next passion
                     project. Allow Book Worm to nurture your ideas and help you
                     to achieve your goals.
                 </Pitch>
