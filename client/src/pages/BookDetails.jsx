@@ -20,6 +20,7 @@ import { createAsyncReducer } from "utils/create-reducer";
 // Assets
 import heroImage from "assets/book-details-hero-image.jpg";
 
+// Reusable wrapper for page layout
 const BookDetailsWrapper = ({ children, ...containerProps }) => (
     <>
         <HeroBanner image={heroImage} heading="Book Details" />
@@ -89,9 +90,9 @@ const BookDetails = () => {
          * The above functionality prevents having to re-fetch data, and reduces loading screens/wait time
          * fetchBookById() is a fail-safe in case the preceding code fails
          
-         * @param { string } id - unique identifier for a book
+         * @param { String } id - unique identifier for a book
          * @param { Object } abortSignal - used to abort fetch on component unmount 
-         * @param { string } [serverDomain] - defaults to localhost but can be changed depending on app environment (i.e. dev/production)
+         * @param { String } [serverDomain] - defaults to localhost but can be changed depending on app environment (i.e. dev/production)
          */
         async function fetchBookById(
             id,
@@ -131,19 +132,6 @@ const BookDetails = () => {
         };
     }, [bookIdParam, dispatch, search]);
 
-    // Render loading UI
-    if (book.loading) {
-        return (
-            <BookDetailsWrapper>
-                <CustomBackdrop
-                    text="Loading details"
-                    position="absolute"
-                    spinner={60}
-                />
-            </BookDetailsWrapper>
-        );
-    }
-
     // Render error UI
     if (book.error) {
         return (
@@ -180,8 +168,17 @@ const BookDetails = () => {
         );
     }
 
-    // Something must be returned when there is no value/error (i.e. on mount)
-    return null;
+    // Render loading UI (on mount)
+    return (
+        <BookDetailsWrapper>
+            <CustomBackdrop
+                open={book.loading}
+                text="Loading details"
+                position="absolute"
+                spinner={60}
+            />
+        </BookDetailsWrapper>
+    );
 };
 
 export default BookDetails;
