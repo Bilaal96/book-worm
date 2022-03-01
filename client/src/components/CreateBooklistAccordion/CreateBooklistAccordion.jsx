@@ -177,8 +177,8 @@ const CreateBooklistAccordion = () => {
             >
                 <Typography variant="h6">
                     {expanded
-                        ? "Create New List"
-                        : "👉 Click here to create a new list"}
+                        ? "👇 Create new booklist"
+                        : "👉 Create new booklist"}
                 </Typography>
             </AccordionSummary>
 
@@ -186,6 +186,7 @@ const CreateBooklistAccordion = () => {
                 <form onSubmit={createBooklist} noValidate>
                     <TextField
                         label="Title"
+                        placeholder="e.g. Economics Assignment References"
                         value={formFields.title}
                         onChange={handleFormFieldChange}
                         className={classes.textField}

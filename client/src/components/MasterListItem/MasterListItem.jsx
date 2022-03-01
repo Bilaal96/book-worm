@@ -1,54 +1,7 @@
-/**
- * ---------- List-item types: ----------
- *? list types are required because the components required different props
- ** BookApiListItem
- * 1) renders book data from the Books API (accepts "book" prop)
- * ! only navigates to BookDetails
- ** MasterListItem
- * 2) renders a booklist (i.e. MasterListItem)
- * 2a. adds a book to a booklist
- * 2b. navigates to the booklist, displaying all its items
-
- * ----- To make reusable: ----- 
- ** (1) accept single props (title, description, authors [optional], thumbnail [optional])
- * --- Pure func ---
- *! Accepts book object as prop (containing title, desc, authors etc.)
- *? (2) Have BookApiListItem and MasterListItem generate a "book" object that follows a strict format
- *? create a component which accepts the strictly formatted book object as a prop, and displays the expected data in a "standardised" way
- *? The list types outlined above essentially wrap this strict component
-
- * ---------- Required List Functionalities ----------
- *! For editable list-items, add an editable prop which renders actions (such as delete)
- *! ALSO CREATE A CONFIRMATION DIALOG/MODAL COMPONENT
-
- *? Items/children rendered by: MasterListItem
- ** MasterList - NOTE:TBD
- *! renders all Booklists via MasterListContext -> fetched from DB
- * Appears in:
-    - AddToListModal (in BooksGrid/BookCard & BookDetails)
-        * onClick -> add the "target book" to the Booklist clicked
-    - ManageLists Page (at ROUTE: /manage-lists)
-        * onClick -> navigate to /manage-lists/:listId (SEE BookList BELOW for details of route)
-        *! EDITABLE: DELETE LIST
-            - Delete from DB & MasterListContext
-
- *? Items/children rendered by: BookApiListItem
- ** Booklist - NOTE:TBD
- *! onMount: render all books in a list via masterList
- * Appears in: ManageLists Page (at ROUTE: /manage-lists/:listId)
- * List-item rendered by -> BookApiListItem
- * onClick -> navigate to /books/:id, render BookDetails
- *! EDITABLE: DELETE LIST[ITEM] 
-    - Delete from books array in -> DB & MasterListContext
- *! EDITABLE (IMPROVEMENT): EDIT CURRENT LISTS DETAILS | ADD TO ANOTHER LIST
- ** Related Books list
- * Appears in: RelatedBooks
- * List-item rendered by -> BookApiListItem
- * onClick -> navigate to /books/:id; renders BookDetails
- */
 import PropTypes from "prop-types";
 import { useState, useContext } from "react";
 import { useSnackbar } from "notistack";
+import { useTheme, useMediaQuery } from "@material-ui/core";
 
 // Contexts
 import { AuthContext } from "contexts/auth/auth.context.js";
@@ -61,21 +14,48 @@ import ConfirmActionModal from "components/ConfirmActionModal/ConfirmActionModal
 
 import useStyles from "./styles.js";
 
+/**
+ * MasterListItem (MLI) renders an interactive thumbnail/link for a user created booklist.
+ * By default (i.e. without the modal prop - see below), MLI will:
+    - navigate to the "/manage-lists/:id" route (on click) 
+    - provide the option to delete the MLI (i.e. a single booklist)
+ 
+ * @param { Object } booklist - Data representing a single user booklist. A booklist is an element of a booklists array - which is fetched from the DB.
+ * @param { Function } onListItemClick - Handles onClick event for a single MLI.
+ * @param { Boolean } [modal]
+ * Used to customise styles and interactive options when rendered in AddToBooklistModal.
+ * When specified:
+    - clicking a MLI adds a book to the relevant booklist in the DB and updates the UI
+    - a booklist cannot be deleted; i.e. delete booklist button is not rendered
+ */
 const MasterListItem = ({
     booklist,
     onListItemClick: handleListItemClick,
     modal,
 }) => {
+    // Breakpoint used to determine value of delete button's size prop
+    const theme = useTheme();
+    const breakpointSmallUp = useMediaQuery(theme.breakpoints.up("sm"));
+
+    const styleProps = { modal };
+    const classes = useStyles(styleProps);
+
     const { enqueueSnackbar } = useSnackbar();
     const { accessToken, user } = useContext(AuthContext);
     const { masterList, setMasterList } = useContext(MasterListContext);
 
-    const { _id, title, description, books, userId: booklistOwner } = booklist;
-    const styleProps = { modal };
-    const classes = useStyles(styleProps);
-
     const [openModal, setOpenModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    // booklist prop
+    const {
+        _id,
+        title,
+        description,
+        books,
+        userId: booklistOwner,
+        updatedAt,
+    } = booklist;
 
     const deleteBooklist = async () => {
         try {
@@ -124,8 +104,8 @@ const MasterListItem = ({
 
     return (
         <>
-            {/* MasterListItem is not deletable from modal */}
-            {!modal && (
+            {/* NOTE: MasterListItem is not deletable from modal */}
+            {modal ? null : (
                 <ConfirmActionModal
                     title="Delete Booklist"
                     openModal={openModal}
@@ -150,54 +130,81 @@ const MasterListItem = ({
             )}
 
             <Grid item xs={12}>
-                <Paper className={classes.masterListItem} elevation={2}>
-                    {/* Booklist Details & Actions Container */}
-                    <Grid
-                        container
-                        alignItems="center"
-                        justifyContent="space-between"
+                <Paper className={classes.paper} elevation={2}>
+                    {/* Booklist Details */}
+                    <div
+                        className={classes.details}
+                        onClick={handleListItemClick(_id)}
+                        tabIndex="0"
+                        aria-label={
+                            modal
+                                ? `Add book to list`
+                                : `View ${title ? `"${title}"` : ""} list`
+                        }
                     >
-                        {/* Booklist Details */}
-                        <Grid
-                            item
-                            xs={modal ? 12 : 11}
-                            className={classes.details}
-                            onClick={handleListItemClick(_id)}
+                        {/* Title */}
+                        <Typography
+                            className={classes.title}
+                            component="h2"
+                            variant="h4"
                         >
-                            {/* Title */}
-                            <Typography component="h2" variant="h3">
-                                {title ? `${title}` : "Unknown Title"}
-                            </Typography>
+                            {title ? `${title}` : "Unknown Title"}
+                        </Typography>
 
-                            {/* Description */}
-                            {/* <Typography
-                                component="p"
-                                variant="body1"
-                                dangerouslySetInnerHTML={{ __html: description }}
-                            /> */}
-                            <Typography component="p" variant="body1">
-                                Description: {description}
-                            </Typography>
-                            <Typography component="p" variant="body1">
+                        {/* Description */}
+                        <Typography
+                            className={classes.description}
+                            component="p"
+                            variant="h6"
+                        >
+                            {description ? (
+                                `Summary: ${description}`
+                            ) : (
+                                <em>Summary not available</em>
+                            )}
+                        </Typography>
+
+                        {/* Total Books Count */}
+                        <Typography component="p" variant="body1">
+                            Total books in list: {books.length}
+                        </Typography>
+
+                        {/* Last Updated - date format: DD/MM/YY */}
+                        <Typography
+                            component="p"
+                            variant="body2"
+                            color="textSecondary"
+                        >
+                            <em>
+                                Last updated:{" "}
+                                {new Date(updatedAt).toLocaleDateString()}{" "}
+                            </em>
+                        </Typography>
+
+                        {/* Book Ids - TESTING ONLY */}
+                        {/* <Typography component="p" variant="body1">
                                 Id of books stored:{" "}
                                 {books.map((book) => book.id).join(", ")}
-                            </Typography>
-                        </Grid>
+                            </Typography> */}
+                    </div>
 
-                        {/* Booklist Actions (ManageLists page only) */}
-                        {modal ? null : (
-                            <Grid item xs={1}>
-                                <Grid container justifyContent="center">
-                                    <IconButton
-                                        className={classes.deleteButton}
-                                        onClick={() => setOpenModal(true)}
-                                    >
-                                        <Delete fontSize="large" />
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                        )}
-                    </Grid>
+                    {/* Booklist Actions (for use in NON-modal only) */}
+                    {/* NOTE: MasterListItem is not deletable from modal */}
+                    {modal ? null : (
+                        <div className={classes.actions}>
+                            <IconButton
+                                className={classes.deleteButton}
+                                onClick={() => setOpenModal(true)}
+                                aria-label="Delete list"
+                            >
+                                <Delete
+                                    fontSize={
+                                        breakpointSmallUp ? "large" : "medium"
+                                    }
+                                />
+                            </IconButton>
+                        </div>
+                    )}
                 </Paper>
             </Grid>
         </>
