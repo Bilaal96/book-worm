@@ -7,7 +7,7 @@ import useSearchContext from "hooks/useSearchContext.js";
 import { Typography } from "@material-ui/core";
 import WidthContainer from "components/WidthContainer/WidthContainer";
 import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop";
-import BooksGrid from "components/BooksGrid/BooksGrid";
+import BookCardsGrid from "components/BookCardsGrid/BookCardsGrid";
 import UserAppeal from "components/UserAppeal/UserAppeal";
 
 const SearchResults = ({ resultsPagination: ResultsPagination }) => {
@@ -48,7 +48,7 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
                     </Typography>
 
                     {ResultsPagination}
-                    <BooksGrid booksFound={search.value} />
+                    <BookCardsGrid books={search.value.items} />
                     {ResultsPagination}
                 </WidthContainer>
             </>

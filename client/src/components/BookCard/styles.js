@@ -2,6 +2,17 @@ import { makeStyles } from "@material-ui/core";
 
 export default makeStyles((theme) => ({
     card: {},
+    linkToDetails: {
+        transition: "all 0.2s ease",
+        cursor: "pointer",
+
+        "&:hover": { backgroundColor: "rgba(0,0,0,0.2)" },
+        "&:focus": {
+            outline: "none",
+            backgroundColor: "rgba(0,0,0,0.6)",
+        },
+        "&:active": { backgroundColor: "rgba(0,0,0,0.6)" },
+    },
     header: {
         // Used in conjunction with "noWrap" prop to truncate text with ellipsis
         display: "block",
@@ -33,8 +44,5 @@ export default makeStyles((theme) => ({
     actionsTwo: {
         display: "flex",
         padding: theme.spacing(2),
-        [theme.breakpoints.up("md")]: {
-            justifyContent: "space-around",
-        },
     },
 }));

@@ -94,6 +94,11 @@ let theme = createTheme({
                 },
             },
         },
+        MuiTooltip: {
+            tooltip: {
+                fontSize: "0.8rem",
+            },
+        },
     },
 });
 

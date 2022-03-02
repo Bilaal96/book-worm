@@ -4,11 +4,12 @@ import PropTypes from "prop-types";
 import { Grid } from "@material-ui/core";
 import BookCard from "components/BookCard/BookCard";
 
-const BooksGrid = ({ booksFound }) => {
+// Render BookCard in grid format
+const BookCardsGrid = ({ books }) => {
     return (
         <Grid container spacing={2}>
-            {booksFound.items &&
-                booksFound.items.map((book) => (
+            {books &&
+                books.map((book) => (
                     <Grid key={book.id} item xs={12} sm={6} md={4} lg={3}>
                         <BookCard book={book} />
                     </Grid>
@@ -17,8 +18,8 @@ const BooksGrid = ({ booksFound }) => {
     );
 };
 
-BooksGrid.propTypes = {
-    booksFound: PropTypes.object.isRequired,
+BookCardsGrid.propTypes = {
+    books: PropTypes.array.isRequired,
 };
 
-export default BooksGrid;
+export default BookCardsGrid;
