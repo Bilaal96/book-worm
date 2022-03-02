@@ -1,8 +1,9 @@
-import { Home, MenuBook, LockOpen, Edit } from "@material-ui/icons";
+import { Public, ListAlt, LockOpen, Edit } from "@material-ui/icons";
 
-// Pagination
-// Max number of books to request from Google Books API
-// NOTE: API is limited to max of 40
+/** Pagination
+ * Max number of books to request from Google Books API
+ * NOTE: API is limited to max of 40
+ */
 export const MAX_RESULTS_PER_PAGE = 20;
 
 // Highest possible number of pages to show in pagination
@@ -21,14 +22,14 @@ export const NAV_MAP_BASE = [
         // SEE: https://stackoverflow.com/questions/39189640/react-router-index-route-always-active
         routeName: "/books",
         isExact: true,
-        text: "Home",
-        icon: <Home />,
+        text: "Discover",
+        icon: <Public />,
     },
     {
         routeName: "/manage-lists",
         isExact: false,
         text: "Manage Lists",
-        icon: <MenuBook />,
+        icon: <ListAlt />,
     },
 ];
 
