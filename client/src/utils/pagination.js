@@ -30,7 +30,7 @@ export const getStartIndex = (
 /**
  * TODO Calculate last valid page number, precedes initial request for books data
  * Currently the max page count is hard coded as 10
- * For the cases where max page count (whatever it's value may be) does not successfully retrieve books, this method should calculate the last valid page number that is able to fetch results
+ * For the cases where max page count (whatever its value may be) does not successfully retrieve books, this method should calculate the last valid page number that is able to fetch results
  * Then it shall set a new max page count with this calculated value
  */
 export const getLastPageOfSubmittedSearch = (

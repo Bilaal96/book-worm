@@ -10,6 +10,8 @@ import Home from "pages/Home";
 import ManageLists from "pages/ManageLists";
 import SignUp from "pages/SignUp";
 import Login from "pages/Login";
+import WidthContainer from "components/WidthContainer/WidthContainer";
+import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop";
 
 function App() {
     return (
@@ -49,7 +51,12 @@ function App() {
                     </ProtectedRoute>
 
                     <Route>
-                        <h1>404 | NOT FOUND</h1>
+                        <WidthContainer>
+                            <CustomBackdrop
+                                text="❌ 404 | Page Not Found 🤔"
+                                position="absolute"
+                            />
+                        </WidthContainer>
                     </Route>
                 </Switch>
             </PageContainer>

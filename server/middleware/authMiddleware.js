@@ -47,7 +47,7 @@ export const verifyAccessToken = (req, res, next) => {
                     return next(CustomError.unauthorized("Token blacklisted"));
 
                 // NOT Blacklisted, proceed to next middleware in this route
-                // Pass next middleware accessToken and it's decoded payload
+                // Pass next middleware accessToken and its decoded payload
                 console.log("ACCESS TOKEN VERIFIED:", accessToken);
                 req.accessToken = accessToken;
                 req.decodedToken = decodedPayload; // decoded access token

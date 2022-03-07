@@ -8,7 +8,7 @@ import CustomError from "../utils/CustomError.js";
  * Only registered users can perform /booklists actions
  * All /booklists routes receive an accessToken
  * The accessToken is verified by the middleware: verifyAccessToken
- * If valid, verifyAccessToken forwards the accessToken and it's decodedPayload (as decodedToken) to the next middleware in the stack
+ * If valid, verifyAccessToken forwards the accessToken and its decodedPayload (as decodedToken) to the next middleware in the stack
  */
 
 // ----- Booklists Collection -----

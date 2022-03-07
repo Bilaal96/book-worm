@@ -193,7 +193,7 @@ const login_post = async (req, res, next) => {
 const refresh_get = async (req, res, next) => {
     console.log("\n", "--- refresh_get ---");
     try {
-        // Once refresh token is approved, it's decoded payload is forwarded to this middleware; accessible under "req.refTokenPayload"
+        // Once refresh token is approved, its decoded payload is forwarded to this middleware; accessible under "req.refTokenPayload"
         // Below, the payload is used to reconstruct the user object with properties expected by the token signing functions
         const payload = req.refTokenPayload;
         const user = {
@@ -255,7 +255,7 @@ const logout_get = (req, res, next) => {
         // Clear refresh token from redis cache
         redisClient.del("RF_" + decodedToken.sub);
 
-        // Destroy Refresh Cookie & it's "shadow" counterpart - reset & expire cookies in client
+        // Destroy Refresh Cookie & its "shadow" counterpart - reset & expire cookies in client
         res.cookie("RF_TK", "", {
             ...secureCookieOptions,
             ...refreshCookieOptions,
