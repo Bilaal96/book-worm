@@ -1,24 +1,15 @@
-/**
- * ----- TBD -----
- * Delete book from a list (BookApiListItem)
- *? Endpoint: DELETE /booklists/:listId/books/:bookId 
- 
- * Update title and description
- *? Endpoint: PUT /booklists/:listId/books
- */
-
 import { useContext, useState } from "react";
 import { useParams, useHistory } from "react-router-dom";
 import { useSnackbar } from "notistack";
 
 // Context
-import { MasterListContext } from "contexts/master-list/master-list.context";
 import { AuthContext } from "contexts/auth/auth.context";
+import { MasterListContext } from "contexts/master-list/master-list.context";
 
 // Components
-import { Grid } from "@material-ui/core";
+import { Hidden } from "@material-ui/core";
 import BooklistMetadata from "components/BooklistMetadata/BooklistMetadata";
-import BookApiListItem from "components/BookApiListItem/BookApiListItem";
+import BookCardsList from "components/BookCardsList/BookCardsList.jsx";
 import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop.jsx";
 
 import useStyles from "./styles.js";
@@ -33,18 +24,21 @@ const Booklist = () => {
     const { masterList, setMasterList, getBooklistById } =
         useContext(MasterListContext);
 
-    const [isDeleting, setIsDeleting] = useState(false);
+    // Is set to true until request to delete book completes (succeeds or fails)
+    const [isDeletingBook, setIsDeletingBook] = useState(false);
 
     // Get the booklist user wants to view from Master List context
     const booklist = getBooklistById(listId);
+    console.log("BOOKLIST", booklist);
 
     // On list item click, navigate to BookDetails page for: `/books/${book.id}`
-    const viewBookDetails = (bookId) => (e) => history.push(`/books/${bookId}`);
+    const navigateToBookDetailsRoute = (bookId) => (e) =>
+        history.push(`/books/${bookId}`);
 
     const removeBookFromBooklist = (bookId) => async (e) => {
         try {
             // Request deletion of book (with id of 'bookId') from booklist (with id of 'listId')
-            setIsDeleting(true); // init loading state
+            setIsDeletingBook(true); // init loading state
             const response = await fetch(
                 `http://localhost:5000/booklists/${listId}/books/${bookId}`,
                 {
@@ -78,7 +72,7 @@ const Booklist = () => {
 
             // Update masterList state
             setMasterList(updatedMasterList);
-            setIsDeleting(false); // end loading state
+            setIsDeletingBook(false); // end loading state
 
             // Display success notification
             const successNotification =
@@ -86,7 +80,7 @@ const Booklist = () => {
             enqueueSnackbar(successNotification, { variant: "success" });
         } catch (err) {
             console.error(err);
-            setIsDeleting(false); // end loading state
+            setIsDeletingBook(false); // end loading state
             // Display error notification
             const errorNotification =
                 "Failed to remove book from list 🤔. If this problem persists please try again later.";
@@ -110,25 +104,33 @@ const Booklist = () => {
         );
 
     return (
-        <>
-            <div className={classes.flexContainer}>
-                {/* Editable Booklist Title & Description */}
-                {booklist && <BooklistMetadata booklist={booklist} />}
+        <div className={classes.flexContainer}>
+            {/* Editable Booklist Title & Description */}
+            {booklist && <BooklistMetadata booklist={booklist} />}
 
-                {/* List of books in a list */}
-                <Grid container spacing={2}>
-                    {booklist.books?.map((book) => (
-                        <BookApiListItem
-                            key={book.id}
-                            book={book}
-                            onClick={viewBookDetails(book.id)}
-                            handleDelete={removeBookFromBooklist(book.id)}
-                            isDeleting={isDeleting}
-                        />
-                    ))}
-                </Grid>
-            </div>
-        </>
+            {/* Display BookCard's in GRID format; hide at "mdUp" breakpoint */}
+            <Hidden mdUp>
+                <BookCardsList
+                    books={booklist.books}
+                    cardLayout="vertical"
+                    handleBookDetailsClick={navigateToBookDetailsRoute}
+                    handleBookDelete={removeBookFromBooklist}
+                    isDeletingBook={isDeletingBook}
+                />
+            </Hidden>
+
+            {/* Display BookCard's in LIST format; hide at "smDown" breakpoint */}
+            <Hidden smDown>
+                <BookCardsList
+                    books={booklist.books}
+                    breakpoints={{ xs: 12 }}
+                    cardLayout="horizontal"
+                    handleBookDetailsClick={navigateToBookDetailsRoute}
+                    handleBookDelete={removeBookFromBooklist}
+                    isDeletingBook={isDeletingBook}
+                />
+            </Hidden>
+        </div>
     );
 };
 

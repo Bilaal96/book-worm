@@ -1,4 +1,5 @@
 import PropTypes from "prop-types";
+import { useHistory } from "react-router-dom";
 
 // Custom Hooks
 import useSearchContext from "hooks/useSearchContext.js";
@@ -7,11 +8,15 @@ import useSearchContext from "hooks/useSearchContext.js";
 import { Typography } from "@material-ui/core";
 import WidthContainer from "components/WidthContainer/WidthContainer";
 import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop";
-import BookCardsGrid from "components/BookCardsGrid/BookCardsGrid";
+import BookCardsList from "components/BookCardsList/BookCardsList";
 import UserAppeal from "components/UserAppeal/UserAppeal";
 
 const SearchResults = ({ resultsPagination: ResultsPagination }) => {
+    const history = useHistory();
     const [search] = useSearchContext();
+
+    const navigateToBookDetailsRoute = (bookId) => (e) =>
+        history.push(`/books/${bookId}`);
 
     // Fetching data, show loading screen
     if (search.loading) {
@@ -38,7 +43,7 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
         );
     }
 
-    // Books found, display in paginated BooksGrid
+    // Books found, display in paginated BookCardsList
     if (search.value?.items.length > 0) {
         return (
             <>
@@ -48,7 +53,11 @@ const SearchResults = ({ resultsPagination: ResultsPagination }) => {
                     </Typography>
 
                     {ResultsPagination}
-                    <BookCardsGrid books={search.value.items} />
+                    {/* Render BookCardsList with default styles */}
+                    <BookCardsList
+                        books={search.value.items}
+                        handleBookDetailsClick={navigateToBookDetailsRoute}
+                    />
                     {ResultsPagination}
                 </WidthContainer>
             </>
