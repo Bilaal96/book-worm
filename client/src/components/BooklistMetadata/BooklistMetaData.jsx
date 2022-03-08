@@ -2,36 +2,51 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 
 // Components
-import { Paper } from "@material-ui/core";
+import { makeStyles, Paper } from "@material-ui/core";
 import MetadataViewMode from "components/MetadataViewMode/MetadataViewMode.jsx";
 import MetadataEditMode from "components/MetadataEditMode/MetadataEditMode.jsx";
 
-import useStyles from "./styles.js";
+// Styles
+const useStyles = makeStyles((theme) => ({
+    paper: {
+        display: "flex",
+        flexDirection: "column",
+        padding: theme.spacing(2),
+        gap: theme.spacing(1),
+    },
+}));
 
-// Displays title and description of a booklist
+/** 
+ * Displays metadata for a booklist, including: 
+    - editable title & description 
+    - number of books in the list 
+    - when list was last updated 
+ */
 const BooklistMetadata = ({ booklist }) => {
-    const { _id, title, description } = booklist; // metadata
+    const classes = useStyles();
 
     // State used to toggle between edit/display mode components
     const [editMode, setEditMode] = useState(false);
 
-    const styleProps = { editMode };
-    const classes = useStyles(styleProps);
+    const { _id, title, description, books, updatedAt } = booklist;
 
-    const metaDataProps = {
+    const metadataProps = {
+        // Metadata
         listId: _id,
         title,
         description,
+        booksCount: books.length,
+        lastUpdated: new Date(updatedAt).toLocaleDateString(),
+        // Used to toggle between MetadataEditMode & MetadataViewMode
         setEditMode,
-        parentStyles: classes,
     };
 
     return (
         <Paper className={classes.paper} elevation={2}>
             {editMode ? (
-                <MetadataEditMode {...metaDataProps} />
+                <MetadataEditMode {...metadataProps} />
             ) : (
-                <MetadataViewMode {...metaDataProps} />
+                <MetadataViewMode {...metadataProps} />
             )}
         </Paper>
     );

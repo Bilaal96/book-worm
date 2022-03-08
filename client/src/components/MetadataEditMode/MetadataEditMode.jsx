@@ -7,20 +7,32 @@ import { AuthContext } from "contexts/auth/auth.context";
 import { MasterListContext } from "contexts/master-list/master-list.context";
 
 // Components
-import { Typography, TextField, Button } from "@material-ui/core";
+import { makeStyles, Typography, TextField, Button } from "@material-ui/core";
 import { Save } from "@material-ui/icons";
 import AsyncButton from "components/AsyncButton/AsyncButton";
 
 // Utils
 import validate from "utils/form-validators";
 
-const MetadataEditMode = ({
-    listId,
-    title,
-    description,
-    setEditMode,
-    parentStyles,
-}) => {
+// Styles
+const useStyles = makeStyles((theme) => ({
+    editForm: {
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(2),
+        zIndex: 10,
+    },
+    editModeActions: {
+        display: "flex",
+        justifyContent: "flex-end",
+        gap: theme.spacing(1),
+    },
+}));
+
+// Allows user to edit title & description of a booklist
+// Save/Cancel buttons render MetadataViewMode (in place of MetadataEditMode)
+const MetadataEditMode = ({ listId, title, description, setEditMode }) => {
+    const classes = useStyles();
     const { enqueueSnackbar } = useSnackbar();
     const { accessToken } = useContext(AuthContext);
     const { masterList, setMasterList, getBooklistById } =
@@ -167,12 +179,17 @@ const MetadataEditMode = ({
 
     return (
         <>
-            <Typography variant="h4" component="h2">
+            <Typography
+                variant="h4"
+                component="h2"
+                color="primary"
+                gutterBottom
+            >
                 Edit Booklist Details
             </Typography>
 
             <form
-                className={parentStyles.editForm}
+                className={classes.editForm}
                 onSubmit={updateBooklistMetadata}
                 noValidate
             >
@@ -191,7 +208,7 @@ const MetadataEditMode = ({
                 />
 
                 <TextField
-                    label="Description"
+                    label="Summary"
                     placeholder="Optional summary of list contents"
                     value={formFields.description}
                     onChange={handleFormFieldChange}
@@ -206,17 +223,16 @@ const MetadataEditMode = ({
                     disabled={isSaving}
                 />
 
-                {/* Save Button */}
-                <div className={parentStyles.actions}>
+                {/* Save & Cancel buttons */}
+                <div className={classes.editModeActions}>
                     <AsyncButton
-                        className={parentStyles.saveButton}
                         color="primary"
                         variant="contained"
                         startIcon={<Save />}
                         type="submit"
                         loading={isSaving}
                     >
-                        {isSaving ? "Saving Changes" : "Save Details"}
+                        {isSaving ? "Saving" : "Save"}
                     </AsyncButton>
 
                     {/* Cancel Button */}
@@ -238,7 +254,6 @@ MetadataEditMode.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
     setEditMode: PropTypes.func.isRequired,
-    parentStyles: PropTypes.object.isRequired,
 };
 
 export default MetadataEditMode;
