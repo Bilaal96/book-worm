@@ -6,6 +6,11 @@ import { Edit } from "@material-ui/icons";
 
 // Styles
 const useStyles = makeStyles((theme) => ({
+    title: {
+        [theme.breakpoints.up("sm")]: {
+            maxWidth: "92%",
+        },
+    },
     viewModeActions: {
         display: "flex",
         justifyContent: "space-between",
@@ -28,7 +33,12 @@ const MetadataViewMode = ({
     return (
         <>
             {/* Title */}
-            <Typography variant="h4" component="h2" color="secondary">
+            <Typography
+                className={classes.title}
+                variant="h4"
+                component="h2"
+                color="secondary"
+            >
                 {title}
             </Typography>
 
@@ -45,12 +55,13 @@ const MetadataViewMode = ({
                 Total books in list: {booksCount}
             </Typography>
 
-            {/* Edit Button - enters edit mode */}
             <div className={classes.viewModeActions}>
                 {/* Last Updated - date format: DD/MM/YY */}
                 <Typography component="p" variant="body2" color="textSecondary">
                     <em>Last updated: {lastUpdated}</em>
                 </Typography>
+
+                {/* Edit Button - enters edit mode */}
                 <Button
                     color="primary"
                     variant="contained"
