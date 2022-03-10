@@ -1,83 +1,99 @@
 import { makeStyles } from "@material-ui/core";
 
+// Custom breakpoint & media query - between MUI's "sm" & "md" breakpoints
+// NOTE: customBreakpoint is exported for the placement of MUI Tooltips
+export const customBreakpoint = "(min-width:780px)";
+const mediaQueryBetweenSmAndMd = `@media ${customBreakpoint}`;
+
 export default makeStyles((theme) => ({
-    // Container
-    cssLayoutContainer: {
+    paper: {
         display: "flex",
         flexDirection: "column",
+        overflow: "hidden", // Prevent children from leaking out
+
+        // Custom media query
+        [mediaQueryBetweenSmAndMd]: {
+            display: "grid",
+            gridTemplateColumns: "max-content repeat(11, 1fr)", // 12 cols
+            gridTemplateRows: "0.4fr repeat(2, 1fr)", // 3 rows
+        },
+    },
+    bookHeading: {
+        height: "max-content",
         padding: theme.spacing(2),
-        // gridTemplateColumns: "1fr",
-        // gridTemplateAreas: `
-        //     'actions'
-        //     'image'
-        //     'info'
-        // `,
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.common.white,
+        borderBottom: `2px solid ${theme.palette.secondary.light}`,
 
-        [theme.breakpoints.up("sm")]: {
-            flexDirection: "row",
-            gap: "10px",
-            // gridTemplateAreas: `
-            //     'actions image . . .'
-            //     'info info info info info'
-            // `,
+        // Custom media query
+        [mediaQueryBetweenSmAndMd]: {
+            // Grid-item #1 (container: paper)
+            gridColumn: "4 / -1",
         },
     },
-
-    // Grid Items
-    // -- Buttons
-    bookActions: {
+    thumbnailContainer: {
         display: "flex",
-        flexDirection: "row",
-        gap: "20px",
         justifyContent: "center",
-        gridArea: "actions",
-        order: 2,
-        backgroundColor: theme.palette.accent.main,
+        backgroundColor: "rgba(195, 212, 216, 0.6)",
 
-        [theme.breakpoints.up("sm")]: {
-            flexDirection: "column",
-            width: "48px",
-            gap: "10px",
-            justifyContent: "normal",
-            order: 1,
+        // Custom media query
+        [mediaQueryBetweenSmAndMd]: {
+            // Grid-item #2 (container: paper)
+            gridColumn: "span 2",
+            gridRow: "1 / 4",
+            borderRight: `2px solid ${theme.palette.secondary.light}`,
         },
     },
-    iconButtons: {
-        borderRadius: "4px",
-    },
-    googlePlayIcon: {
-        width: "20px",
-        height: "20px",
-        /**
-         * MUI icons are 24x24 by default, so we add:
-         * 2px margin-top and bottom - to compensate for smaller size
-         * 4px margin-left to center icon
-         */
-        margin: "2px 0 2px 4px",
-    },
-
-    // -- Image
-    bookCover: {
-        margin: "20px auto",
-        backgroundImage: ({ bookThumbnail }) => `url(${bookThumbnail})`,
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
+    thumbnail: {
+        // Flex-item #1 (container: thumbnailContainer)
+        maxWidth: "100%", // can only be as wide as container
         height: "300px",
-        minWidth: "200px",
-        gridArea: "image",
-        order: 1,
+        objectFit: "contain",
+    },
+    actionsBar: {
+        padding: theme.spacing(1, 2),
+        backgroundColor: theme.palette.accent.main,
+        borderBottom: `2px solid ${theme.palette.primary.light}`,
 
-        [theme.breakpoints.up("sm")]: {
-            margin: "0",
-            order: 2,
-            // paddingTop: "75%",
+        // Custom media query
+        [mediaQueryBetweenSmAndMd]: {
+            // Grid-item #3 (container: paper)
+            width: "100%",
+            gridColumn: "1 / 2",
+            gridRow: "1 / span 3",
+
+            padding: theme.spacing(2, 1),
+            border: "unset",
+            borderRight: `2px solid ${theme.palette.primary.light}`,
         },
     },
+    actions: {
+        // Flex-container
+        display: "flex",
+        gap: theme.spacing(1),
 
-    // -- Info
+        // Custom media query
+        [mediaQueryBetweenSmAndMd]: {
+            // Display actions vertically
+            flexDirection: "column",
+        },
+    },
     bookInfo: {
-        gridArea: "info",
-        order: 3,
+        // Grid-item #4 (container: paper)
+        padding: theme.spacing(2),
+
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(1),
+
+        // Custom media query
+        [mediaQueryBetweenSmAndMd]: {
+            gridColumn: "4 / -1",
+            gridRow: "span 2",
+        },
+    },
+    eBookChip: {
+        width: "max-content",
+        marginTop: "0.6rem",
     },
 }));

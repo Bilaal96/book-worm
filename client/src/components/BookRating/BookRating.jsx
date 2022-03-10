@@ -2,21 +2,46 @@ import PropTypes from "prop-types";
 
 // Components
 import { Rating } from "@material-ui/lab";
-import { Typography } from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 
-import useStyles from "./styles";
+// Styles
+const useStyles = makeStyles((theme) => ({
+    bookRating: {
+        display: "flex",
+        gap: theme.spacing(2),
+    },
+}));
 
-const BookRating = ({ avgRating, count }) => {
+// Custom implementation of MUIs Rating component
+// https://v4.mui.com/components/rating/#half-ratings
+const BookRating = ({ avgRating = 0, count = 0 }) => {
     const classes = useStyles();
-    console.log("BookRating", { avgRating, count });
 
     return (
         <div className={classes.bookRating}>
-            {/* NOTE: avgRating || 0 - prevents setting the value-prop to undefined (which causes MUI error) */}
-            <Rating value={avgRating || 0} precision={0.1} readOnly />
-            <Typography variant="body1">
-                ({count ? count : "No Reviews"})
-            </Typography>
+            {/* Star Rating Visual */}
+            <Rating value={avgRating} precision={0.1} readOnly />
+
+            {/* Numeric Rating Visual (out of 5) */}
+            {avgRating > 0 && (
+                <Typography variant="body1">{`${avgRating} / 5`}</Typography>
+            )}
+
+            {/* Number of ratings given */}
+            {/* No ratings */}
+            {count === 0 && (
+                <Typography variant="body1">{`(0 reviews)`}</Typography>
+            )}
+
+            {/* Has a single rating */}
+            {count === 1 && (
+                <Typography variant="body1">{`(1 review)`}</Typography>
+            )}
+
+            {/* Has more than one rating */}
+            {count > 1 && (
+                <Typography variant="body1">{`(${count} reviews)`}</Typography>
+            )}
         </div>
     );
 };

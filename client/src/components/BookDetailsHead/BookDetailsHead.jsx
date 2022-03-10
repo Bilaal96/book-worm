@@ -1,124 +1,153 @@
 import PropTypes from "prop-types";
+import { useMediaQuery } from "@material-ui/core";
 
 // Components
-import { Paper, Typography, IconButton } from "@material-ui/core";
+import {
+    Paper,
+    Typography,
+    IconButton,
+    Tooltip,
+    Chip,
+    Avatar,
+} from "@material-ui/core";
 import BookRating from "components/BookRating/BookRating";
 
 // Icons
-import { AddCircleOutline, Visibility } from "@material-ui/icons";
-// import { ReactComponent as GooglePlay } from "assets/google-play-icon.svg";
+import {
+    AddCircleOutline,
+    Visibility,
+    VisibilityOff,
+} from "@material-ui/icons";
 
 // Utils
 import { getBookThumbnail } from "utils/book-data-display";
 
-import useStyles from "./styles";
+import useStyles, { customBreakpoint } from "./styles";
 
-/**
- * NOTE for Potential Improvement:
- * Use grid-template-areas to adjust layout per screen size
- */
 const BookDetailsHead = ({ book, setOpenModal }) => {
-    const { saleInfo, volumeInfo } = book;
+    const classes = useStyles();
+    const matchesCustomBreakpoint = useMediaQuery(customBreakpoint);
+    const tooltipPlacement = matchesCustomBreakpoint ? "right" : "top-start";
+
+    const { accessInfo, saleInfo, volumeInfo } = book;
 
     // if available get book cover, if not use fallback image
     const bookThumbnail = getBookThumbnail(volumeInfo.imageLinks);
-    // Make bookThumbnail accessible in makeStyles via props
-    const styleProps = { bookThumbnail };
-    const classes = useStyles(styleProps);
 
     return (
-        <Paper className={classes.cssLayoutContainer} elevation={2}>
-            {/* Actions */}
-            <div className={classes.bookActions}>
-                {/* Add to a Booklist */}
-                <IconButton
-                    title="Add to a Booklist"
-                    className={classes.iconButtons}
-                    onClick={() => setOpenModal(true)}
-                >
-                    <AddCircleOutline />
-                </IconButton>
-
-                {/* Preview */}
-                <IconButton
-                    title="Preview"
-                    className={classes.iconButtons}
-                    component="a"
-                    href={volumeInfo.previewLink}
-                    target="_blank"
-                    disabled={!volumeInfo.previewLink}
-                >
-                    <Visibility />
-                </IconButton>
-
-                {/* Google Play Store
-                 * Link via -> accessInfo.webReaderLink
-                 * NOTE: Link does not always exist -> sometimes not found
-                 */}
-                {/* <IconButton
-                    className={classes.iconButtons}
-                    component="a"
-                    href={volumeInfo.previewLink}
-                    target="_blank"
-                >
-                    <GooglePlay className={classes.googlePlayIcon} />
-                </IconButton> */}
-            </div>
-
-            {/* Book Cover */}
-            <div
-                className={classes.bookCover}
-                title={`Book cover for: ${volumeInfo.title}`}
-            />
-
-            {/** Main Information
-             * NOTE Improvement: 
-                - if saleInfo.isEbook === true -> show MUI Chip component (like a tag) -> "Available as E-book"
-             */}
-            <div className={classes.bookInfo}>
+        <Paper className={classes.paper} elevation={6}>
+            <div className={classes.bookHeading}>
+                {/* Title */}
                 <Typography variant="h5" component="h1">
                     {volumeInfo.title}
                 </Typography>
-                <Typography variant="subtitle1" component="h2">
-                    {volumeInfo.subtitle}
+
+                {/* Subtitle (if available) */}
+                {volumeInfo.subtitle && (
+                    <Typography variant="subtitle1" component="h2">
+                        {volumeInfo.subtitle}
+                    </Typography>
+                )}
+            </div>
+
+            {/* Book Cover (Thumbnail) */}
+            <div className={classes.thumbnailContainer}>
+                <img
+                    src={bookThumbnail}
+                    className={classes.thumbnail}
+                    title={`Book cover for: ${volumeInfo.title}`}
+                    alt={`Book cover for: ${volumeInfo.title}`}
+                />
+            </div>
+
+            {/* Actions performable on a book */}
+            <div className={classes.actionsBar}>
+                <div className={classes.actions}>
+                    {/* Add to a user's Booklist */}
+                    <Tooltip
+                        title="Add to a Booklist"
+                        aria-label="Add to a Booklist"
+                        placement={tooltipPlacement}
+                    >
+                        <IconButton onClick={() => setOpenModal(true)}>
+                            <AddCircleOutline />
+                        </IconButton>
+                    </Tooltip>
+
+                    {/* View book preview on Google Books website */}
+                    {/* Availability of preview link is determined using API response and then reflected in UI */}
+                    {accessInfo && accessInfo.viewability !== "NO_PAGES" ? (
+                        <Tooltip
+                            title="Google Books Preview"
+                            aria-label="Preview book on Google Books website"
+                            placement={tooltipPlacement}
+                        >
+                            <IconButton
+                                component="a"
+                                href={volumeInfo.previewLink}
+                                target="_blank"
+                            >
+                                <Visibility />
+                            </IconButton>
+                        </Tooltip>
+                    ) : (
+                        <Tooltip
+                            title="Preview not available"
+                            aria-label="Preview not available via Google Books"
+                            placement={tooltipPlacement}
+                        >
+                            <IconButton>
+                                <VisibilityOff color="disabled" />
+                            </IconButton>
+                        </Tooltip>
+                    )}
+                </div>
+            </div>
+
+            <div className={classes.bookInfo}>
+                {/* Author(s) */}
+                <Typography component="p" variant="subtitle1">
+                    <strong>Author(s): </strong>
+                    {volumeInfo.authors ? (
+                        `${volumeInfo.authors.join(", ")}`
+                    ) : (
+                        <em>unknown</em>
+                    )}
                 </Typography>
-                <Typography variant="subtitle2">
-                    {volumeInfo.authors}
+
+                {/* Publisher & Date Published */}
+                <Typography component="p" variant="body1">
+                    <strong>Published by: </strong>
+
+                    {/* Publisher (rendered if available) */}
+                    {volumeInfo.publisher ? (
+                        volumeInfo.publisher
+                    ) : (
+                        <em>unknown</em>
+                    )}
+
+                    {/* Date published (rendered if available) */}
+                    {volumeInfo.publisher &&
+                        volumeInfo.publishedDate !== undefined &&
+                        ` (${volumeInfo.publishedDate})`}
                 </Typography>
-                <Typography variant="body1">
-                    {volumeInfo.publishedDate}
-                </Typography>
-                {/**
-                 * BookRating component - Star Rating
-                 https://v4.mui.com/components/rating/#half-ratings
-                 */}
+
+                {/** Star Rating - out of 5 */}
                 <BookRating
                     avgRating={volumeInfo.averageRating}
                     count={volumeInfo.ratingsCount}
                 />
 
-                {/** SalesInfo 
-                  * NOTE improvement:
-                  * Check if "saleability" === "FOR_SALE" OR "NOT_FOR_SALE"
-                  * If "FOR_SALE", show data from saleInfo:
-                    - buyLink -> as href of button/link -> GET/BUY BOOK
-                    - retailPrice
-                        - currencyCode -> NOTE: use package to parse as currency symbol
-                        - amount
-                  */}
-                <Typography variant="body2">
-                    isEbook:
-                    {saleInfo.isEbook
-                        ? "Available as E-Book"
-                        : "Not available as E-book"}
-                </Typography>
-                <Typography variant="body2">{saleInfo.saleability}</Typography>
-                {saleInfo.retailPrice && (
-                    <Typography variant="body2">
-                        {saleInfo.retailPrice.amount}
-                        {` (${saleInfo.retailPrice.currencyCode})`}
-                    </Typography>
-                )}
+                {/* Displays if book is E-book or not */}
+                <Chip
+                    className={classes.eBookChip}
+                    avatar={<Avatar>{saleInfo.isEbook ? "✔" : "❌"}</Avatar>}
+                    label={
+                        saleInfo.isEbook ? "E-Book" : "Not available as E-book"
+                    }
+                    color={saleInfo.isEbook ? "primary" : "default"}
+                    variant="outlined"
+                />
             </div>
         </Paper>
     );
