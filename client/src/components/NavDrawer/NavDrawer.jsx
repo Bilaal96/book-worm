@@ -44,7 +44,7 @@ const NavDrawer = ({ navigationMap }) => {
             <Drawer open={openDrawer} onClose={handleDrawerToggle(false)}>
                 <List className={classes.list}>
                     <ListItem className={classes.logo}>
-                        <Logo />
+                        <Logo closeDrawer={handleDrawerToggle(false)} />
                     </ListItem>
 
                     {navigationMap.map(({ routeName, text, icon }, index) => (

@@ -10,6 +10,8 @@ export default makeStyles((theme) => ({
     toolBar: {
         padding: theme.spacing(1, 2),
         [theme.breakpoints.up("md")]: {
+            display: "flex",
+            justifyContent: "space-between",
             padding: theme.spacing(1, 3),
         },
     },
