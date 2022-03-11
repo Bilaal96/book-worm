@@ -1,5 +1,3 @@
-import { createTheme, responsiveFontSizes } from "@material-ui/core";
-
 /**
  *? PREVIOUS PALETTE - for reference
  * teal[500]
@@ -24,14 +22,22 @@ import { createTheme, responsiveFontSizes } from "@material-ui/core";
  * #F9F1F0 - Cream
  * #fedfd5 - Cream compliment
 
- ** CURRENT PALETTE
  * https://v4.mui.com/customization/color/#picking-colors
  * https://www.canva.com/colors/color-palettes/facing-forward/
  * https://www.canva.com/colors/color-palettes/cool-cream-strawberry/
  * https://www.canva.com/colors/color-palettes/in-the-blue/
  */
 
-let theme = createTheme({
+/**
+ * Use unstable_createMuiStrictModeTheme to remove findDOMNode deprecation warning
+ * Source: https://stackoverflow.com/questions/61220424/material-ui-drawer-finddomnode-is-deprecated-in-strictmode
+ */
+import {
+    unstable_createMuiStrictModeTheme,
+    responsiveFontSizes,
+} from "@material-ui/core";
+
+let theme = unstable_createMuiStrictModeTheme({
     header: {
         height: "64px",
     },

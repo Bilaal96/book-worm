@@ -13,19 +13,19 @@ import ScrollToTop from "components/ScrollToTop/ScrollToTop";
 import App from "./App";
 
 ReactDOM.render(
-    // <React.StrictMode>
-    <Router>
-        <ScrollToTop />
-        <ThemeProvider theme={theme}>
-            <SnackbarProvider maxSnack={3}>
-                <MasterListProvider>
-                    <AuthProvider>
-                        <App />
-                    </AuthProvider>
-                </MasterListProvider>
-            </SnackbarProvider>
-        </ThemeProvider>
-    </Router>,
-    // </React.StrictMode>,
+    <React.StrictMode>
+        <Router>
+            <ScrollToTop />
+            <ThemeProvider theme={theme}>
+                <SnackbarProvider maxSnack={3}>
+                    <MasterListProvider>
+                        <AuthProvider>
+                            <App />
+                        </AuthProvider>
+                    </MasterListProvider>
+                </SnackbarProvider>
+            </ThemeProvider>
+        </Router>
+    </React.StrictMode>,
     document.getElementById("root")
 );
