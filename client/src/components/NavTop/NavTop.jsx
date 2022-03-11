@@ -1,4 +1,6 @@
+import PropTypes from "prop-types";
 import { useContext } from "react";
+import { useLocation } from "react-router-dom";
 
 // Contexts
 import { AuthContext } from "contexts/auth/auth.context";
@@ -12,6 +14,8 @@ import useStyles from "./styles";
 
 const NavTop = ({ navigationMap }) => {
     const classes = useStyles();
+    const { pathname } = useLocation();
+
     const auth = useContext(AuthContext);
 
     return (
@@ -26,8 +30,12 @@ const NavTop = ({ navigationMap }) => {
                 <Button
                     key={index}
                     className={classes.navLink}
+                    activeClassName={
+                        pathname.includes(routeName)
+                            ? classes.navLinkSelected
+                            : ""
+                    }
                     startIcon={icon}
-                    activeClassName={classes.navLinkSelected}
                     component={RouterNavLink}
                     to={routeName}
                     exact={isExact}
@@ -37,11 +45,13 @@ const NavTop = ({ navigationMap }) => {
             ))}
 
             {/* Render LogoutButton if user is logged in */}
-            {auth.user && (
-                <LogoutButton className={classes.navLink}>LOG OUT</LogoutButton>
-            )}
+            {auth.user && <LogoutButton>LOG OUT</LogoutButton>}
         </nav>
     );
+};
+
+NavTop.propTypes = {
+    navigationMap: PropTypes.array.isRequired,
 };
 
 export default NavTop;

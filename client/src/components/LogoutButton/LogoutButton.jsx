@@ -17,6 +17,9 @@ import {
 // Icons
 import { PowerSettingsNew } from "@material-ui/icons";
 
+import useStyles from "./styles";
+
+// Modal opened on LogoutButton click - to confirm user logout
 const ConfirmLogoutModal = ({
     title,
     openModal,
@@ -49,7 +52,7 @@ const ConfirmLogoutModal = ({
     );
 };
 
-// NOTE: otherProps styles Logout Button in NavTop
+// LogoutButton - for NavDrawer / NavTop
 const LogoutButton = ({ listItem, closeDrawer, ...otherProps }) => {
     const auth = useContext(AuthContext);
     const [openModal, setOpenModal] = useState(false);
@@ -58,19 +61,23 @@ const LogoutButton = ({ listItem, closeDrawer, ...otherProps }) => {
 
     const handleLogout = (e) => {
         auth.logout();
-
-        if (listItem) closeDrawer(); // Close NavDrawer
+        if (listItem) closeDrawer();
     };
 
-    const confirmLogoutProps = { openModal, setOpenModal, handleLogout };
+    const confirmModalProps = { openModal, setOpenModal, handleLogout };
+    const classes = useStyles({ openModal });
 
     // Render LogoutButton as ListItem (for NavDrawer)
     if (listItem) {
         return (
             <>
-                <ConfirmLogoutModal {...confirmLogoutProps} />
-                <ListItem button onClick={openConfirmationModal}>
-                    <ListItemIcon>
+                <ConfirmLogoutModal {...confirmModalProps} />
+                <ListItem
+                    className={classes.listItem}
+                    button
+                    onClick={openConfirmationModal}
+                >
+                    <ListItemIcon className={classes.listItemIcon}>
                         <PowerSettingsNew />
                     </ListItemIcon>
                     <ListItemText primary="Logout" />
@@ -82,8 +89,9 @@ const LogoutButton = ({ listItem, closeDrawer, ...otherProps }) => {
     // Render LogoutButton as Button (for NavTop)
     return (
         <>
-            <ConfirmLogoutModal {...confirmLogoutProps} />
+            <ConfirmLogoutModal {...confirmModalProps} />
             <Button
+                className={classes.button}
                 startIcon={<PowerSettingsNew />}
                 onClick={openConfirmationModal}
                 {...otherProps}
@@ -97,7 +105,6 @@ const LogoutButton = ({ listItem, closeDrawer, ...otherProps }) => {
 LogoutButton.propTypes = {
     listItem: PropTypes.bool,
     closeDrawer: PropTypes.func,
-    // ...otherProps,
 };
 
 export default LogoutButton;

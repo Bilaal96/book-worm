@@ -1,4 +1,6 @@
-import { useState, useContext, useEffect } from "react";
+import PropTypes from "prop-types";
+import { useState, useContext } from "react";
+import { useLocation } from "react-router-dom";
 
 // Contexts
 import { AuthContext } from "contexts/auth/auth.context";
@@ -16,51 +18,20 @@ import {
 import Logo from "components/Logo/Logo";
 import LogoutButton from "components/LogoutButton/LogoutButton";
 
-// MUI Icons
+// Icons
 import { Menu } from "@material-ui/icons";
 
 import useStyles from "./styles";
 
-/** findDomNode Warning options
- * ! CURRENTLY DISABLED REACT STRICT MODE TO PREVENT CONSOLE ERROR
- 
- * 1) ignore -> is an issue with Material UI
- * 2) disable React Strict Mode
- * 3) use unstable version of createMuiTheme 
- 
- * SEE: https://stackoverflow.com/questions/61220424/material-ui-drawer-finddomnode-is-deprecated-in-strictmode 
- */
 const NavDrawer = ({ navigationMap }) => {
     const classes = useStyles();
+    const { pathname } = useLocation();
 
     const auth = useContext(AuthContext);
-    const [isOpen, setIsOpen] = useState(false);
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [openDrawer, setOpenDrawer] = useState(false);
 
-    /**
-     * Defining this handler is not absolutely necessary, but is optimal
-     * Because a callback passed as a prop is redefined on every render
-     * e.g. onClick={ () => setIsOpen(true) }
-     */
-    const handleDrawerToggle = (openState) => (event) => {
-        setIsOpen(openState);
-    };
-
-    const handleListItemClick = (index) => (event) => {
-        // set value of ListItem's "selected" prop, which determines styles for selected ListItem
-        setSelectedIndex(index);
-        // close NavDrawer
-        setIsOpen(false);
-    };
-
-    // Highlight the correct ListItem after route redirect on login/logout
-    useEffect(() => {
-        if (auth.user) {
-            setSelectedIndex(1); // select: Manage Lists
-        } else {
-            setSelectedIndex(0); // select: Home
-        }
-    }, [auth.user]);
+    // Sets openDrawer state - accepts boolean argument
+    const handleDrawerToggle = (openState) => (e) => setOpenDrawer(openState);
 
     return (
         <>
@@ -70,43 +41,44 @@ const NavDrawer = ({ navigationMap }) => {
             </IconButton>
 
             {/* Collapsible Side Drawer */}
-            <nav className={classes.drawer} aria-label="Navigation">
-                <Drawer open={isOpen} onClose={handleDrawerToggle(false)}>
-                    <div className={classes.list}>
-                        <List>
-                            <ListItem>
-                                <Logo />
-                            </ListItem>
+            <Drawer open={openDrawer} onClose={handleDrawerToggle(false)}>
+                <List className={classes.list}>
+                    <ListItem className={classes.logo}>
+                        <Logo />
+                    </ListItem>
 
-                            {navigationMap.map(
-                                ({ routeName, text, icon }, index) => (
-                                    <ListItem
-                                        button
-                                        key={index}
-                                        component={RouterLink}
-                                        to={routeName}
-                                        onClick={handleListItemClick(index)}
-                                        selected={selectedIndex === index}
-                                    >
-                                        <ListItemIcon>{icon}</ListItemIcon>
-                                        <ListItemText primary={text} />
-                                    </ListItem>
-                                )
-                            )}
+                    {navigationMap.map(({ routeName, text, icon }, index) => (
+                        <ListItem
+                            className={classes.navLink}
+                            button
+                            key={index}
+                            component={RouterLink}
+                            to={routeName}
+                            onClick={handleDrawerToggle(false)}
+                            selected={pathname.includes(routeName)}
+                        >
+                            <ListItemIcon className={classes.navLinkIcon}>
+                                {icon}
+                            </ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItem>
+                    ))}
 
-                            {/* Render LogoutButton if user is logged in */}
-                            {auth.user && (
-                                <LogoutButton
-                                    listItem
-                                    closeDrawer={() => setIsOpen(false)}
-                                />
-                            )}
-                        </List>
-                    </div>
-                </Drawer>
-            </nav>
+                    {/* Render LogoutButton if user is logged in */}
+                    {auth.user && (
+                        <LogoutButton
+                            listItem
+                            closeDrawer={handleDrawerToggle(false)}
+                        />
+                    )}
+                </List>
+            </Drawer>
         </>
     );
+};
+
+NavDrawer.propTypes = {
+    navigationMap: PropTypes.array.isRequired,
 };
 
 export default NavDrawer;
