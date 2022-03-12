@@ -5,6 +5,11 @@ import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import mongoose from "mongoose";
 import * as path from "path";
+import { fileURLToPath } from "url";
+
+// Required to fix "ReferenceError: __dirname is not defined in ES module scope"
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Routes
 import booksRoute from "./routes/booksRoute.js";
