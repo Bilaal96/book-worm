@@ -98,3 +98,5 @@ app.use((err, req, res, next) => {
         },
     });
 });
+
+process.on("uncaughtException", (err) => console.log(err));

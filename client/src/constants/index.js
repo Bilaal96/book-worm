@@ -6,6 +6,8 @@ export const BOOK_WORM_API_URI =
         ? process.env.REACT_APP_PROD_API_URI
         : process.env.REACT_APP_DEV_API_URI;
 console.log({ BOOK_WORM_API_URI });
+console.log("REACT_APP_PROD", process.env.REACT_APP_PROD_API_URI);
+console.log("ENV_VARS", process.env);
 
 /** Pagination
  * Max number of books to request from Google Books API
