@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import mongoose from "mongoose";
+import * as path from "path";
 
 // Routes
 import booksRoute from "./routes/booksRoute.js";
@@ -45,12 +46,10 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // Create MongoDB Connection String
-const { MONGO_DB_URI, MONGO_USER, MONGO_SECRET } = process.env;
-const DB_URI =
-    MONGO_DB_URI ||
-    `mongodb+srv://${MONGO_USER}:${encodeURIComponent(
-        MONGO_SECRET
-    )}@cluster0.bihot.mongodb.net/book-worm?retryWrites=true&w=majority`;
+const { MONGO_USER, MONGO_SECRET } = process.env;
+const DB_URI = `mongodb+srv://${MONGO_USER}:${encodeURIComponent(
+    MONGO_SECRET
+)}@cluster0.bihot.mongodb.net/book-worm?retryWrites=true&w=majority`;
 
 // Establish connection with DB
 mongoose
