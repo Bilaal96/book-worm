@@ -1,15 +1,17 @@
 import { useEffect, useContext, useCallback } from "react";
 import useAsyncEffect from "hooks/useAsyncEffect";
 
+// Contexts
+import { AuthContext } from "contexts/auth/auth.context";
+import { MasterListContext } from "contexts/master-list/master-list.context";
+
 // Components
 import CreateBooklistAccordion from "components/CreateBooklistAccordion/CreateBooklistAccordion";
 import CustomBackdrop from "components/CustomBackdrop/CustomBackdrop";
 import { Grid } from "@material-ui/core";
 import MasterListItem from "components/MasterListItem/MasterListItem";
 
-// Contexts
-import { AuthContext } from "contexts/auth/auth.context";
-import { MasterListContext } from "contexts/master-list/master-list.context";
+import { BOOK_WORM_API_URI } from "constants/index.js";
 
 // onMount: check if booklists is cached in localStorage
 
@@ -58,7 +60,7 @@ const MasterList = ({ handleListItemClick, modal }) => {
 
         // Attempt data fetch
         try {
-            const response = await fetch("http://localhost:5000/booklists", {
+            const response = await fetch(`${BOOK_WORM_API_URI}/booklists`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
                 credentials: "include",
             });

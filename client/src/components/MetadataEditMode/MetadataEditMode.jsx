@@ -13,6 +13,7 @@ import AsyncButton from "components/AsyncButton/AsyncButton";
 
 // Utils
 import validate from "utils/form-validators";
+import { BOOK_WORM_API_URI } from "constants/index.js";
 
 // Styles
 const useStyles = makeStyles((theme) => ({
@@ -115,7 +116,7 @@ const MetadataEditMode = ({ listId, title, description, setEditMode }) => {
                 // Make PATCH request for partial update of a booklist
                 setIsSaving(true); // init loading state
                 const response = await fetch(
-                    `http://localhost:5000/booklists/${listId}`,
+                    `${BOOK_WORM_API_URI}/booklists/${listId}`,
                     {
                         method: "PATCH",
                         headers: {

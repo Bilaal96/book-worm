@@ -1,4 +1,5 @@
 import { MAX_RESULTS_PER_PAGE } from "constants/index";
+import { BOOK_WORM_API_URI } from "constants/index.js";
 
 /**
  * --- getUrlEncodedQueryString() ---
@@ -41,10 +42,7 @@ export const getURIEncodedQueryString = (queryParams) => {
  * At the very least, the following properties are expected in configurableParams:
     - search
  */
-export const getBooksRequestURI = (
-    configurableParams,
-    serverDomain = "http://localhost:5000"
-) => {
+export const getBooksRequestURI = (configurableParams) => {
     // Accumulate query params in an object
     const queryParams = {
         // default params for every request
@@ -61,5 +59,5 @@ export const getBooksRequestURI = (
 
     // return URI with which API request can be made
     // e.g. http://localhost:5000/?search=test&startIndex=0&maxResults=20
-    return `${serverDomain}/books?${uriEncodedQuerystring}`;
+    return `${BOOK_WORM_API_URI}/books?${uriEncodedQuerystring}`;
 };

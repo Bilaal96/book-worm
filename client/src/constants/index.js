@@ -1,5 +1,12 @@
 import { Public, ListAlt, LockOpen, Edit } from "@material-ui/icons";
 
+// Select API URL based on environment variables
+export const BOOK_WORM_API_URI =
+    process.env.NODE_ENV === "production"
+        ? process.env.REACT_APP_PROD_API_URI
+        : process.env.REACT_APP_DEV_API_URI;
+console.log({ BOOK_WORM_API_URI });
+
 /** Pagination
  * Max number of books to request from Google Books API
  * NOTE: API is limited to max of 40

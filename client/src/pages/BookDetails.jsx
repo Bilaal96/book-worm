@@ -16,6 +16,7 @@ import AddToBooklistModal from "components/AddToBooklistModal/AddToBooklistModal
 
 // Utils
 import { createAsyncReducer } from "utils/create-reducer";
+import { BOOK_WORM_API_URI } from "constants/index.js";
 
 // Assets
 import heroImage from "assets/book-details-hero-image.jpg";
@@ -94,16 +95,15 @@ const BookDetails = () => {
          * @param { Object } abortSignal - used to abort fetch on component unmount 
          * @param { String } [serverDomain] - defaults to localhost but can be changed depending on app environment (i.e. dev/production)
          */
-        async function fetchBookById(
-            id,
-            abortSignal,
-            serverDomain = "http://localhost:5000"
-        ) {
+        async function fetchBookById(id, abortSignal) {
             try {
                 // fetch a single book at the route /:bookId
-                const response = await fetch(`${serverDomain}/books/${id}`, {
-                    signal: abortSignal,
-                });
+                const response = await fetch(
+                    `${BOOK_WORM_API_URI}/books/${id}`,
+                    {
+                        signal: abortSignal,
+                    }
+                );
 
                 // Fetch failed: HTTP status code is NOT WITHIN success range (200-299)
                 if (!response.ok) {

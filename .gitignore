@@ -1,2 +1,7 @@
 # Ignore user workspace settings
 .vscode
+
+node_modules/
+build/
+
+.env

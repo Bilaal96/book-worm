@@ -12,11 +12,14 @@ import { MasterListContext } from "contexts/master-list/master-list.context";
 import ConfirmActionModal from "components/ConfirmActionModal/ConfirmActionModal";
 import { Typography } from "@material-ui/core";
 
+import { BOOK_WORM_API_URI } from "constants/index.js";
+
 // Provides app with ability to access & update AuthContext
 const AuthProvider = ({ children }) => {
     const { clearMasterList } = useContext(MasterListContext);
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const history = useHistory();
+
     const [authInProgress, setAuthInProgress] = useState(false);
     const [accessToken, setAccessToken] = useState(null);
     const [user, setUser] = useState(null);
@@ -52,7 +55,7 @@ const AuthProvider = ({ children }) => {
     // Perform fetch request to renew auth tokens
     const fetchNewAuthTokens = async () => {
         try {
-            const response = await fetch("http://localhost:5000/auth/refresh", {
+            const response = await fetch(`${BOOK_WORM_API_URI}/auth/refresh`, {
                 headers: { "Content-Type": "application/json" },
                 credentials: "include", // required to send refresh cookie
             });
@@ -173,7 +176,7 @@ const AuthProvider = ({ children }) => {
 
             // Send authentication request with user credentials
             const response = await fetch(
-                `http://localhost:5000/auth/${authType}`,
+                `${BOOK_WORM_API_URI}/auth/${authType}`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -239,7 +242,7 @@ const AuthProvider = ({ children }) => {
         try {
             setAuthInProgress(true); // init loading state
 
-            const response = await fetch("http://localhost:5000/auth/logout", {
+            const response = await fetch(`${BOOK_WORM_API_URI}/auth/logout`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",

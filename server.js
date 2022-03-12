@@ -32,15 +32,29 @@ app.use(
 );
 app.use(cookieParser());
 
+// Serve Static Client Files => ONLY in Production Env
+if (process.env.NODE_ENV === "production") {
+    // Allow static files to be served from: __dirname/client/build
+    app.use(express.static(path.join(__dirname, "client/build")));
+
+    // Serve index.html for any incoming HTTP GET Request
+    // -- all static files are built into small modules/packages from index.html
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(__dirname, "client/build", "index.html"));
+    });
+}
+
 // Create MongoDB Connection String
-const { MONGO_USER, MONGO_SECRET } = process.env;
-const dbUri = `mongodb+srv://${MONGO_USER}:${encodeURIComponent(
-    MONGO_SECRET
-)}@cluster0.bihot.mongodb.net/book-worm?retryWrites=true&w=majority`;
+const { MONGO_DB_URI, MONGO_USER, MONGO_SECRET } = process.env;
+const DB_URI =
+    MONGO_DB_URI ||
+    `mongodb+srv://${MONGO_USER}:${encodeURIComponent(
+        MONGO_SECRET
+    )}@cluster0.bihot.mongodb.net/book-worm?retryWrites=true&w=majority`;
 
 // Establish connection with DB
 mongoose
-    .connect(dbUri, { useNewUrlParser: true, useUnifiedTopology: true })
+    .connect(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then((result) => {
         console.log("Connection with MongoDB established");
         // Only listen for requests once DB connection is established

@@ -12,6 +12,8 @@ import { Grid, IconButton, Paper, Typography } from "@material-ui/core";
 import { Delete } from "@material-ui/icons";
 import ConfirmActionModal from "components/ConfirmActionModal/ConfirmActionModal";
 
+import { BOOK_WORM_API_URI } from "constants/index.js";
+
 import useStyles from "./styles.js";
 
 /**
@@ -64,8 +66,9 @@ const MasterListItem = ({
 
             // User owns booklist, send request to delete it
             setIsDeleting(true); // init loading state
+
             const response = await fetch(
-                `http://localhost:5000/booklists/${_id}`,
+                `${BOOK_WORM_API_URI}/booklists/${_id}`,
                 {
                     method: "DELETE",
                     headers: { Authorization: `Bearer ${accessToken}` },

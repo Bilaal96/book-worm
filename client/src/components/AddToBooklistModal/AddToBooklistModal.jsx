@@ -12,6 +12,8 @@ import PopupModal from "components/PopupModal/PopupModal";
 import MasterList from "components/MasterList/MasterList";
 import ActionRequiresLoginModal from "components/ActionRequiresLoginModal/ActionRequiresLoginModal";
 
+import { BOOK_WORM_API_URI } from "constants/index.js";
+
 const useStyles = makeStyles((theme) => ({
     popupModalContent: {
         background: theme.palette.background.default,
@@ -60,7 +62,7 @@ const AddToBooklistModal = ({ book: bookToAdd, openModal, setOpenModal }) => {
             // Make request to add book to list
             // -- i.e. insert bookToAdd into targetBooklist.books array
             const response = await fetch(
-                `http://localhost:5000/booklists/${targetBooklistId}/books`,
+                `${BOOK_WORM_API_URI}/booklists/${targetBooklistId}/books`,
                 {
                     method: "PUT",
                     headers: {
