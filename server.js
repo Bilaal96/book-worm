@@ -22,35 +22,33 @@ import { verifyAccessToken } from "./middleware/authMiddleware.js";
 
 // App Configuration
 import "./config/init_redis.js";
-const PORT = process.env.PORT || 5000; // get/define PORT to listen for req on
+// -- determine ORIGIN based on application environment
+const ORIGIN =
+    process.env.NODE_ENV === "production"
+        ? process.env.ORIGIN_PROD
+        : process.env.ORIGIN_DEV;
+console.log("CORS ORIGIN:", ORIGIN);
+// -- get/define PORT to listen for req on
+const PORT = process.env.PORT || 5000;
+
 const app = express();
 
 // Middlewares
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// -- set appropriate CORS headers
 app.use(
     cors({
-        // Set appropriate headers
         credentials: true, // Access-Control-Allow-Credentials
-        origin: "http://localhost:3000", // Access-Control-Allow-Origin
+        origin: ORIGIN, // Access-Control-Allow-Origin
     })
 );
 app.use(cookieParser());
+// -- allow static files to be served from: '__dirname/client/build'
+app.use(express.static(path.join(__dirname, "client/build")));
 
-// Serve Static Client Files => ONLY in Production Env
-if (process.env.NODE_ENV === "production") {
-    // Allow static files to be served from: __dirname/client/build
-    app.use(express.static(path.join(__dirname, "client/build")));
-
-    // Serve index.html for any incoming HTTP GET Request
-    // -- all static files are built into small modules/packages from index.html
-    app.get("*", (req, res) => {
-        res.sendFile(path.join(__dirname, "client/build", "index.html"));
-    });
-}
-
-// Create MongoDB Connection String
+// Assemble MongoDB Connection String
 const { MONGO_USER, MONGO_SECRET } = process.env;
 const DB_URI = `mongodb+srv://${MONGO_USER}:${encodeURIComponent(
     MONGO_SECRET
@@ -83,6 +81,13 @@ app.get("/test", verifyAccessToken, (req, res) => {
 app.use("/books", booksRoute);
 app.use("/auth", authRoute);
 app.use("/booklists", verifyAccessToken, booklistsRoute);
+
+// Serve static index.html for requests made to unknown endpoints
+if (process.env.NODE_ENV === "production") {
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(__dirname, "client/build", "index.html"));
+    });
+}
 
 // Custom Error Handler
 app.use(handleCustomError);
