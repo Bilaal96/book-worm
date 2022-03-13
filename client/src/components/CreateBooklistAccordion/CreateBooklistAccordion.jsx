@@ -110,14 +110,17 @@ const CreateBooklistAccordion = () => {
         if (formIsValid) {
             try {
                 setIsCreating(true); // init loading state
-                const response = await fetch(`${BOOK_WORM_API_URI}/booklists`, {
-                    method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(formFields),
-                });
+                const response = await fetch(
+                    `${BOOK_WORM_API_URI}/api/booklists`,
+                    {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(formFields),
+                    }
+                );
 
                 // Failed to create list - handle bad response
                 if (!response.ok) {

@@ -59,7 +59,7 @@ export const verifyAccessToken = (req, res, next) => {
 
 /** Silent Token Refresh
  * When access token expires, the client will send a request to renew auth tokens
- * The refresh cookie is sent with the request to the /auth/refresh route
+ * The refresh cookie is sent with the request to the /api/auth/refresh route
  * This function validates the refresh token (stored in the refresh cookie) by:
     1) verifying the token signature
     2) checking if the token is whitelisted in the Redis cache
@@ -93,7 +93,7 @@ export const verifyRefreshToken = (req, res, next) => {
                     }
 
                     // Refresh tokens (both received and whitelisted) DO NOT match
-                    // Only whitelisted tokens can make an /auth/refresh request
+                    // Only whitelisted tokens can make an /api/auth/refresh request
                     if (refreshToken !== cachedRefToken)
                         return next(
                             CustomError.unauthorized("Token is not whitelisted")

@@ -59,5 +59,5 @@ export const getBooksRequestURI = (configurableParams) => {
 
     // return URI with which API request can be made
     // e.g. http://localhost:5000/?search=test&startIndex=0&maxResults=20
-    return `${BOOK_WORM_API_URI}/books?${uriEncodedQuerystring}`;
+    return `${BOOK_WORM_API_URI}/api/books?${uriEncodedQuerystring}`;
 };

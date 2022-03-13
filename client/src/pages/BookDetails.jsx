@@ -99,7 +99,7 @@ const BookDetails = () => {
             try {
                 // fetch a single book at the route /:bookId
                 const response = await fetch(
-                    `${BOOK_WORM_API_URI}/books/${id}`,
+                    `${BOOK_WORM_API_URI}/api/books/${id}`,
                     {
                         signal: abortSignal,
                     }

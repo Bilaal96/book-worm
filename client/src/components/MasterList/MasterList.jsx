@@ -60,7 +60,7 @@ const MasterList = ({ handleListItemClick, modal }) => {
 
         // Attempt data fetch
         try {
-            const response = await fetch(`${BOOK_WORM_API_URI}/booklists`, {
+            const response = await fetch(`${BOOK_WORM_API_URI}/api/booklists`, {
                 headers: { Authorization: `Bearer ${accessToken}` },
                 credentials: "include",
             });

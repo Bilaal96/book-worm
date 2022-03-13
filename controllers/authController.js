@@ -89,7 +89,7 @@ const secureCookieOptions = {
 const refreshCookieOptions = {
     ...secureCookieOptions,
     maxAge: TTL_REF_COOKIE,
-    path: "/auth/refresh",
+    path: "/api/auth/refresh",
 };
 
 // NOTE: only exists if Refresh Cookie exists (hence "Shadow Cookie"); and is accessible to frontend app
@@ -100,7 +100,7 @@ const shadowCookieOptions = {
     httpOnly: false,
 };
 
-// POST /auth/signup
+// POST /api/auth/signup
 const signup_post = async (req, res, next) => {
     console.log("\n", "--- signup_post ---");
     const { firstName, lastName, email, password, confirmPassword } = req.body;
@@ -143,7 +143,7 @@ const signup_post = async (req, res, next) => {
     }
 };
 
-// POST /auth/login
+// POST /api/auth/login
 const login_post = async (req, res, next) => {
     console.log("\n", "--- login_post ---");
     // Get user credentials from req.body
@@ -189,7 +189,7 @@ const login_post = async (req, res, next) => {
     }
 };
 
-// GET /auth/refresh
+// GET /api/auth/refresh
 const refresh_get = async (req, res, next) => {
     console.log("\n", "--- refresh_get ---");
     try {
@@ -224,7 +224,7 @@ const refresh_get = async (req, res, next) => {
     }
 };
 
-// GET /auth/logout
+// GET /api/auth/logout
 const logout_get = (req, res, next) => {
     console.log("\n", "--- logout_get ---");
     try {

@@ -68,7 +68,7 @@ const MasterListItem = ({
             setIsDeleting(true); // init loading state
 
             const response = await fetch(
-                `${BOOK_WORM_API_URI}/booklists/${_id}`,
+                `${BOOK_WORM_API_URI}/api/booklists/${_id}`,
                 {
                     method: "DELETE",
                     headers: { Authorization: `Bearer ${accessToken}` },

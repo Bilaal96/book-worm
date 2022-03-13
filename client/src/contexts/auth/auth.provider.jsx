@@ -55,10 +55,13 @@ const AuthProvider = ({ children }) => {
     // Perform fetch request to renew auth tokens
     const fetchNewAuthTokens = async () => {
         try {
-            const response = await fetch(`${BOOK_WORM_API_URI}/auth/refresh`, {
-                headers: { "Content-Type": "application/json" },
-                credentials: "include", // required to send refresh cookie
-            });
+            const response = await fetch(
+                `${BOOK_WORM_API_URI}/api/auth/refresh`,
+                {
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "include", // required to send refresh cookie
+                }
+            );
 
             if (!response.ok && response.status !== 401) {
                 const error = await response.json();
@@ -176,7 +179,7 @@ const AuthProvider = ({ children }) => {
 
             // Send authentication request with user credentials
             const response = await fetch(
-                `${BOOK_WORM_API_URI}/auth/${authType}`,
+                `${BOOK_WORM_API_URI}/api/auth/${authType}`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -242,17 +245,20 @@ const AuthProvider = ({ children }) => {
         try {
             setAuthInProgress(true); // init loading state
 
-            const response = await fetch(`${BOOK_WORM_API_URI}/auth/logout`, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                    // no-cache - require validation for resource freshness
-                    // If not specified, refresh cookie is not deleted
-                    "Cache-Control": "no-cache",
-                },
-                // required to remove refreshToken from Redis whitelist
-                credentials: "include",
-            });
+            const response = await fetch(
+                `${BOOK_WORM_API_URI}/api/auth/logout`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                        // no-cache - require validation for resource freshness
+                        // If not specified, refresh cookie is not deleted
+                        "Cache-Control": "no-cache",
+                    },
+                    // required to remove refreshToken from Redis whitelist
+                    credentials: "include",
+                }
+            );
 
             console.log("Logout HTTP response status:", response.status);
 

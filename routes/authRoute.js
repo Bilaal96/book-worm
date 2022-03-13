@@ -10,22 +10,22 @@ import {
 
 const router = Router();
 
-// path: /auth/signup
+// path: /api/auth/signup
 router.post("/signup", authController.signup_post);
 router.use("/signup", handleSignupError);
 
-// path: /auth/login
+// path: /api/auth/login
 router.post("/login", authController.login_post);
 router.use("/login", handleLoginError);
 
-// path: /auth/refresh
+// path: /api/auth/refresh
 router.get(
     "/refresh",
     authMiddleware.verifyRefreshToken,
     authController.refresh_get
 );
 
-// path: /auth/logout
+// path: /api/auth/logout
 router.get(
     "/logout",
     authMiddleware.verifyAccessToken,

@@ -71,16 +71,16 @@ mongoose
     });
 
 // Test server connection / protected route
-app.get("/test", verifyAccessToken, (req, res) => {
+app.get("/api/test", verifyAccessToken, (req, res) => {
     const { accessToken, decodedToken } = req;
     console.log("ACCESS VERIFIED:", { accessToken, decodedToken });
     res.status(200).json({ success: `Test endpoint hit` });
 });
 
 // Routes
-app.use("/books", booksRoute);
-app.use("/auth", authRoute);
-app.use("/booklists", verifyAccessToken, booklistsRoute);
+app.use("/api/books", booksRoute);
+app.use("/api/auth", authRoute);
+app.use("/api/booklists", verifyAccessToken, booklistsRoute);
 
 // Serve static index.html for requests made to unknown endpoints
 if (process.env.NODE_ENV === "production") {

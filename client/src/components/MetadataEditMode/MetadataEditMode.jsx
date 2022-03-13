@@ -116,7 +116,7 @@ const MetadataEditMode = ({ listId, title, description, setEditMode }) => {
                 // Make PATCH request for partial update of a booklist
                 setIsSaving(true); // init loading state
                 const response = await fetch(
-                    `${BOOK_WORM_API_URI}/booklists/${listId}`,
+                    `${BOOK_WORM_API_URI}/api/booklists/${listId}`,
                     {
                         method: "PATCH",
                         headers: {

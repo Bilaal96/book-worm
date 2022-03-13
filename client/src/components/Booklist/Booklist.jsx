@@ -42,7 +42,7 @@ const Booklist = () => {
             // Request deletion of book (with id of 'bookId') from booklist (with id of 'listId')
             setIsDeletingBook(true); // init loading state
             const response = await fetch(
-                `${BOOK_WORM_API_URI}/booklists/${listId}/books/${bookId}`,
+                `${BOOK_WORM_API_URI}/api/booklists/${listId}/books/${bookId}`,
                 {
                     method: "DELETE",
                     headers: { Authorization: `Bearer ${accessToken}` },

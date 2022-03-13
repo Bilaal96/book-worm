@@ -62,7 +62,7 @@ const AddToBooklistModal = ({ book: bookToAdd, openModal, setOpenModal }) => {
             // Make request to add book to list
             // -- i.e. insert bookToAdd into targetBooklist.books array
             const response = await fetch(
-                `${BOOK_WORM_API_URI}/booklists/${targetBooklistId}/books`,
+                `${BOOK_WORM_API_URI}/api/booklists/${targetBooklistId}/books`,
                 {
                     method: "PUT",
                     headers: {
