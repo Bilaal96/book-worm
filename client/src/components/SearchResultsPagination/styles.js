@@ -8,6 +8,11 @@ export default makeStyles((theme) => ({
         backgroundColor: "rgba(255,255,255, 0.5)",
         borderRadius: "40px",
 
+        "& .MuiPagination-ul": {
+            display: "flex",
+            gap: theme.spacing(1.5, 0.5),
+        },
+
         [theme.breakpoints.up("sm")]: {
             margin: theme.spacing(4, "auto"),
         },

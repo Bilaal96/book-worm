@@ -74,6 +74,7 @@ export default makeStyles((theme) => ({
         // Override disabled button styles
         "&.Mui-disabled": {
             backgroundColor: theme.palette.secondary.dark,
+            color: theme.palette.common.subtleWhite,
         },
 
         [theme.breakpoints.up("sm")]: {
