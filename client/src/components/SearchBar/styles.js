@@ -72,7 +72,7 @@ export default makeStyles((theme) => ({
         borderTopRightRadius: 0,
 
         // Override disabled button styles
-        "&.Mui-disabled": {
+        "&.Mui-disabled, &[disabled]": {
             backgroundColor: theme.palette.secondary.dark,
             color: theme.palette.common.subtleWhite,
         },

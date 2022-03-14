@@ -177,6 +177,10 @@ const AuthProvider = ({ children }) => {
 
             setAuthInProgress(true); // init loading state
 
+            // Clear masterList from localStorage
+            // Prevents data of previous user (who did not MANUALLY log out) from merging with current user's data
+            clearMasterList();
+
             // Send authentication request with user credentials
             const response = await fetch(
                 `${BOOK_WORM_API_URI}/api/auth/${authType}`,

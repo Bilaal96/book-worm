@@ -127,7 +127,7 @@ const BookCardVertical = ({
                     >
                         <IconButton
                             component="a"
-                            href={volumeInfo.previewLink}
+                            href={`${volumeInfo.previewLink}&printsec=frontcover`}
                             target="_blank"
                         >
                             <Visibility />
