@@ -1,10 +1,7 @@
-import { MAX_RESULTS_PER_PAGE } from "constants/index";
-import { BOOK_WORM_API_URI } from "constants/index.js";
+import { BOOK_WORM_API_URI, MAX_RESULTS_PER_PAGE } from 'constants/index';
 
 /**
- * --- getUrlEncodedQueryString() ---
  * Iterates over queryParams object and calls encodeURIComponent() for each property/query parameter
- 
  * @returns { string } URL Encoded Query String -> used to request Books data
 
  * Object.entries() accepts an object and returns an array
@@ -21,18 +18,13 @@ import { BOOK_WORM_API_URI } from "constants/index.js";
  * Each element from the array is separated by an ampersand
  */
 export const getURIEncodedQueryString = (queryParams) => {
-    return Object.entries(queryParams)
-        .map(
-            ([queryParam, value]) =>
-                `${queryParam}=${encodeURIComponent(value)}`
-        )
-        .join("&");
+  return Object.entries(queryParams)
+    .map(([queryParam, value]) => `${queryParam}=${encodeURIComponent(value)}`)
+    .join('&');
 };
 
 /**
- * --- getBooksRequestURI() ---
  * Builds the URI required to request books data from Google Books API 
- 
  * @param { object } configurableParams - used to manually set / override default params
  * @param { string } serverDomain - flexibly set the domain for custom API
 
@@ -43,21 +35,20 @@ export const getURIEncodedQueryString = (queryParams) => {
     - search
  */
 export const getBooksRequestURI = (configurableParams) => {
-    // Accumulate query params in an object
-    const queryParams = {
-        // default params for every request
-        maxResults: MAX_RESULTS_PER_PAGE,
-        startIndex: 0,
+  // Accumulate query params in an object
+  const queryParams = {
+    // default params for every request
+    maxResults: MAX_RESULTS_PER_PAGE,
+    startIndex: 0,
 
-        // manually set params / override default params
-        ...configurableParams,
-    };
+    // manually set params / override default params
+    ...configurableParams,
+  };
 
-    // Get url encoded string, consisting of all query parameters
-    const uriEncodedQuerystring = getURIEncodedQueryString(queryParams);
-    console.log("getBooksRequestURI", { uriEncodedQuerystring });
+  // Get url encoded string, consisting of all query parameters
+  const uriEncodedQuerystring = getURIEncodedQueryString(queryParams);
 
-    // return URI with which API request can be made
-    // e.g. http://localhost:5000/?search=test&startIndex=0&maxResults=20
-    return `${BOOK_WORM_API_URI}/api/books?${uriEncodedQuerystring}`;
+  // return URI with which API request can be made
+  // e.g. http://localhost:5000/?search=test&startIndex=0&maxResults=20
+  return `${BOOK_WORM_API_URI}/api/books?${uriEncodedQuerystring}`;
 };
