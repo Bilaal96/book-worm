@@ -34,8 +34,5 @@
     "devDependencies": {
         "concurrently": "^6.2.1",
         "nodemon": "^2.0.19"
-    },
-    "prettier": {
-        "tabWidth": 4
     }
 }
