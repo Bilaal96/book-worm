@@ -1,13 +1,16 @@
-import { Public, ListAlt, LockOpen, Edit } from "@material-ui/icons";
+import { Public, ListAlt, LockOpen, Edit } from '@material-ui/icons';
 
 // Select API URL based on environment variables
 export const BOOK_WORM_API_URI =
-    process.env.NODE_ENV === "production"
-        ? process.env.REACT_APP_PROD_API_URI
-        : process.env.REACT_APP_DEV_API_URI;
-console.log({ BOOK_WORM_API_URI });
-console.log("REACT_APP_PROD", process.env.REACT_APP_PROD_API_URI);
-console.log("ENV_VARS", process.env);
+  process.env.NODE_ENV === 'production'
+    ? process.env.REACT_APP_PROD_API_URI
+    : process.env.REACT_APP_DEV_API_URI;
+
+if (process.env.NODE_ENV === 'production') {
+  console.log('REACT_APP_PROD', process.env.REACT_APP_PROD_API_URI);
+} else {
+  console.log('ENV_VARS', process.env);
+}
 
 /** Pagination
  * Max number of books to request from Google Books API
@@ -26,36 +29,36 @@ export const MAX_PAGE_LIMIT = 10;
  */
 // Links that are ALWAYS rendered
 export const NAV_MAP_BASE = [
-    {
-        // routeName: must be /books to get activeClassName styles
-        // SEE: https://stackoverflow.com/questions/39189640/react-router-index-route-always-active
-        routeName: "/books",
-        isExact: true,
-        text: "Discover",
-        icon: <Public />,
-    },
-    {
-        routeName: "/manage-lists",
-        isExact: false,
-        text: "Manage Lists",
-        icon: <ListAlt />,
-    },
+  {
+    // routeName: must be /books to get activeClassName styles
+    // SEE: https://stackoverflow.com/questions/39189640/react-router-index-route-always-active
+    routeName: '/books',
+    isExact: true,
+    text: 'Discover',
+    icon: <Public />,
+  },
+  {
+    routeName: '/manage-lists',
+    isExact: false,
+    text: 'Manage Lists',
+    icon: <ListAlt />,
+  },
 ];
 
 // Links that are only rendered when user is NOT logged in
 export const NAV_MAP_AUTH = [
-    {
-        routeName: "/login",
-        isExact: false,
-        text: "Log In",
-        icon: <LockOpen />,
-    },
-    {
-        routeName: "/signup",
-        isExact: false,
-        text: "Sign Up",
-        icon: <Edit />,
-    },
+  {
+    routeName: '/login',
+    isExact: false,
+    text: 'Log In',
+    icon: <LockOpen />,
+  },
+  {
+    routeName: '/signup',
+    isExact: false,
+    text: 'Sign Up',
+    icon: <Edit />,
+  },
 ];
 
 // All Links to render when user is not logged in
